@@ -20,6 +20,7 @@ public interface MetaDao {
 
     /**
      * 添加项目
+     *
      * @param meta
      * @return
      */
@@ -27,6 +28,7 @@ public interface MetaDao {
 
     /**
      * 删除项目
+     *
      * @param mid
      * @return
      */
@@ -34,6 +36,7 @@ public interface MetaDao {
 
     /**
      * 更新项目
+     *
      * @param meta
      * @return
      */
@@ -41,6 +44,7 @@ public interface MetaDao {
 
     /**
      * 根据编号获取项目
+     *
      * @param mid
      * @return
      */
@@ -49,6 +53,7 @@ public interface MetaDao {
 
     /**
      * 根据条件查询
+     *
      * @param metaCond
      * @return
      */
@@ -56,6 +61,7 @@ public interface MetaDao {
 
     /**
      * 根据类型获取meta数量
+     *
      * @param type
      * @return
      */
@@ -63,6 +69,7 @@ public interface MetaDao {
 
     /**
      * 根据sql查询
+     *
      * @param paraMap
      * @return
      */

@@ -40,9 +40,9 @@ public class LogDomain implements Serializable {
      */
     private Integer created;
 
-
-
-
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
     public Integer getId() {
         return id;
@@ -90,9 +90,5 @@ public class LogDomain implements Serializable {
 
     public void setCreated(Integer created) {
         this.created = created;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 }

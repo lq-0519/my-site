@@ -1,7 +1,5 @@
 package cn.luischen.dto.cond;
 
-import cn.luischen.utils.TaleUtils;
-
 /**
  * 用户查找条件
  * Created by winterchen on 2018/4/30.

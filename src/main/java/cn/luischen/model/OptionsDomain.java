@@ -6,11 +6,17 @@ package cn.luischen.model;
  */
 public class OptionsDomain {
 
-    /** 名称 */
+    /**
+     * 名称
+     */
     private String name;
-    /** 内容 */
+    /**
+     * 内容
+     */
     private String value;
-    /** 备注 */
+    /**
+     * 备注
+     */
     private String description;
 
     public String getName() {

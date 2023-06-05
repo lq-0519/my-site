@@ -45,7 +45,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional
     @Override
-    @CacheEvict(value={"atricleCache","atricleCaches","siteCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void addArticle(ContentDomain contentDomain) {
         if (null == contentDomain)
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
@@ -71,21 +71,21 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional
-    @CacheEvict(value={"atricleCache","atricleCaches","siteCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void deleteArticleById(Integer cid) {
         if (null == cid)
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         contentDao.deleteArticleById(cid);
         //同时也要删除该文章下的所有评论
         List<CommentDomain> comments = commentDao.getCommentsByCId(cid);
-        if (null != comments && comments.size() > 0){
-            comments.forEach(comment ->{
+        if (null != comments && comments.size() > 0) {
+            comments.forEach(comment -> {
                 commentDao.deleteComment(comment.getCoid());
             });
         }
         //删除标签和分类关联
         List<RelationShipDomain> relationShips = relationShipDao.getRelationShipByCid(cid);
-        if (null != relationShips && relationShips.size() > 0){
+        if (null != relationShips && relationShips.size() > 0) {
             relationShipDao.deleteRelationShipByCid(cid);
         }
 
@@ -93,7 +93,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional
-    @CacheEvict(value={"atricleCache","atricleCaches","siteCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void updateArticleById(ContentDomain contentDomain) {
         //标签和分类
         String tags = contentDomain.getTags();
@@ -109,7 +109,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional
-    @CacheEvict(value={"atricleCache","atricleCaches","siteCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void updateCategory(String ordinal, String newCatefory) {
         ContentCond cond = new ContentCond();
         cond.setCategory(ordinal);
@@ -121,9 +121,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
 
-
     @Override
-    @CacheEvict(value={"atricleCache","atricleCaches","siteCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void updateContentByCid(ContentDomain content) {
         if (null != content && null != content.getCid()) {
             contentDao.updateArticleById(content);
@@ -160,7 +159,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public PageInfo<ContentDomain> searchArticle(String param, int pageNun, int pageSize) {
-        PageHelper.startPage(pageNun,pageSize);
+        PageHelper.startPage(pageNun, pageSize);
         List<ContentDomain> contentDomains = contentDao.searchArticle(param);
         PageInfo<ContentDomain> pageInfo = new PageInfo<>(contentDomains);
         return pageInfo;

@@ -25,19 +25,18 @@ import java.util.Arrays;
 @Component
 public class WebLogAspect {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(WebLogAspect.class);
+    ThreadLocal<Long> startTime = new ThreadLocal<>();
     @Autowired
     private LogService logService;
 
-    private static Logger LOGGER = LoggerFactory.getLogger(WebLogAspect.class);
-
-    ThreadLocal<Long> startTime = new ThreadLocal<>();
-
     @Pointcut("execution(public * cn.luischen.controller..*.*(..))")
-    public void webLog(){}
+    public void webLog() {
+    }
 
 
     @Before("webLog()")
-    public void doBefore(JoinPoint joinPoint){
+    public void doBefore(JoinPoint joinPoint) {
 
         startTime.set(System.currentTimeMillis());
 

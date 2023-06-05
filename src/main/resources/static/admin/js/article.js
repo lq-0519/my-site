@@ -44,12 +44,12 @@ function subArticle(status) {
     var params = $("#articleForm").serialize();
     var url = $('#articleForm #cid').val() != '' ? '/admin/article/modify' : '/admin/article/publish';
     tale.post({
-        url:url,
-        data:params,
+        url: url,
+        data: params,
         success: function (result) {
             if (result && result.code == 'success') {
                 tale.alertOk({
-                    text:'文章保存成功',
+                    text: '文章保存成功',
                     then: function () {
                         setTimeout(function () {
                             window.location.href = '/admin/article';
@@ -113,14 +113,14 @@ $('#multiple-type').change(function () {
     var postType = $('#multiple-type').val();
     var tags = $('#tags');
     var categories = $('#multiple-sel');
-    if(postType == 'post'){
+    if (postType == 'post') {
         $('#tags_tagsinput').show(500);
         $('#s2id_multiple-sel').show(500);
-        $('#comment-div').attr("style","display:block;");
-    }else {
+        $('#comment-div').attr("style", "display:block;");
+    } else {
         $('#tags_tagsinput').hide(500);
         $('#s2id_multiple-sel').hide(500);
-        $('#comment-div').attr("style","display:none;");
+        $('#comment-div').attr("style", "display:none;");
 
     }
 });
@@ -129,14 +129,14 @@ $(function () {
     var postType = $('#multiple-type').val();
     var tags = $('#tags');
     var categories = $('#multiple-sel');
-    if(postType == 'post'){
+    if (postType == 'post') {
         $('#tags_tagsinput').show();
         $('#s2id_multiple-sel').show();
-        $('#comment-div').attr("style","display:block;");
-    }else {
+        $('#comment-div').attr("style", "display:block;");
+    } else {
         $('#tags_tagsinput').hide();
         $('#s2id_multiple-sel').hide();
-        $('#comment-div').attr("style","display:none;");
+        $('#comment-div').attr("style", "display:none;");
 
     }
 });

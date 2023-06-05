@@ -19,6 +19,7 @@ public interface ContentDao {
 
     /**
      * 添加文章
+     *
      * @param contentDomain
      * @return
      */
@@ -26,6 +27,7 @@ public interface ContentDao {
 
     /**
      * 根据编号删除文章
+     *
      * @param cid
      * @return
      */
@@ -33,6 +35,7 @@ public interface ContentDao {
 
     /**
      * 更新文章
+     *
      * @param contentDomain
      * @return
      */
@@ -40,6 +43,7 @@ public interface ContentDao {
 
     /**
      * 更新文章的评论数
+     *
      * @param cid
      * @param commentsNum
      * @return
@@ -47,9 +51,9 @@ public interface ContentDao {
     int updateArticleCommentCountById(@Param("cid") Integer cid, @Param("commentsNum") Integer commentsNum);
 
 
-
     /**
      * 根据编号获取文章
+     *
      * @param cid
      * @return
      */
@@ -57,6 +61,7 @@ public interface ContentDao {
 
     /**
      * 根据条件获取文章列表
+     *
      * @param contentCond
      * @return
      */
@@ -64,12 +69,14 @@ public interface ContentDao {
 
     /**
      * 获取文章总数量
+     *
      * @return
      */
     Long getArticleCount();
 
     /**
      * 获取归档数据
+     *
      * @param contentCond 查询条件（只包含开始时间和结束时间）
      * @return
      */
@@ -77,12 +84,14 @@ public interface ContentDao {
 
     /**
      * 获取最近的文章（只包含id和title）
+     *
      * @return
      */
     List<ContentDomain> getRecentlyArticle();
 
     /**
      * 搜索文章-根据标题 或 内容匹配
+     *
      * @param param
      * @return
      */

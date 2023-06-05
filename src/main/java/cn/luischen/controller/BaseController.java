@@ -2,40 +2,31 @@ package cn.luischen.controller;
 
 import cn.luischen.constant.Types;
 import cn.luischen.constant.WebConst;
-import cn.luischen.dto.ArchiveDto;
 import cn.luischen.dto.MetaDto;
 import cn.luischen.dto.cond.ContentCond;
-import cn.luischen.dto.cond.MetaCond;
-import cn.luischen.model.ContentDomain;
 import cn.luischen.model.UserDomain;
 import cn.luischen.service.content.ContentService;
 import cn.luischen.service.meta.MetaService;
 import cn.luischen.service.site.SiteService;
 import cn.luischen.utils.MapCache;
 import cn.luischen.utils.TaleUtils;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- *
  * Created by winterchen on 2018/4/30.
  */
 public abstract class BaseController {
 
+    protected MapCache cache = MapCache.single();
     @Autowired
     private ContentService contentService;
-
     @Autowired
     private MetaService metaService;
-
     @Autowired
     private SiteService siteService;
-
-
-    protected MapCache cache = MapCache.single();
 
     public BaseController title(HttpServletRequest request, String title) {
         request.setAttribute("title", title);
@@ -45,13 +36,14 @@ public abstract class BaseController {
 
     /**
      * 获取blog页面需要的公共数据
+     *
      * @param request
      * @return
      */
-    public BaseController blogBaseData(HttpServletRequest request, ContentCond contentCond){
+    public BaseController blogBaseData(HttpServletRequest request, ContentCond contentCond) {
 //        List<MetaDto> categories = metaService.getMetaList(Types.CATEGORY.getType(), null, WebConst.MAX_POSTS);
 //        List<MetaDto> tags = metaService.getMetaList(Types.TAG.getType(), null, WebConst.MAX_POSTS);
-        List<MetaDto> links = metaService.getMetaList(Types.LINK.getType(), null,WebConst.MAX_POSTS);
+        List<MetaDto> links = metaService.getMetaList(Types.LINK.getType(), null, WebConst.MAX_POSTS);
 //        request.setAttribute("categories", categories);//分类
 //        request.setAttribute("tags", tags);//标签
         request.setAttribute("links", links);
@@ -64,8 +56,10 @@ public abstract class BaseController {
 
         return this;
     }
+
     /**
      * 获取请求绑定的登录对象
+     *
      * @param request
      * @return
      */
@@ -73,7 +67,7 @@ public abstract class BaseController {
         return TaleUtils.getLoginUser(request);
     }
 
-    public Integer getUid(HttpServletRequest request){
+    public Integer getUid(HttpServletRequest request) {
         return this.user(request).getUid();
     }
 

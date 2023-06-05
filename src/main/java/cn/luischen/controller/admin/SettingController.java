@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +41,7 @@ public class SettingController extends BaseController {
 
     @ApiOperation("进入设置页")
     @GetMapping(value = "")
-    public String setting(HttpServletRequest request){
+    public String setting(HttpServletRequest request) {
         List<OptionsDomain> optionsList = optionService.getOptions();
         Map<String, String> options = new HashMap<>();
         optionsList.forEach((option) -> {
@@ -67,8 +66,8 @@ public class SettingController extends BaseController {
 
             //刷新设置
             List<OptionsDomain> options = optionService.getOptions();
-            if(! CollectionUtils.isEmpty(options)){
-                WebConst.initConfig = options.stream().collect(Collectors.toMap(OptionsDomain::getName,OptionsDomain::getValue));
+            if (!CollectionUtils.isEmpty(options)) {
+                WebConst.initConfig = options.stream().collect(Collectors.toMap(OptionsDomain::getName, OptionsDomain::getValue));
             }
             logService.addLog(LogActions.SYS_SETTING.getAction(), GsonUtils.toJsonString(querys), request.getRemoteAddr(), this.getUid(request));
             return APIResponse.success();
@@ -77,11 +76,6 @@ public class SettingController extends BaseController {
             return APIResponse.fail(e.getMessage());
         }
     }
-
-
-
-
-
 
 
 }

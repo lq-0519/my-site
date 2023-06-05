@@ -30,16 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    @Autowired
-    private CommentDao commentDao;
-
-    @Autowired
-    private ContentService contentService;
-
-
-
-    private static final Map<String,String> STATUS_MAP = new ConcurrentHashMap<>();
-
+    private static final Map<String, String> STATUS_MAP = new ConcurrentHashMap<>();
     /**
      * 评论状态：正常
      */
@@ -48,21 +39,25 @@ public class CommentServiceImpl implements CommentService {
      * 评论状态：不显示
      */
     private static final String STATUS_BLANK = "not_audit";
+    @Autowired
+    private CommentDao commentDao;
+    @Autowired
+    private ContentService contentService;
 
     static {
-        STATUS_MAP.put("approved",STATUS_NORMAL);
-        STATUS_MAP.put("not_audit",STATUS_BLANK);
+        STATUS_MAP.put("approved", STATUS_NORMAL);
+        STATUS_MAP.put("not_audit", STATUS_BLANK);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value={"commentCache","siteCache"},allEntries=true)
+    @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void addComment(CommentDomain comments) {
         String msg = null;
         if (null == comments) {
             msg = "评论对象为空";
         }
-        if(comments != null) {
+        if (comments != null) {
             if (StringUtils.isBlank(comments.getAuthor())) {
                 comments.setAuthor("热心网友");
             }
@@ -102,7 +97,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    @CacheEvict(value={"commentCache","siteCache"},allEntries=true)
+    @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void deleteComment(Integer coid) {
         if (null == coid)
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
@@ -114,7 +109,7 @@ public class CommentServiceImpl implements CommentService {
         List<CommentDomain> childComments = commentDao.getCommentsByCond(commentCond);
         Integer count = 0;
         //删除子评论
-        if (null != childComments && childComments.size() > 0){
+        if (null != childComments && childComments.size() > 0) {
             for (int i = 0; i < childComments.size(); i++) {
                 commentDao.deleteComment(childComments.get(i).getCoid());
                 count++;
@@ -128,14 +123,14 @@ public class CommentServiceImpl implements CommentService {
         ContentDomain contentDomain = contentService.getArticleById(comment.getCid());
         if (null != contentDomain
                 && null != contentDomain.getCommentsNum()
-                && contentDomain.getCommentsNum() != 0){
+                && contentDomain.getCommentsNum() != 0) {
             contentDomain.setCommentsNum(contentDomain.getCommentsNum() - count);
             contentService.updateContentByCid(contentDomain);
         }
     }
 
     @Override
-    @CacheEvict(value={"commentCache","siteCache"},allEntries=true)
+    @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void updateCommentStatus(Integer coid, String status) {
         if (null == coid)
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);

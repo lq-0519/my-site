@@ -25,7 +25,7 @@
     <delete id="deleteRelationShipById">
         DELETE FROM
         <include refid="BASE_TABLE"/>
-        WHERE cid =  #{cid, jdbcType=INTEGER}
+        WHERE cid = #{cid, jdbcType=INTEGER}
         AND mid = #{mid, jdbcType=INTEGER}
     </delete>
 
@@ -57,7 +57,9 @@
     <select id="getRelationShipByCid" resultType="cn.luischen.model.RelationShipDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
-        FROM <include refid="BASE_TABLE"/> AS rs
+        FROM
+        <include refid="BASE_TABLE"/>
+        AS rs
         WHERE cid = #{cid, jdbcType=INTEGER}
     </select>
 
@@ -65,15 +67,18 @@
     <select id="getRelationShipByMid" resultType="cn.luischen.model.RelationShipDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
-        FROM <include refid="BASE_TABLE"/> AS rs
+        FROM
+        <include refid="BASE_TABLE"/>
+        AS rs
         WHERE mid = #{mid, jdbcType=INTEGER}
     </select>
 
     <!-- 查找数量 -->
     <select id="getCountById" resultType="java.lang.Long">
         SELECT count(*)
-        FROM <include refid="BASE_TABLE"/>
-        WHERE cid =  #{cid, jdbcType=INTEGER}
+        FROM
+        <include refid="BASE_TABLE"/>
+        WHERE cid = #{cid, jdbcType=INTEGER}
         AND mid = #{mid, jdbcType=INTEGER}
     </select>
 

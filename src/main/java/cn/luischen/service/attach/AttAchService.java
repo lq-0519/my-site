@@ -14,6 +14,7 @@ public interface AttAchService {
 
     /**
      * 添加单个附件信息
+     *
      * @param attAchDomain
      * @return
      */
@@ -21,6 +22,7 @@ public interface AttAchService {
 
     /**
      * 批量添加附件信息
+     *
      * @param list
      * @return
      */
@@ -28,6 +30,7 @@ public interface AttAchService {
 
     /**
      * 根据主键编号删除附件信息
+     *
      * @param id
      * @return
      */
@@ -35,6 +38,7 @@ public interface AttAchService {
 
     /**
      * 更新附件信息
+     *
      * @param attAchDomain
      * @return
      */
@@ -42,6 +46,7 @@ public interface AttAchService {
 
     /**
      * 根据主键获取附件信息
+     *
      * @param id
      * @return
      */
@@ -49,6 +54,7 @@ public interface AttAchService {
 
     /**
      * 获取所有的附件信息
+     *
      * @return
      */
     PageInfo<AttAchDto> getAtts(int pageNum, int pageSize);

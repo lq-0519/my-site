@@ -33,6 +33,22 @@ public class BusinessException extends RuntimeException {
         this.errorMessageArguments = new String[0];
     }
 
+    public static BusinessException withErrorCode(String errorCode) {
+        BusinessException businessException = new BusinessException();
+        businessException.errorCode = errorCode;
+        return businessException;
+    }
+
+    public static BusinessException fromAPIResponse(APIResponse apiResponse) {
+        BusinessException businessException = new BusinessException();
+        if (apiResponse == null) {
+            apiResponse = APIResponse.fail("NULL");
+        }
+
+        businessException.apiResponse = apiResponse;
+        return businessException;
+    }
+
     public String getErrorCode() {
         return this.errorCode;
     }
@@ -49,35 +65,20 @@ public class BusinessException extends RuntimeException {
         this.errorMessageArguments = errorMessageArguments;
     }
 
-    public static BusinessException withErrorCode(String errorCode) {
-        BusinessException businessException = new BusinessException();
-        businessException.errorCode = errorCode;
-        return businessException;
-    }
-
-    public static BusinessException fromAPIResponse(APIResponse apiResponse) {
-        BusinessException businessException = new BusinessException();
-        if(apiResponse == null) {
-            apiResponse = APIResponse.fail("NULL");
-        }
-
-        businessException.apiResponse = apiResponse;
-        return businessException;
-    }
-
     public BusinessException withErrorMessageArguments(String... errorMessageArguments) {
-        if(errorMessageArguments != null) {
+        if (errorMessageArguments != null) {
             this.errorMessageArguments = errorMessageArguments;
         }
 
         return this;
     }
+
     public APIResponse response() {
-        if(this.apiResponse != null) {
+        if (this.apiResponse != null) {
             return this.apiResponse;
         } else {
             this.apiResponse = APIResponse.widthCode(this.getErrorCode());
-            if(this.getErrorMessageArguments() != null && this.getErrorMessageArguments().length > 0) {
+            if (this.getErrorMessageArguments() != null && this.getErrorMessageArguments().length > 0) {
                 try {
                     this.apiResponse.setMsg(MessageFormat.format(this.apiResponse.getMsg(), this.getErrorMessageArguments()));
                 } catch (Exception var2) {

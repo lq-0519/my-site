@@ -23,7 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -35,7 +39,7 @@ import java.util.List;
 @Api("后台首页")
 @Controller("adminIndexController")
 @RequestMapping(value = "/admin")
-public class IndexController extends BaseController{
+public class IndexController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
@@ -49,10 +53,9 @@ public class IndexController extends BaseController{
     private UserService userService;
 
 
-
     @ApiOperation("进入首页")
-    @GetMapping(value = {"","/index"})
-    public String index(HttpServletRequest request){
+    @GetMapping(value = {"", "/index"})
+    public String index(HttpServletRequest request) {
         LOGGER.info("Enter admin index method");
         List<CommentDomain> comments = siteService.getComments(5);
         List<ContentDomain> contents = siteService.getNewArticles(5);
@@ -93,10 +96,10 @@ public class IndexController extends BaseController{
             logService.addLog(LogActions.UP_INFO.getAction(), GsonUtils.toJsonString(temp), request.getRemoteAddr(), this.getUid(request));
 
             //更新session中的数据
-            UserDomain original= (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            UserDomain original = (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
             original.setScreenName(screenName);
             original.setEmail(email);
-            session.setAttribute(WebConst.LOGIN_SESSION_KEY,original);
+            session.setAttribute(WebConst.LOGIN_SESSION_KEY, original);
         }
         return APIResponse.success();
     }
@@ -106,7 +109,7 @@ public class IndexController extends BaseController{
      */
     @PostMapping(value = "/password")
     @ResponseBody
-    public APIResponse upPwd(@RequestParam String oldPassword, @RequestParam String password, HttpServletRequest request,HttpSession session) {
+    public APIResponse upPwd(@RequestParam String oldPassword, @RequestParam String password, HttpServletRequest request, HttpSession session) {
         UserDomain users = this.user(request);
         if (StringUtils.isBlank(oldPassword) || StringUtils.isBlank(password)) {
             return APIResponse.fail("请确认信息输入完整");
@@ -128,11 +131,11 @@ public class IndexController extends BaseController{
             logService.addLog(LogActions.UP_PWD.getAction(), null, request.getRemoteAddr(), this.getUid(request));
 
             //更新session中的数据
-            UserDomain original= (UserDomain)session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            UserDomain original = (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
             original.setPassword(pwd);
-            session.setAttribute(WebConst.LOGIN_SESSION_KEY,original);
+            session.setAttribute(WebConst.LOGIN_SESSION_KEY, original);
             return APIResponse.success();
-        } catch (Exception e){
+        } catch (Exception e) {
             String msg = "密码修改失败";
             if (e instanceof BusinessException) {
                 msg = e.getMessage();
@@ -142,8 +145,6 @@ public class IndexController extends BaseController{
             return APIResponse.fail(msg);
         }
     }
-
-
 
 
 }

@@ -26,9 +26,9 @@ public class OptionServiceImpl implements OptionService {
     private OptionDao optionDao;
 
     @Override
-    @CacheEvict(value={"optionsCache","optionCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
     public void deleteOptionByName(String name) {
-        if(StringUtils.isBlank(name))
+        if (StringUtils.isBlank(name))
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         optionDao.deleteOptionByName(name);
 
@@ -36,9 +36,9 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     @Transactional
-    @CacheEvict(value={"optionsCache","optionCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
     public void updateOptionByName(String name, String value) {
-        if(StringUtils.isBlank(name))
+        if (StringUtils.isBlank(name))
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         OptionsDomain option = new OptionsDomain();
         option.setName(name);
@@ -49,7 +49,7 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     @Transactional
-    @CacheEvict(value={"optionsCache","optionCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
     public void saveOptions(Map<String, String> options) {
         if (null != options && !options.isEmpty()) {
             options.forEach(this::updateOptionByName);
@@ -59,7 +59,7 @@ public class OptionServiceImpl implements OptionService {
     @Override
     @Cacheable(value = "optionCache", key = "'optionByName_' + #p0")
     public OptionsDomain getOptionByName(String name) {
-        if(StringUtils.isBlank(name))
+        if (StringUtils.isBlank(name))
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         return optionDao.getOptionByName(name);
     }

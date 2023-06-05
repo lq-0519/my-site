@@ -18,7 +18,6 @@ import cn.luischen.model.ContentDomain;
 import cn.luischen.service.site.SiteService;
 import cn.luischen.utils.DateKit;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,7 @@ import java.util.Map;
  * Created by winterchen on 2018/4/30.
  */
 @Service
-public class SiteServiceImpl implements SiteService{
+public class SiteServiceImpl implements SiteService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SiteServiceImpl.class);
 
@@ -56,7 +55,7 @@ public class SiteServiceImpl implements SiteService{
     @Cacheable(value = "siteCache", key = "'comments_' + #p0")
     public List<CommentDomain> getComments(int limit) {
         LOGGER.debug("Enter recentComments method:limit={}", limit);
-        if (limit < 0 || limit > 10){
+        if (limit < 0 || limit > 10) {
             limit = 10;
         }
         PageHelper.startPage(1, limit);
@@ -130,10 +129,30 @@ public class SiteServiceImpl implements SiteService{
         return archives;
     }
 
-
+    @Override
+    @Cacheable(value = "siteCache", key = "'metas_' + #p0")
+    public List<MetaDto> getMetas(String type, String orderBy, int limit) {
+        LOGGER.debug("Enter metas method:type={},order={},limit={}", type, orderBy, limit);
+        List<MetaDto> retList = null;
+        if (StringUtils.isNotBlank(type)) {
+            if (StringUtils.isBlank(orderBy)) {
+                orderBy = "count desc, a.mid desc";
+            }
+            if (limit < 1 || limit > WebConst.MAX_POSTS) {
+                limit = 10;
+            }
+            Map<String, Object> paraMap = new HashMap<>();
+            paraMap.put("type", type);
+            paraMap.put("order", orderBy);
+            paraMap.put("limit", limit);
+            retList = metaDao.selectFromSql(paraMap);
+        }
+        LOGGER.debug("Exit metas method");
+        return retList;
+    }
 
     private void parseArchives(List<ArchiveDto> archives, ContentCond contentCond) {
-        if (null != archives){
+        if (null != archives) {
             archives.forEach(archive -> {
                 String date = archive.getDate();
                 Date sd = DateKit.dateFormat(date, "yyyy年MM月");
@@ -147,27 +166,5 @@ public class SiteServiceImpl implements SiteService{
                 archive.setArticles(contentss);
             });
         }
-    }
-
-    @Override
-    @Cacheable(value = "siteCache", key = "'metas_' + #p0")
-    public List<MetaDto> getMetas(String type, String orderBy, int limit) {
-        LOGGER.debug("Enter metas method:type={},order={},limit={}", type, orderBy, limit);
-        List<MetaDto> retList=null;
-        if (StringUtils.isNotBlank(type)) {
-            if(StringUtils.isBlank(orderBy)){
-                orderBy = "count desc, a.mid desc";
-            }
-            if(limit < 1 || limit > WebConst.MAX_POSTS){
-                limit = 10;
-            }
-            Map<String, Object> paraMap = new HashMap<>();
-            paraMap.put("type", type);
-            paraMap.put("order", orderBy);
-            paraMap.put("limit", limit);
-            retList= metaDao.selectFromSql(paraMap);
-        }
-        LOGGER.debug("Exit metas method");
-        return retList;
     }
 }

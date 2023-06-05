@@ -33,6 +33,7 @@ public class Swagger2 {
                 .paths(PathSelectors.any())
                 .build();
     }
+
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Luis Site Swagger Restful API")

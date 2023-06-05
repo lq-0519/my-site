@@ -15,6 +15,7 @@ public interface OptionDao {
 
     /**
      * 删除网站配置
+     *
      * @param name
      * @return
      */
@@ -22,6 +23,7 @@ public interface OptionDao {
 
     /**
      * 更新网站配置
+     *
      * @param options
      * @return
      */
@@ -36,6 +38,7 @@ public interface OptionDao {
 
     /**
      * 获取全部网站配置
+     *
      * @return
      */
     List<OptionsDomain> getOptions();

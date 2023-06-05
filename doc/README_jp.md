@@ -2,7 +2,8 @@
 
 ## 概要
 
-My Siteは、Docker+SpringBoot2.0+Mybatis+thymeleafなどの技術を使用して実装された個人のウェブサイトです。もともとはDockerとSpringBootの実践的な練習プロジェクトでしたが、現在はオープンソースとなっており、機能が完全で、デプロイが簡単で、完璧なコードを提供し、使用者には比類のない体験を提供するでしょう。このプロジェクトが気に入った場合は、[このプロジェクトに「いいね！」を](https://github.com/WinterChenS/my-site)してください。
+My
+Siteは、Docker+SpringBoot2.0+Mybatis+thymeleafなどの技術を使用して実装された個人のウェブサイトです。もともとはDockerとSpringBootの実践的な練習プロジェクトでしたが、現在はオープンソースとなっており、機能が完全で、デプロイが簡単で、完璧なコードを提供し、使用者には比類のない体験を提供するでしょう。このプロジェクトが気に入った場合は、[このプロジェクトに「いいね！」を](https://github.com/WinterChenS/my-site)してください。
 
 - **個人のウェブサイトとして使用できます。個人のホームページ、写真作品、ブログなどの機能が統合されています。**
 - **SpringBoot技術の学習プロジェクトとしても使用できます。My Siteは要件を満たしており、コードと機能が完備しています。**
@@ -47,7 +48,6 @@ My Siteは、Docker+SpringBoot2.0+Mybatis+thymeleafなどの技術を使用し�
 **管理ページ：**
 
 ![http://img.winterchen.com/eqeqeqeqe.png](http://img.winterchen.com/eqeqeqeqe.png)
-
 
 # 更新履歴
 

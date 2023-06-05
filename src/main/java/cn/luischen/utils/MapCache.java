@@ -15,11 +15,6 @@ public class MapCache {
     private static final int DEFAULT_CACHES = 1024;
 
     private static final MapCache INS = new MapCache();
-
-    public static MapCache single() {
-        return INS;
-    }
-
     /**
      * 缓存容器
      */
@@ -31,6 +26,10 @@ public class MapCache {
 
     public MapCache(int cacheCount) {
         cachePool = new ConcurrentHashMap<>(cacheCount);
+    }
+
+    public static MapCache single() {
+        return INS;
     }
 
     /**

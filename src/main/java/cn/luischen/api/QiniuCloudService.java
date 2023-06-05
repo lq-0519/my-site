@@ -25,7 +25,11 @@ import java.io.IOException;
 public class QiniuCloudService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QiniuCloudService.class);
-
+    /**
+     * 七牛云外网访问地址
+     */
+    @Value("${qiniu.cdn.url}")
+    public String QINIU_UPLOAD_SITE;
     @Value("${qiniu.accesskey}")
     private String ACCESS_KEY;
     @Value("${qiniu.serectkey}")
@@ -35,11 +39,6 @@ public class QiniuCloudService {
      */
     @Value("${qiniu.bucket}")
     private String BUCKET;
-    /**
-     * 七牛云外网访问地址
-     */
-    @Value("${qiniu.cdn.url}")
-    public String QINIU_UPLOAD_SITE;
 
     public String upload(MultipartFile file, String fileName) {
 
@@ -67,7 +66,7 @@ public class QiniuCloudService {
             LOGGER.error("file upload failed", e);
             throw BusinessException.withErrorCode(ErrorConstant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
         }
-        
+
     }
 
 }

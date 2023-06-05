@@ -1,10 +1,9 @@
 # My Site
 
-
-
 ## 简介
-My Site是由Docker+SpringBoot2.0+Mybatis+thymeleaf等技术实现的个人网站，本来是一个docker和springboot的实战练习项目，目前已经开源，功能齐全、部署简单及完善的代码，一定会给使用者无与伦比的体验，如果觉得这个项目不错，请为它[点赞](https://github.com/WinterChenS/my-site)支持。
 
+My
+Site是由Docker+SpringBoot2.0+Mybatis+thymeleaf等技术实现的个人网站，本来是一个docker和springboot的实战练习项目，目前已经开源，功能齐全、部署简单及完善的代码，一定会给使用者无与伦比的体验，如果觉得这个项目不错，请为它[点赞](https://github.com/WinterChenS/my-site)支持。
 
 - **你可以把它作为个人网站，集成了个人首页，个人摄影作品，个人博客等功能；**
 - **你也可以把它作为springboot技术的学习项目，My Site也足够符合要求，且代码和功能完备；**
@@ -18,14 +17,11 @@ My Site是由Docker+SpringBoot2.0+Mybatis+thymeleaf等技术实现的个人网�
 [![License](https://img.shields.io/badge/license-apache-blue.svg)](https://github.com/ZHENFENG13/My-Blog/blob/master/LICENSE)
 [![CI](https://github.com/WinterChenS/my-site/actions/workflows/main.yml/badge.svg)](https://github.com/WinterChenS/my-site/actions/workflows/main.yml)
 
-
-
 #### 相关博客文章
 
 - [springboot+mybatis+thymeleaf+docker构建的个人站点开源项目（集成了个人主页、个人作品、个人博客](https://blog.csdn.net/winter_chen001/article/details/80266339)
 
 # Quick Start
-
 
 - [x]  [1.如何部署My Site](https://github.com/WinterChenS/my-site/wiki/%E5%A6%82%E4%BD%95%E9%83%A8%E7%BD%B2My-Site)
 
@@ -43,9 +39,11 @@ My Site是由Docker+SpringBoot2.0+Mybatis+thymeleaf等技术实现的个人网�
 ![文章列表页](http://img.winterchen.com/eqeqeqeqe.png)
 
 # 学习群
-欢迎大家加入学习群：681513531  答案：8
+
+欢迎大家加入学习群：681513531 答案：8
 
 # Log
+
 - 2021-08-20: 修复部分遗留的缓存bug，修复了作品类文章没有点击量的问题
 
 - 2018-07-12: 修复缓存导致更新和删除文章不生效的Bug
@@ -65,7 +63,6 @@ My Site是由Docker+SpringBoot2.0+Mybatis+thymeleaf等技术实现的个人网�
 - 2018-05-05: 优化了选择文章类型，增加了评论功能
 
 - 2018-05-03: 发布第一版
-
 
 [![Stargazers over time](https://starchart.cc/WinterChenS/my-site.svg)](https://starchart.cc/WinterChenS/my-site)
 

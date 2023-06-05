@@ -15,14 +15,9 @@ import java.util.regex.Pattern;
  **/
 public class XSSUtil {
     private static final Logger LOG = LoggerFactory.getLogger(XSSUtil.class);
-
-    private XSSUtil() {
-        // empty private constructor
-    }
-
     private static final Pattern NULL_CHAR = Pattern.compile("\0");
     private static final Pattern[] PATTERNS =
-            new Pattern[] {
+            new Pattern[]{
                     // Avoid anything in a <script> type of expression
                     Pattern.compile("<script>(.*?)</script>", Pattern.CASE_INSENSITIVE),
                     // Avoid anything in a src='...' type of expression
@@ -57,12 +52,14 @@ public class XSSUtil {
                             "on(load|error|mouseover|submit|reset|focus|click)(.*?)=",
                             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL)
             };
+    private XSSUtil() {
+        // empty private constructor
+    }
 
     /**
      * Method tests whether a string contains malicious XSS script or not.
      *
      * @param value decoded string to test
-     *
      * @return true if string matches at least one XSS pattern, or false otherwise
      */
     public static boolean containsXSS(String value) {

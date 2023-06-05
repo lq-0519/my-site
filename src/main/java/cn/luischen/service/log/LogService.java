@@ -11,6 +11,7 @@ public interface LogService {
 
     /**
      * 添加
+     *
      * @param action
      * @param data
      * @param ip
@@ -20,6 +21,7 @@ public interface LogService {
 
     /**
      * 删除日志
+     *
      * @param id
      * @return
      */
@@ -27,6 +29,7 @@ public interface LogService {
 
     /**
      * 获取日志
+     *
      * @return
      */
     PageInfo<LogDomain> getLogs(int pageNum, int pageSize);

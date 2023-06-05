@@ -18,6 +18,7 @@ public interface CommentDao {
 
     /**
      * 新增评论
+     *
      * @param commentDomain
      * @return
      */
@@ -25,6 +26,7 @@ public interface CommentDao {
 
     /**
      * 删除评论
+     *
      * @param coid
      * @return
      */
@@ -32,6 +34,7 @@ public interface CommentDao {
 
     /**
      * 更新评论的状态
+     *
      * @param coid
      * @return
      */
@@ -39,12 +42,15 @@ public interface CommentDao {
 
     /**
      * 获取单条评论
+     *
      * @param coid
      * @return
      */
     CommentDomain getCommentById(@Param("coid") Integer coid);
+
     /**
      * 根据文章编号获取评论列表
+     *
      * @param cid
      * @return
      */
@@ -52,6 +58,7 @@ public interface CommentDao {
 
     /**
      * 根据条件获取评论列表
+     *
      * @param commentCond
      * @return
      */
@@ -59,6 +66,7 @@ public interface CommentDao {
 
     /**
      * 获取文章数量
+     *
      * @return
      */
     Long getCommentsCount();

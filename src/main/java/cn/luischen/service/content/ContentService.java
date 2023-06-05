@@ -12,6 +12,7 @@ public interface ContentService {
 
     /**
      * 添加文章
+     *
      * @param contentDomain
      * @return
      */
@@ -19,6 +20,7 @@ public interface ContentService {
 
     /**
      * 根据编号删除文章
+     *
      * @param cid
      * @return
      */
@@ -26,6 +28,7 @@ public interface ContentService {
 
     /**
      * 更新文章
+     *
      * @param contentDomain
      * @return
      */
@@ -33,21 +36,23 @@ public interface ContentService {
 
     /**
      * 更新分类
+     *
      * @param ordinal
      * @param newCatefory
      */
     void updateCategory(String ordinal, String newCatefory);
 
 
-
     /**
      * 添加文章点击量
+     *
      * @param content
      */
     void updateContentByCid(ContentDomain content);
 
     /**
      * 根据编号获取文章
+     *
      * @param cid
      * @return
      */
@@ -55,6 +60,7 @@ public interface ContentService {
 
     /**
      * 根据条件获取文章列表
+     *
      * @param contentCond
      * @return
      */
@@ -62,6 +68,7 @@ public interface ContentService {
 
     /**
      * 获取最近的文章（只包含id和title）
+     *
      * @param pageNum
      * @param pageSize
      * @return
@@ -70,6 +77,7 @@ public interface ContentService {
 
     /**
      * 搜索文章
+     *
      * @param param
      * @param pageNun
      * @param pageSize

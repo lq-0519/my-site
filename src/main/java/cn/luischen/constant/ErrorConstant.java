@@ -25,7 +25,7 @@ public interface ErrorConstant {
 
     interface Att {
         static final String ADD_NEW_ATT_FAIL = "添加附件信息失败";
-        static final String UPDATE_ATT_FAIL =  "更新附件信息失败";
+        static final String UPDATE_ATT_FAIL = "更新附件信息失败";
         static final String DELETE_ATT_FAIL = "删除附件信息失败";
         static final String UPLOAD_FILE_FAIL = "上传附件失败";
     }
@@ -55,7 +55,6 @@ public interface ErrorConstant {
         static final String USERNAME_PASSWORD_ERROR = "用户名不存在或密码错误";
         static final String NOT_LOGIN = "用户未登录";
     }
-
 
 
 }

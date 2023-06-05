@@ -42,7 +42,7 @@ public class MetaServiceImpl implements MetaService {
     private ContentService contentService;
 
     @Override
-    @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void addMeta(MetaDomain meta) {
         if (null == meta)
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
@@ -51,24 +51,24 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void saveMeta(String type, String name, Integer mid) {
-        if (StringUtils.isNotBlank(type) && StringUtils.isNotBlank(name)){
+        if (StringUtils.isNotBlank(type) && StringUtils.isNotBlank(name)) {
             MetaCond metaCond = new MetaCond();
             metaCond.setName(name);
             metaCond.setType(type);
             List<MetaDomain> metas = metaDao.getMetasByCond(metaCond);
-            if (null == metas || metas.size() == 0){
+            if (null == metas || metas.size() == 0) {
                 MetaDomain metaDomain = new MetaDomain();
                 metaDomain.setName(name);
-                if (null != mid){
+                if (null != mid) {
                     MetaDomain meta = metaDao.getMetaById(mid);
                     if (null != meta)
                         metaDomain.setMid(mid);
 
                     metaDao.updateMeta(metaDomain);
                     //更新原有的文章分类
-                    if(meta !=null) {
+                    if (meta != null) {
                         contentService.updateCategory(meta.getName(), name);
                     }
                 } else {
@@ -84,7 +84,7 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void addMetas(Integer cid, String names, String type) {
         if (null == cid)
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
@@ -98,7 +98,7 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void saveOrUpdate(Integer cid, String name, String type) {
         MetaCond metaCond = new MetaCond();
         metaCond.setName(name);
@@ -107,10 +107,10 @@ public class MetaServiceImpl implements MetaService {
 
         int mid;
         MetaDomain metaDomain;
-        if (metas.size() == 1){
+        if (metas.size() == 1) {
             MetaDomain meta = metas.get(0);
             mid = meta.getMid();
-        }else if (metas.size() > 1){
+        } else if (metas.size() > 1) {
             throw BusinessException.withErrorCode(ErrorConstant.Meta.NOT_ONE_RESULT);
         } else {
             metaDomain = new MetaDomain();
@@ -120,9 +120,9 @@ public class MetaServiceImpl implements MetaService {
             this.addMeta(metaDomain);
             mid = metaDomain.getMid();
         }
-        if (mid != 0){
+        if (mid != 0) {
             Long count = relationShipDao.getCountById(cid, mid);
-            if (count == 0){
+            if (count == 0) {
                 RelationShipDomain relationShip = new RelationShipDomain();
                 relationShip.setCid(cid);
                 relationShip.setMid(mid);
@@ -133,22 +133,22 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void deleteMetaById(Integer mid) {
         if (null == mid)
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
 
         MetaDomain meta = metaDao.getMetaById(mid);
-        if (null != meta){
+        if (null != meta) {
             String type = meta.getType();
             String name = meta.getName();
             metaDao.deleteMetaById(mid);
             //需要把相关的数据删除
             List<RelationShipDomain> relationShips = relationShipDao.getRelationShipByMid(mid);
-            if (null != relationShips && relationShips.size() > 0){
+            if (null != relationShips && relationShips.size() > 0) {
                 for (RelationShipDomain relationShip : relationShips) {
                     ContentDomain article = contentService.getArticleById(relationShip.getCid());
-                    if (null != article){
+                    if (null != article) {
                         ContentDomain temp = new ContentDomain();
                         temp.setCid(relationShip.getCid());
                         if (type.equals(Types.CATEGORY.getType())) {
@@ -166,11 +166,10 @@ public class MetaServiceImpl implements MetaService {
         }
 
 
-
     }
 
     @Override
-    @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
+    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void updateMeta(MetaDomain meta) {
         if (null == meta || null == meta.getMid())
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
@@ -196,7 +195,7 @@ public class MetaServiceImpl implements MetaService {
     @Override
     @Cacheable(value = "metaCaches", key = "'metaList_' + #p0")
     public List<MetaDto> getMetaList(String type, String orderby, int limit) {
-        if (StringUtils.isNotBlank(type)){
+        if (StringUtils.isNotBlank(type)) {
             if (StringUtils.isBlank(orderby)) {
                 orderby = "count desc, a.mid desc";
             }

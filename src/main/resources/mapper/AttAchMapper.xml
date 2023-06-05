@@ -29,8 +29,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             fname, ftype, fkey, authorId, created,
         </trim>
-        <trim  prefix="VALUES(" suffix=")" suffixOverrides=",">
-            #{fname, jdbcType=VARCHAR}, #{ftype, jdbcType=VARCHAR}, #{fkey, jdbcType=VARCHAR}, #{authorId,jdbcType=INTEGER}, UNIX_TIMESTAMP(NOW()),
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            #{fname, jdbcType=VARCHAR}, #{ftype, jdbcType=VARCHAR}, #{fkey, jdbcType=VARCHAR},
+            #{authorId,jdbcType=INTEGER}, UNIX_TIMESTAMP(NOW()),
         </trim>
     </insert>
 
@@ -44,9 +45,10 @@
         VALUES
         <foreach collection="list" item="AttAchDomain" index="index" separator=",">
             (
-              <trim suffix="" suffixOverrides=",">
-                  #{fname, jdbcType=VARCHAR}, #{ftype, jdbcType=VARCHAR}, #{authorId,jdbcType=INTEGER}, UNIX_TIMESTAMP(NOW()),
-              </trim>
+            <trim suffix="" suffixOverrides=",">
+                #{fname, jdbcType=VARCHAR}, #{ftype, jdbcType=VARCHAR}, #{authorId,jdbcType=INTEGER},
+                UNIX_TIMESTAMP(NOW()),
+            </trim>
             )
         </foreach>
     </insert>
@@ -85,8 +87,11 @@
             <include refid="REL_USER_COLUMN"/>
         </trim>
         FROM
-        <include refid="BASE_TABLE"/> AS aa
-        LEFT JOIN <include refid="TABLE_USER"/> AS u
+        <include refid="BASE_TABLE"/>
+        AS aa
+        LEFT JOIN
+        <include refid="TABLE_USER"/>
+        AS u
         ON aa.authorId = u.uid
         WHERE aa.id = #{id, jdbcType=INTEGER}
     </select>
@@ -99,8 +104,11 @@
             <include refid="REL_USER_COLUMN"/>
         </trim>
         FROM
-        <include refid="BASE_TABLE"/> AS aa
-        LEFT JOIN <include refid="TABLE_USER"/> AS u
+        <include refid="BASE_TABLE"/>
+        AS aa
+        LEFT JOIN
+        <include refid="TABLE_USER"/>
+        AS u
         ON aa.authorId = u.uid
         ORDER BY aa.created DESC
     </select>

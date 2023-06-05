@@ -2,7 +2,6 @@ package cn.luischen.service.user.impl;
 
 import cn.luischen.constant.ErrorConstant;
 import cn.luischen.dao.UserDao;
-import cn.luischen.dto.cond.UserCond;
 import cn.luischen.exception.BusinessException;
 import cn.luischen.model.UserDomain;
 import cn.luischen.service.user.UserService;

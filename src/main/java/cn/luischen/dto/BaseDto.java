@@ -7,7 +7,9 @@ package cn.luischen.dto;
 public class BaseDto {
 
 
-    /** 用户名 */
+    /**
+     * 用户名
+     */
     private String userName;
 
     public String getUserName() {

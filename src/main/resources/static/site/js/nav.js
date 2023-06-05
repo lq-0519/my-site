@@ -21,8 +21,7 @@ $(document).ready(function () {
                 const mainmenu = $(this).next('ul');
                 if (mainmenu.hasClass('open')) {
                     mainmenu.slideUp().removeClass('open');
-                }
-                else {
+                } else {
                     mainmenu.slideDown().addClass('open');
                     if (settings.format === "dropdown") {
                         mainmenu.find('ul').slideDown();
@@ -36,8 +35,7 @@ $(document).ready(function () {
                     $(this).toggleClass('submenu-opened');
                     if ($(this).siblings('ul').hasClass('open')) {
                         $(this).siblings('ul').removeClass('open').slideUp();
-                    }
-                    else {
+                    } else {
                         $(this).siblings('ul').addClass('open').slideDown();
                     }
                 });

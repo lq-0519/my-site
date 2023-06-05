@@ -3,7 +3,7 @@
 <mapper namespace="cn.luischen.dao.MetaDao">
 
     <sql id="BASE_TABLE">
-      t_metas
+        t_metas
     </sql>
 
     <sql id="RELATION_SHIP_TABLE">
@@ -67,17 +67,19 @@
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
-        <include refid="BASE_TABLE"/> AS m
+        <include refid="BASE_TABLE"/>
+        AS m
         WHERE m.mid = #{mid, jdbcType=INTEGER}
     </select>
 
     <!-- 根据条件获取项目 -->
     <select id="getMetasByCond" resultType="cn.luischen.model.MetaDomain"
-                parameterType="cn.luischen.dto.cond.MetaCond">
+            parameterType="cn.luischen.dto.cond.MetaCond">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
-        <include refid="BASE_TABLE"/> AS m
+        <include refid="BASE_TABLE"/>
+        AS m
         <where>
             <if test="name != null">
                 AND m.name = #{name,jdbcType=VARCHAR}
@@ -97,13 +99,13 @@
     </select>
 
     <resultMap id="BaseResultMap" type="cn.luischen.model.MetaDomain">
-        <id column="mid" jdbcType="INTEGER" property="mid" />
-        <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="slug" jdbcType="VARCHAR" property="slug" />
-        <result column="type" jdbcType="VARCHAR" property="type" />
-        <result column="description" jdbcType="VARCHAR" property="description" />
-        <result column="sort" jdbcType="INTEGER" property="sort" />
-        <result column="parent" jdbcType="INTEGER" property="parent" />
+        <id column="mid" jdbcType="INTEGER" property="mid"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="slug" jdbcType="VARCHAR" property="slug"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="parent" jdbcType="INTEGER" property="parent"/>
     </resultMap>
 
     <resultMap id="MetaDto" type="cn.luischen.dto.MetaDto" extends="BaseResultMap">
@@ -112,10 +114,14 @@
 
     <select id="selectFromSql" resultMap="MetaDto" parameterType="Map">
         select
-            a.*,
-            count(b.cid) as count
-        from <include refid="BASE_TABLE"/> AS a
-        left join <include refid="RELATION_SHIP_TABLE"/> AS b on a.mid = b.mid
+        a.*,
+        count(b.cid) as count
+        from
+        <include refid="BASE_TABLE"/>
+        AS a
+        left join
+        <include refid="RELATION_SHIP_TABLE"/>
+        AS b on a.mid = b.mid
         where a.type = #{type}
         group by a.mid
         order by #{order}

@@ -12,6 +12,7 @@ public interface OptionService {
 
     /**
      * 删除网站配置
+     *
      * @param name
      * @return
      */
@@ -19,6 +20,7 @@ public interface OptionService {
 
     /**
      * 更新网站配置
+     *
      * @param name
      * @param value
      * @return
@@ -27,9 +29,11 @@ public interface OptionService {
 
     /**
      * 保存网站配置
+     *
      * @param options
      */
     void saveOptions(Map<String, String> options);
+
     /***
      * 根据名称获取网站配置
      * @param name
@@ -39,6 +43,7 @@ public interface OptionService {
 
     /**
      * 获取全部网站配置
+     *
      * @return
      */
     List<OptionsDomain> getOptions();

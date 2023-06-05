@@ -19,13 +19,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = BusinessException.class)
     @ResponseBody
-    public APIResponse businessException(Exception e){
+    public APIResponse businessException(Exception e) {
 
         String msg = "请求错误";
-        if (e instanceof BusinessException){
+        if (e instanceof BusinessException) {
             msg = ((BusinessException) e).getErrorCode();
         }
-        logger.error("find exception:e={}",e.getMessage());
+        logger.error("find exception:e={}", e.getMessage());
         e.printStackTrace();
         return APIResponse.fail(msg);
     }

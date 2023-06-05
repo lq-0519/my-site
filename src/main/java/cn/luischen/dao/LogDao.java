@@ -14,6 +14,7 @@ public interface LogDao {
 
     /**
      * 添加日志
+     *
      * @param logDomain
      * @return
      */
@@ -21,6 +22,7 @@ public interface LogDao {
 
     /**
      * 删除日志
+     *
      * @param id
      * @return
      */
@@ -28,6 +30,7 @@ public interface LogDao {
 
     /**
      * 获取日志
+     *
      * @return
      */
     List<LogDomain> getLogs();

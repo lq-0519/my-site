@@ -4,7 +4,7 @@ package cn.luischen.utils;
  * 返回的参数封装类
  * Created by winterchen on 2018/4/20.
  */
-public class APIResponse <T> {
+public class APIResponse<T> {
 
     private static final String CODE_SUCCESS = "success";
 
@@ -14,33 +14,33 @@ public class APIResponse <T> {
     private T data;
     private String msg;
 
-    public APIResponse(){
+    public APIResponse() {
 
     }
 
-    public APIResponse(String code){
+    public APIResponse(String code) {
         this.code = code;
     }
 
-    public APIResponse(String code, T data){
+    public APIResponse(String code, T data) {
         this.code = code;
         this.data = data;
     }
 
-    public APIResponse(String code, String msg){
+    public APIResponse(String code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public static APIResponse success(){
+    public static APIResponse success() {
         return new APIResponse(CODE_SUCCESS);
     }
 
-    public static APIResponse success(Object data){
+    public static APIResponse success(Object data) {
         return new APIResponse(CODE_SUCCESS, data);
     }
 
-    public static APIResponse fail(String msg){
+    public static APIResponse fail(String msg) {
         return new APIResponse(CODE_FAIL, msg);
     }
 

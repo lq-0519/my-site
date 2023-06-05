@@ -3,7 +3,7 @@
 <mapper namespace="cn.luischen.dao.ContentDao">
 
     <sql id="BASE_TABLE">
-      t_contents
+        t_contents
     </sql>
 
     <!-- 用户表 -->
@@ -65,7 +65,7 @@
             <if test="content != null">
                 content = #{content, jdbcType=LONGVARCHAR},
             </if>
-                modified = UNIX_TIMESTAMP(NOW()),
+            modified = UNIX_TIMESTAMP(NOW()),
             <if test="type != null">
                 type = #{type, jdbcType=VARCHAR},
             </if>
@@ -97,7 +97,7 @@
         WHERE cid = #{cid, jdbcType=INTEGER}
     </update>
 
-    <update id="updateArticleCommentCountById" >
+    <update id="updateArticleCommentCountById">
         UPDATE
         <include refid="BASE_TABLE"/>
         SET commentsNum = #{commentsNum, jdbcType=INTEGER}
@@ -110,7 +110,8 @@
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
-        <include refid="BASE_TABLE"/> AS c
+        <include refid="BASE_TABLE"/>
+        AS c
         WHERE c.cid = #{cid, jdbcType=INTEGER}
     </select>
 
@@ -120,7 +121,8 @@
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
-        <include refid="BASE_TABLE"/> AS c
+        <include refid="BASE_TABLE"/>
+        AS c
         <where>
             <if test="tag != null">
                 AND c.tags LIKE CONCAT('%',#{tag, jdbcType=VARCHAR},'%')
@@ -149,10 +151,11 @@
         </where>
         ORDER BY c.created DESC
     </select>
-    
+
     <select id="getArticleCount" resultType="java.lang.Long">
         SELECT count(*)
-        FROM <include refid="BASE_TABLE"/>
+        FROM
+        <include refid="BASE_TABLE"/>
     </select>
 
     <resultMap id="archiveDtoMap" type="cn.luischen.dto.ArchiveDto">
@@ -161,11 +164,12 @@
     </resultMap>
 
     <select id="getArchive" resultMap="archiveDtoMap"
-                parameterType="cn.luischen.dto.cond.ContentCond">
+            parameterType="cn.luischen.dto.cond.ContentCond">
         select
-            FROM_UNIXTIME(created, '%Y年%m月') as date,
-            count(*)                         as count
-        from <include refid="BASE_TABLE"/>
+        FROM_UNIXTIME(created, '%Y年%m月') as date,
+        count(*) as count
+        from
+        <include refid="BASE_TABLE"/>
         <where>
             type = 'post'
             and status = 'publish'
@@ -179,21 +183,22 @@
         group by date
         order by date desc
     </select>
-    
+
     <select id="getRecentlyArticle" resultType="cn.luischen.model.ContentDomain">
         SELECT
-            cid, title
+        cid, title
         FROM
         <include refid="BASE_TABLE"/>
         ORDER BY created DESC
     </select>
-    
+
     <!-- 模糊搜索 -->
     <select id="searchArticle" resultType="cn.luischen.model.ContentDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
-        <include refid="BASE_TABLE"/> AS c
+        <include refid="BASE_TABLE"/>
+        AS c
         <where>
             c.title LIKE CONCAT('%',#{param, jdbcType=VARCHAR},'%')
             OR

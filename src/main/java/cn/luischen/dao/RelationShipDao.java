@@ -17,6 +17,7 @@ public interface RelationShipDao {
 
     /**
      * 添加
+     *
      * @param relationShip
      * @return
      */
@@ -24,6 +25,7 @@ public interface RelationShipDao {
 
     /**
      * 根据文章编号和meta编号删除关联
+     *
      * @param cid
      * @param mid
      * @return
@@ -32,6 +34,7 @@ public interface RelationShipDao {
 
     /**
      * 根据文章编号删除关联
+     *
      * @param cid
      * @return
      */
@@ -39,6 +42,7 @@ public interface RelationShipDao {
 
     /**
      * 根据meta编号删除关联
+     *
      * @param mid
      * @return
      */
@@ -46,6 +50,7 @@ public interface RelationShipDao {
 
     /**
      * 更新
+     *
      * @param relationShip
      * @return
      */
@@ -53,6 +58,7 @@ public interface RelationShipDao {
 
     /**
      * 根据文章主键获取关联
+     *
      * @param cid
      * @return
      */
@@ -60,6 +66,7 @@ public interface RelationShipDao {
 
     /**
      * 根据meta编号获取关联
+     *
      * @param mid
      * @return
      */
@@ -67,6 +74,7 @@ public interface RelationShipDao {
 
     /**
      * 获取数量
+     *
      * @param cid
      * @param mid
      * @return

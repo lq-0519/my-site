@@ -6,7 +6,12 @@ import cn.luischen.model.OptionsDomain;
 import cn.luischen.model.UserDomain;
 import cn.luischen.service.option.OptionService;
 import cn.luischen.service.user.UserService;
-import cn.luischen.utils.*;
+import cn.luischen.utils.AdminCommons;
+import cn.luischen.utils.Commons;
+import cn.luischen.utils.IPKit;
+import cn.luischen.utils.MapCache;
+import cn.luischen.utils.TaleUtils;
+import cn.luischen.utils.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +94,13 @@ public class BaseInterceptor implements HandlerInterceptor {
 
     }
 
+    @Override
+    public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
+
+    }
+
     private void initSiteConfig(HttpServletRequest request) {
-        if (WebConst.initConfig.isEmpty()){
+        if (WebConst.initConfig.isEmpty()) {
             List<OptionsDomain> options = optionService.getOptions();
             Map<String, String> querys = new HashMap<>();
             options.forEach(option -> {
@@ -98,10 +108,5 @@ public class BaseInterceptor implements HandlerInterceptor {
             });
             WebConst.initConfig = querys;
         }
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
-
     }
 }

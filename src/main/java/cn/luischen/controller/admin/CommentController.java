@@ -16,7 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 @Api("评论相关接口")
 @Controller
 @RequestMapping("/admin/comments")
-public class CommentController extends BaseController{
+public class CommentController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
 
@@ -40,12 +44,12 @@ public class CommentController extends BaseController{
     public String index(
             @ApiParam(name = "page", value = "页数", required = false)
             @RequestParam(name = "page", required = false, defaultValue = "1")
-            int page,
+                    int page,
             @ApiParam(name = "limit", value = "每页条数", required = false)
             @RequestParam(name = "limit", required = false, defaultValue = "15")
-            int limit,
+                    int limit,
             HttpServletRequest request
-    ){
+    ) {
         UserDomain user = this.user(request);
 
         PageInfo<CommentDomain> comments = commentService.getCommentsByCond(new CommentCond(), page, limit);
@@ -59,8 +63,8 @@ public class CommentController extends BaseController{
     public APIResponse deleteComment(
             @ApiParam(name = "coid", value = "评论编号", required = true)
             @RequestParam(name = "coid", required = true)
-            Integer coid
-    ){
+                    Integer coid
+    ) {
 
         try {
             CommentDomain comment = commentService.getCommentById(coid);
@@ -82,16 +86,16 @@ public class CommentController extends BaseController{
     public APIResponse changeStatus(
             @ApiParam(name = "coid", value = "评论主键", required = true)
             @RequestParam(name = "coid", required = true)
-            Integer coid,
+                    Integer coid,
             @ApiParam(name = "status", value = "状态", required = true)
             @RequestParam(name = "status", required = true)
-            String status
-    ){
+                    String status
+    ) {
         try {
             CommentDomain comment = commentService.getCommentById(coid);
-            if (null != comment){
+            if (null != comment) {
                 commentService.updateCommentStatus(coid, status);
-            }else{
+            } else {
                 return APIResponse.fail("删除失败");
             }
         } catch (Exception e) {
@@ -101,8 +105,6 @@ public class CommentController extends BaseController{
         }
         return APIResponse.success();
     }
-
-
 
 
 }
