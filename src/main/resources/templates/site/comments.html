@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="comments">
+<html lang="en" th:fragment="comments" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<div th:if="${article.allowComment}" class="comment-allow">
+<div class="comment-allow" th:if="${article.allowComment}">
     <div id="comments-content" th:if="${article}!=null">
-        <div th:id="${article.cid ?: 0}" class="comments-pan">
+        <div class="comments-pan" th:id="${article.cid ?: 0}">
 
             <h3>
                 <th:block th:text="${article.commentsNum ?: 0}"></th:block>
                 Comments
             </h3>
 
-            <ul th:if="${comments}" class="comments-reply">
+            <ul class="comments-reply" th:if="${comments}">
                 <th:block th:each="comment :${comments}">
                     <li th:id="'li-comment-'+${comment.coid}">
 
                         <figure th:id="'comment-'+${comment.coid}">
 
-                            <img th:src="@{${commons.gravatar(comment.mail)}(s='80',r='G',d='')}" alt=""
-                                 class="img-responsive"/>
+                            <img alt="" class="img-responsive"
+                                 th:src="@{${commons.gravatar(comment.mail)}(s='80',r='G',d='')}"/>
 
                         </figure>
 
                         <section>
 
-                            <h4><a th:href="${comment.url}" target="blank" th:text="${comment.author}"></a></h4>
+                            <h4><a target="blank" th:href="${comment.url}" th:text="${comment.author}"></a></h4>
 
                             <div class="date-pan">
                                 <th:block th:text="${commons.fmtdate(comment.created)}"></th:block>
@@ -47,32 +47,28 @@
 
                 <div class="row">
 
-                    <form  id="comment-form" class="comment-form" role="form"
-                          onsubmit="return TaleComment.subComment();">
+                    <form class="comment-form" id="comment-form" onsubmit="return TaleComment.subComment();"
+                          role="form">
 
-                        <input type="hidden" name="coid" id="coid"/>
-                        <input type="hidden" name="cid" id="cid" th:value="${article.cid}"/>
-                        <input type="hidden" name="_csrf_token" th:value="${_csrf_token}"/>
+                        <input id="coid" name="coid" type="hidden"/>
+                        <input id="cid" name="cid" th:value="${article.cid}" type="hidden"/>
+                        <input name="_csrf_token" th:value="${_csrf_token}" type="hidden"/>
+                        <div class="col-xs-12 col-sm-4 col-md-4">
+                            <input id="author" maxlength="12" name="author" placeholder="姓名 (*)" type="text"/>
+                        </div>
+
                         <div class="col-xs-12 col-sm-4 col-md-4">
 
-                            <input type="text" name="author" maxlength="12" id="author"
-                                   placeholder="姓名 (*)"
+                            <input id="mail" name="mail" placeholder="邮箱 (*)"
+                                   type="email"
                             />
 
                         </div>
 
                         <div class="col-xs-12 col-sm-4 col-md-4">
 
-                            <input type="email" name="mail" id="mail"
-                                   placeholder="邮箱 (*)"
-                            />
-
-                        </div>
-
-                        <div class="col-xs-12 col-sm-4 col-md-4">
-
-                            <input type="url" name="url" id="url"
-                                   placeholder="网址 (http://)"
+                            <input id="url" name="url" placeholder="网址 (http://)"
+                                   type="url"
                             />
 
                         </div>
@@ -81,14 +77,14 @@
 
                         <div class="col-xs-12 col-sm-12 col-md-12">
 
-                                <textarea name="text" id="textarea" placeholder="以上信息可以为空,评论不能为空哦!"
-                                          required="required" minlength="5"
-                                          maxlength="2000"></textarea>
+                                <textarea id="textarea" maxlength="2000" minlength="5"
+                                          name="text" placeholder="以上信息可以为空,评论不能为空哦!"
+                                          required="required"></textarea>
                         </div>
 
                         <div class="text-center">
 
-                            <input type="submit" value="Post Comment" id="misubmit"/>
+                            <input id="misubmit" type="submit" value="Post Comment"/>
 
                         </div>
 

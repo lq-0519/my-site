@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.luischen.dao.ContentDao">
+<mapper namespace="cn.lq.dao.ContentDao">
 
     <sql id="BASE_TABLE">
         t_contents
@@ -8,7 +8,7 @@
 
     <!-- 用户表 -->
     <sql id="TABLE_USER">
-        <include refid="cn.luischen.dao.UserDao.BASE_TABLE"/>
+        <include refid="cn.lq.dao.UserDao.BASE_TABLE"/>
     </sql>
 
     <!-- 文章的基本列 -->
@@ -24,7 +24,7 @@
     </sql>
 
     <!-- 添加文章 -->
-    <insert id="addArticle" parameterType="cn.luischen.model.ContentDomain" useGeneratedKeys="true" keyProperty="cid">
+    <insert id="addArticle" parameterType="cn.lq.common.model.ContentDomain" useGeneratedKeys="true" keyProperty="cid">
         INSERT INTO
         <include refid="BASE_TABLE"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -49,7 +49,7 @@
     </delete>
 
     <!-- 更新文章信息 -->
-    <update id="updateArticleById" parameterType="cn.luischen.model.ContentDomain">
+    <update id="updateArticleById" parameterType="cn.lq.common.model.ContentDomain">
         UPDATE
         <include refid="BASE_TABLE"/>
         <set>
@@ -106,7 +106,7 @@
 
 
     <!-- 根据主键编号获取文章信息 -->
-    <select id="getArticleById" resultType="cn.luischen.model.ContentDomain">
+    <select id="getArticleById" resultType="cn.lq.common.model.ContentDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
@@ -116,8 +116,8 @@
     </select>
 
     <!-- 根据条件查询文章 -->
-    <select id="getArticlesByCond" resultType="cn.luischen.model.ContentDomain"
-            parameterType="cn.luischen.dto.cond.ContentCond">
+    <select id="getArticlesByCond" resultType="cn.lq.common.model.ContentDomain"
+            parameterType="cn.lq.common.cond.ContentCond">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
@@ -158,13 +158,13 @@
         <include refid="BASE_TABLE"/>
     </select>
 
-    <resultMap id="archiveDtoMap" type="cn.luischen.dto.ArchiveDto">
+    <resultMap id="archiveDtoMap" type="cn.lq.common.dto.ArchiveDto">
         <id column="date" property="date"/>
         <result column="count" property="count"/>
     </resultMap>
 
     <select id="getArchive" resultMap="archiveDtoMap"
-            parameterType="cn.luischen.dto.cond.ContentCond">
+            parameterType="cn.lq.common.cond.ContentCond">
         select
         FROM_UNIXTIME(created, '%Y年%m月') as date,
         count(*) as count
@@ -184,7 +184,7 @@
         order by date desc
     </select>
 
-    <select id="getRecentlyArticle" resultType="cn.luischen.model.ContentDomain">
+    <select id="getRecentlyArticle" resultType="cn.lq.common.model.ContentDomain">
         SELECT
         cid, title
         FROM
@@ -193,7 +193,7 @@
     </select>
 
     <!-- 模糊搜索 -->
-    <select id="searchArticle" resultType="cn.luischen.model.ContentDomain">
+    <select id="searchArticle" resultType="cn.lq.common.model.ContentDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM

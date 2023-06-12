@@ -14,7 +14,7 @@
 
 <!-- main -->
 
-<main role="main-inner-wrapper" class="container">
+<main class="container" role="main-inner-wrapper">
 
 
     <div class="row">
@@ -23,7 +23,7 @@
         <!-- Left -->
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
 
-            <article role="pge-title-content" class="blog-header">
+            <article class="blog-header" role="pge-title-content">
 
                 <header>
 
@@ -51,8 +51,9 @@
 
                                         </div>
 
-                                        <img th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1322)}" alt=""
-                                             class="img-responsive"/>
+                                        <img alt=""
+                                             class="img-responsive"
+                                             th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1322)}"/>
 
                                     </figure>
 
@@ -95,8 +96,9 @@
 
                                         </div>
 
-                                        <img th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1221)}" alt=""
-                                             class="img-responsive"/>
+                                        <img alt=""
+                                             class="img-responsive"
+                                             th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1221)}"/>
 
                                     </figure>
 

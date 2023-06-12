@@ -4,96 +4,81 @@
 <div th:replace="site/head::head(${commons.site_title()},${commons.google_site_verification()}, ${commons.baidu_site_verification()})"></div>
 
 
-
-
 <body>
 
-    
 
-    	<!-- header -->
+<!-- header -->
 
-        <div th:replace="site/header::header"></div>
+<div th:replace="site/header::header"></div>
 
-        <!-- header -->
+<!-- header -->
 
-        <!-- main -->
+<!-- main -->
 
-        <main role="main-inner-wrapper" class="container">
+<main class="container" role="main-inner-wrapper">
 
-        	
 
-            
+    <!-- work details -->
 
-            	
+    <div class="work-details">
 
-                <!-- work details -->
 
-                	<div class="work-details">
+        <div class="row">
 
-                    	
+            <div class="col-xs-12 col-sm-12 col-md-4">
 
-                        <div class="row">
+                <header role="work-title">
 
-                        	<div class="col-xs-12 col-sm-12 col-md-4">
+                    <h2 th:text="${archive.title}"></h2>
 
-                            	<header role="work-title">
+                    <h6 th:utext="${commons.fmtdate_en(archive.created)}"></h6>
 
-                                	<h2 th:text="${archive.title}"></h2>
+                </header>
 
-                                    <h6 th:utext="${commons.fmtdate_en(archive.created)}"></h6>
+            </div>
 
-                                </header>
+            <div class="col-xs-12 col-sm-12 col-md-8">
 
-                            </div>
+                <section>
 
-                            <div class="col-xs-12 col-sm-12 col-md-8">
+                    <th:block th:each="p : ${commons.show_all_p(archive.content)}">
+                        <th:block th:utext="${p}"></th:block>
+                    </th:block>
 
-                            	<section>
+                </section>
 
-                                	<th:block th:each="p : ${commons.show_all_p(archive.content)}">
-                                        <th:block th:utext="${p}"></th:block>
-                                    </th:block>
 
-                                </section>
+            </div>
 
-                            
+        </div>
 
-                            </div>
+        <div class="clearfix"></div>
 
-                        </div>
 
-                        <div class="clearfix"></div>
+        <div class="work-images grid">
 
-                        
+            <ul class="grid-lod effect-2" id="grid">
+                <th:block th:each="pic : ${commons.show_all_thumb(archive.content)}">
+                    <li><img alt="" class="img-responsive" th:src="${pic}"/></li>
+                </th:block>
+            </ul>
 
-                        <div class="work-images grid">
+        </div>
 
-                            <ul class="grid-lod effect-2" id="grid">
-                                <th:block th:each="pic : ${commons.show_all_thumb(archive.content)}">
-                                    <li><img th:src="${pic}" alt="" class="img-responsive"/></li>
-                                </th:block>
-                            </ul>
 
-                        </div>
+    </div>
 
-                        
+    <!-- work details -->
 
-                    </div>
 
-                <!-- work details -->
+</main>
 
-            
+<!-- main -->
 
-            
+<!-- footer -->
 
-        </main>
+<div th:replace="site/footer::footer(${commons.site_title()},${commons.site_record()},${commons.site_url()})"></div>
 
-    	<!-- main -->
-
-        <!-- footer -->
-
-        <div th:replace="site/footer::footer(${commons.site_title()},${commons.site_record()},${commons.site_url()})"></div>
-
-    </body>
+</body>
 
 </html>

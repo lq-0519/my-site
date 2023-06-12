@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.luischen.dao.AttAchDao">
+<mapper namespace="cn.lq.dao.AttAchDao">
 
     <sql id="BASE_TABLE">
         t_attach
@@ -8,7 +8,7 @@
 
     <!-- 用户表 -->
     <sql id="TABLE_USER">
-        <include refid="cn.luischen.dao.UserDao.BASE_TABLE"/>
+        <include refid="cn.lq.dao.UserDao.BASE_TABLE"/>
     </sql>
 
     <!-- 附件的基本列 -->
@@ -23,7 +23,7 @@
 
 
     <!-- 新增单个附件 -->
-    <insert id="addAttAch" parameterType="cn.luischen.model.AttAchDomain">
+    <insert id="addAttAch" parameterType="cn.lq.common.model.AttAchDomain">
         INSERT INTO
         <include refid="BASE_TABLE"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -62,7 +62,7 @@
     </delete>
 
     <!-- 更新附件信息 -->
-    <update id="updateAttAch" parameterType="cn.luischen.model.AttAchDomain">
+    <update id="updateAttAch" parameterType="cn.lq.common.model.AttAchDomain">
         UPDATE
         <include refid="BASE_TABLE"/>
         <set>
@@ -80,7 +80,7 @@
     </update>
 
     <!-- 根据主键获取附件信息 -->
-    <select id="getAttAchById" resultType="cn.luischen.dto.AttAchDto">
+    <select id="getAttAchById" resultType="cn.lq.common.dto.AttAchDto">
         SELECT
         <trim suffix="" suffixOverrides=",">
             <include refid="BASE_COLUMN"/>
@@ -97,7 +97,7 @@
     </select>
 
     <!-- 查找所有的附件 -->
-    <select id="getAtts" resultType="cn.luischen.dto.AttAchDto">
+    <select id="getAtts" resultType="cn.lq.common.dto.AttAchDto">
         SELECT
         <trim suffix="" suffixOverrides=",">
             <include refid="BASE_COLUMN"/>

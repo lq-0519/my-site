@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.luischen.dao.OptionDao">
+<mapper namespace="cn.lq.dao.OptionDao">
 
     <sql id="BASE_TABLE">
         t_options
@@ -35,7 +35,7 @@
     </update>
 
     <!-- 根据配置名查找配置信息 -->
-    <select id="getOptionByName" resultType="cn.luischen.model.OptionsDomain">
+    <select id="getOptionByName" resultType="cn.lq.common.model.OptionsDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
@@ -45,7 +45,7 @@
     </select>
 
     <!-- 查找全部配置信息 -->
-    <select id="getOptions" resultType="cn.luischen.model.OptionsDomain">
+    <select id="getOptions" resultType="cn.lq.common.model.OptionsDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM

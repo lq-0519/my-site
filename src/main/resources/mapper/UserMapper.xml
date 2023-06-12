@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.luischen.dao.UserDao">
+<mapper namespace="cn.lq.dao.UserDao">
     <sql id="BASE_TABLE">
         t_users
     </sql>
@@ -9,7 +9,7 @@
         uid,username,password,email,homeUrl,screenName,created,activated,logged,groupName
     </sql>
 
-    <update id="updateUserInfo" parameterType="cn.luischen.model.UserDomain">
+    <update id="updateUserInfo" parameterType="cn.lq.common.model.UserDomain">
         UPDATE
         <include refid="BASE_TABLE"/>
         <set>
@@ -26,7 +26,7 @@
         WHERE uid = #{uid, jdbcType=INTEGER}
     </update>
 
-    <select id="getUserInfoById" resultType="cn.luischen.model.UserDomain">
+    <select id="getUserInfoById" resultType="cn.lq.common.model.UserDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
@@ -35,7 +35,7 @@
         uid = #{uid, jdbcType=INTEGER}
     </select>
 
-    <select id="getUserInfoByCond" resultType="cn.luischen.model.UserDomain">
+    <select id="getUserInfoByCond" resultType="cn.lq.common.model.UserDomain">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM

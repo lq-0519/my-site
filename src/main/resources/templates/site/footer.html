@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="footer(title,record,site_url)">
+<html lang="en" th:fragment="footer(title,record,site_url)" xmlns:th="http://www.thymeleaf.org">
 <footer role="footer">
 
     <!-- logo -->
 
-    <h1> <a th:href="@{/}" title="avana LLC"><img th:src="@{https://cdn.jsdelivr.net/gh/WinterChenS/imgrpo/blog/20210816112027.png}" style="width: 66px;" title="Luis" alt="Luis"/></a> </h1>
+    <h1><a th:href="@{/}" title="avana LLC"><img
+            alt="Luis" style="width: 66px;"
+            th:src="@{https://cdn.jsdelivr.net/gh/WinterChenS/imgrpo/blog/20210816112027.png}" title="Luis"/></a></h1>
 
 
     <!-- logo -->
@@ -35,7 +37,7 @@
                         <li><a class="icon resume" target="blank" th:href="@{${index.value}}"></a></li>
                     </th:block>
                     <th:block th:case="'weibo'">
-                        <li><a class="icon weibo" th:href="@{${index.value}}" target="blank"></a></li>
+                        <li><a class="icon weibo" target="blank" th:href="@{${index.value}}"></a></li>
                     </th:block>
                     <th:block th:case="'zhihu'">
                         <li><a class="icon zhihu" target="blank" th:href="@{${index.value}}"></a></li>
@@ -50,8 +52,11 @@
             </th:block>
         </th:block>
     </ul>
-    <p class="copy-right">&copy; 2018 <th:block th:text="${title}"></th:block></p>
-    <th:block th:if="${record != null and record != ''}"><a class="copy-right" th:href="@{http://www.miitbeian.gov.cn/}" th:text="${record}"></a></th:block>
+    <p class="copy-right">&copy; 2018
+        <th:block th:text="${title}"></th:block>
+    </p>
+    <th:block th:if="${record != null and record != ''}"><a class="copy-right" th:href="@{http://www.miitbeian.gov.cn/}"
+                                                            th:text="${record}"></a></th:block>
 </footer>
 
 <!-- footer -->
@@ -68,10 +73,10 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 
 <script th:src="@{/site/js/bootstrap.min.js}" type="text/javascript"></script>
-<script th:src="@{/site/js/effects/masonry.pkgd.min.js}"  type="text/javascript"></script>
-<script th:src="@{/site/js/effects/imagesloaded.js}"  type="text/javascript"></script>
-<script th:src="@{/site/js/effects/classie.js}"  type="text/javascript"></script>
-<script th:src="@{/site/js/effects/AnimOnScroll.js}"  type="text/javascript"></script>
+<script th:src="@{/site/js/effects/masonry.pkgd.min.js}" type="text/javascript"></script>
+<script th:src="@{/site/js/effects/imagesloaded.js}" type="text/javascript"></script>
+<script th:src="@{/site/js/effects/classie.js}" type="text/javascript"></script>
+<script th:src="@{/site/js/effects/AnimOnScroll.js}" type="text/javascript"></script>
 <script th:src="@{/site/js/effects/modernizr.custom.js}"></script>
 <script th:src="@{https://cdn.bootcss.com/headroom/0.9.1/headroom.min.js}"></script>
 <script th:src="@{https://cdn.bootcss.com/highlight.js/9.9.0/highlight.min.js}"></script>
@@ -93,6 +98,7 @@
     });
     InstantClick.init('mousedown');
     /*]]>*/
+
 </script>
 <!-- 百度收录自动推送 -->
 <script>
@@ -112,5 +118,6 @@
     function linkFirend(link) {
         window.location.href=link;
     }
+
 </script>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='友链管理',active='links'">
+<html lang="en" th:with="title='友链管理',active='links'" xmlns:th="http://www.thymeleaf.org">
 <header th:replace="admin/header::headerFragment(${title},${active})"></header>
 <body class="fixed-left">
 <div id="wrapper">
@@ -26,15 +26,15 @@
                             <th:block th:each="link : ${links}">
                                 <tr th:attr="mid=${link.mid}">
                                     <td th:text="${link.name}"></td>
-                                    <td><a th:href="@{${link.slug}}" target="_blank" th:text="${link.slug}"></a></td>
+                                    <td><a target="_blank" th:href="@{${link.slug}}" th:text="${link.slug}"></a></td>
                                     <td th:text="${link.description}"></td>
                                     <td th:text="${link.sort}"></td>
                                     <td>
-                                        <a href="javascript:void(0)" onclick="editLink(this);"
-                                           class="btn btn-primary btn-sm waves-effect waves-light m-b-5"><i
+                                        <a class="btn btn-primary btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)"
+                                           onclick="editLink(this);"><i
                                                 class="fa fa-edit"></i> <span>编辑</span></a>
-                                        <a href="javascript:void(0)" th:onclick="'delLink('+${link.mid}+');'"
-                                           class="btn btn-danger btn-sm waves-effect waves-light m-b-5"><i
+                                        <a class="btn btn-danger btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)"
+                                           th:onclick="'delLink('+${link.mid}+');'"><i
                                                 class="fa fa-trash-o"></i> <span>删除</span></a>
                                     </td>
                                 </tr>
@@ -48,34 +48,38 @@
                                 <div class="panel-heading"><h3 class="panel-title">保存友链</h3></div>
                                 <div class="panel-body">
 
-                                    <form id="linkForm" class="form-inline" role="form" novalidate="novalidate">
+                                    <form class="form-inline" id="linkForm" novalidate="novalidate" role="form">
 
-                                        <input type="hidden" id="mid" name="mid"/>
+                                        <input id="mid" name="mid" type="hidden"/>
 
                                         <div class="form-group">
                                             <label class="sr-only">链接标题</label>
-                                            <input type="text" id="title" name="title" class="form-control" placeholder="请输入链接标题"
-                                                   required="required" aria-required="true"/>
+                                            <input aria-required="true" class="form-control" id="title" name="title"
+                                                   placeholder="请输入链接标题"
+                                                   required="required" type="text"/>
                                         </div>
 
                                         <div class="form-group">
                                             <label class="sr-only">链接URL</label>
-                                            <input type="url" id="url" name="url" class="form-control" placeholder="请输入链接地址" required="required"
-                                                   aria-required="true"/>
+                                            <input aria-required="true" class="form-control" id="url" name="url"
+                                                   placeholder="请输入链接地址" required="required"
+                                                   type="url"/>
                                         </div>
 
                                         <div class="form-group">
                                             <label class="sr-only">链接LOGO</label>
-                                            <input type="url" id="logo" name="logo" class="form-control"
-                                                   placeholder="请输入链接LOGO，没有则不输入"/>
+                                            <input class="form-control" id="logo" name="logo" placeholder="请输入链接LOGO，没有则不输入"
+                                                   type="url"/>
                                         </div>
 
                                         <div class="form-group">
                                             <label class="sr-only">链接排序</label>
-                                            <input type="number" id="sort" name="sort" class="form-control" value="0"/>
+                                            <input class="form-control" id="sort" name="sort" type="number" value="0"/>
                                         </div>
 
-                                        <button type="submit" class="btn btn-success waves-effect waves-light m-l-10">保存链接</button>
+                                        <button class="btn btn-success waves-effect waves-light m-l-10" type="submit">
+                                            保存链接
+                                        </button>
                                     </form>
                                 </div> <!-- panel-body -->
                             </div> <!-- panel -->
@@ -149,6 +153,7 @@
         });
     }
     /*]]>*/
+
 </script>
 </body>
 </html>

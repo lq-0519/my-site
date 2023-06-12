@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='分类管理',active='category'">
+<html lang="en" th:with="title='分类管理',active='category'" xmlns:th="http://www.thymeleaf.org">
 <header th:replace="admin/header::headerFragment(${title},${active})"></header>
 <body class="fixed-left">
 <div id="wrapper">
@@ -20,26 +20,26 @@
                                 <th:block th:each="c : ${categories}">
                                     <div class="btn-group m-b-10">
                                         <th:block th:if="${c.name == '默认分类'}">
-                                            <button type="button"
-                                                    th:class="'btn btn-'+${adminCommons.rand_color()}+' waves-effect waves-light'">
+                                            <button th:class="'btn btn-'+${adminCommons.rand_color()}+' waves-effect waves-light'"
+                                                    type="button">
                                                 <th:block th:text="${c.name}"/>
                                                 <th:block th:text="' ('+${c.count}+')'"/>
                                             </button>
                                         </th:block>
                                         <th:block th:unless="${c.name == '默认分类'}">
-                                            <button type="button"
-                                                    th:class="'btn btn-'+${adminCommons.rand_color()}+' dropdown-toggle waves-effect waves-light'"
-                                                    data-toggle="dropdown" aria-expanded="false">
+                                            <button aria-expanded="false"
+                                                    data-toggle="dropdown"
+                                                    th:class="'btn btn-'+${adminCommons.rand_color()}+' dropdown-toggle waves-effect waves-light'" type="button">
                                                 <th:block th:text="${c.name}"/>
                                                 <th:block th:text="' ('+${c.count}+')'"/>
                                                 <span
                                                         class="caret"></span></button>
                                             <ul class="dropdown-menu" role="menu">
-                                                <li><a href="javascript:void(0)" th:attr="mid=${c.mid},cname=${c.name}"
-                                                       class="edit-category">修改</a>
+                                                <li><a class="edit-category" href="javascript:void(0)"
+                                                       th:attr="mid=${c.mid},cname=${c.name}">修改</a>
                                                 </li>
-                                                <li><a href="javascript:void(0)" th:attr="mid=${c.mid}"
-                                                       class="del-category">删除</a></li>
+                                                <li><a class="del-category" href="javascript:void(0)"
+                                                       th:attr="mid=${c.mid}">删除</a></li>
                                             </ul>
                                         </th:block>
                                     </div>
@@ -56,16 +56,16 @@
                             <div class="panel-body">
                                 <th:block th:each="c : ${tags}">
                                     <div class="btn-group m-b-10">
-                                        <button type="button"
-                                                th:class="'btn btn-'+${adminCommons.rand_color()}+' dropdown-toggle waves-effect waves-light'"
-                                                data-toggle="dropdown" aria-expanded="false">
+                                        <button aria-expanded="false"
+                                                data-toggle="dropdown"
+                                                th:class="'btn btn-'+${adminCommons.rand_color()}+' dropdown-toggle waves-effect waves-light'" type="button">
                                             <th:block th:text="${c.name}"/>
                                             <th:block th:text="' ('+${c.count}+')'"/>
                                             <span
                                                     class="caret"></span></button>
                                         <ul class="dropdown-menu" role="menu">
-                                            <li><a href="javascript:void(0)" th:attr="mid=${c.mid}"
-                                                   class="del-category">删除</a></li>
+                                            <li><a class="del-category" href="javascript:void(0)"
+                                                   th:attr="mid=${c.mid}">删除</a></li>
                                         </ul>
                                     </div>
                                 </th:block>
@@ -76,13 +76,13 @@
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                <form id="cform" class="form-inline" role="form">
-                                    <input type="hidden" id="mid"/>
+                                <form class="form-inline" id="cform" role="form">
+                                    <input id="mid" type="hidden"/>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="cname" placeholder="请输入分类名称"/>
+                                        <input class="form-control" id="cname" placeholder="请输入分类名称" type="text"/>
                                     </div>
-                                    <button id="save-category-btn" type="button"
-                                            class="btn btn-success waves-effect waves-light m-l-10">保存分类
+                                    <button class="btn btn-success waves-effect waves-light m-l-10" id="save-category-btn"
+                                            type="button">保存分类
                                     </button>
                                 </form>
                             </div>
@@ -146,6 +146,7 @@
         });
     });
     /*]]>*/
+
 </script>
 </body>
 </html>

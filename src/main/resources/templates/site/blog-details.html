@@ -15,14 +15,14 @@
 
 <!-- main -->
 
-<main role="main-inner-wrapper" class="container">
+<main class="container" role="main-inner-wrapper">
 
 
     <div class="blog-details">
 
         <article class="post-details" id="post-details">
 
-            <header role="bog-header" class="bog-header text-center">
+            <header class="bog-header text-center" role="bog-header">
 
                 <h3>
                     <th:block th:utext="${commons.fmtdate_en(article.created)}"></th:block>
@@ -37,11 +37,11 @@
 
             <figure>
 
-                <img src="images/blog-images/blog-details-image.jpg" alt="" class="img-responsive"/>
+                <img alt="" class="img-responsive" src="images/blog-images/blog-details-image.jpg"/>
 
             </figure>
 
-            <div id="post-content" class="post-content" itemprop="articleBody">
+            <div class="post-content" id="post-content" itemprop="articleBody">
                 <th:block th:utext="${commons.article(article.content)}"></th:block>
             </div>
 

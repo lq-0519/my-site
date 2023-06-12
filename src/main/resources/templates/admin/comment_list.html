@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='评论管理',active='comments'">
+<html lang="en" th:with="title='评论管理',active='comments'" xmlns:th="http://www.thymeleaf.org">
 <header th:replace="admin/header::headerFragment(${title},${active})"></header>
 <body class="fixed-left">
 <div id="wrapper">
@@ -28,13 +28,13 @@
                             <th:block th:each="comment : ${comments.list}">
                                 <tr th:attr="cid=${comment.coid}">
                                     <td>
-                                        <a th:href="@{${commons.site_url('/blog/article/')}+${comment.cid}+'#comments-content'}"
-                                           target="_blank" th:utext="${commons.article(comment.content)}"></a>
+                                        <a target="_blank"
+                                           th:href="@{${commons.site_url('/blog/article/')}+${comment.cid}+'#comments-content'}" th:utext="${commons.article(comment.content)}"></a>
                                     </td>
                                     <td th:text="${comment.author}"></td>
                                     <td th:text="${commons.fmtdate(comment.created, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                     <td th:text="${comment.mail}"></td>
-                                    <td><a th:href="@{${comment.url}}" target="_blank" th:text="${comment.url}"></a>
+                                    <td><a target="_blank" th:href="@{${comment.url}}" th:text="${comment.url}"></a>
                                     </td>
                                     <td>
                                         <th:block th:if="${comment.status == 'approved'}">
@@ -46,13 +46,13 @@
                                     </td>
                                     <td>
                                         <th:block th:if="${comment.status == 'not_audit'}">
-                                            <a href="javascript:void(0)"
-                                               th:onclick="'updateStatus('+${comment.coid}+');'"
-                                               class="btn btn-success btn-sm waves-effect waves-light m-b-5"><i
+                                            <a class="btn btn-success btn-sm waves-effect waves-light m-b-5"
+                                               href="javascript:void(0)"
+                                               th:onclick="'updateStatus('+${comment.coid}+');'"><i
                                                     class="fa fa-check-square-o"></i> <span>通过</span></a>
                                         </th:block>
-                                        <a href="javascript:void(0)" th:onclick="'delComment('+${comment.coid}+');'"
-                                           class="btn btn-danger btn-sm waves-effect waves-light m-b-5"><i
+                                        <a class="btn btn-danger btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)"
+                                           th:onclick="'delComment('+${comment.coid}+');'"><i
                                                 class="fa fa-trash-o"></i> <span>删除</span></a>
                                     </td>
                                 </tr>
@@ -110,6 +110,7 @@
         });
     }
     /*]]>*/
+
 </script>
 </body>
 </html>
