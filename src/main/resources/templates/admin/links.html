@@ -24,18 +24,15 @@
                             </thead>
                             <tbody>
                             <th:block th:each="link : ${links}">
-                                <tr th:attr="mid=${link.mid}">
+                                <tr th:attr="mid=${link.id}">
                                     <td th:text="${link.name}"></td>
                                     <td><a target="_blank" th:href="@{${link.slug}}" th:text="${link.slug}"></a></td>
                                     <td th:text="${link.description}"></td>
                                     <td th:text="${link.sort}"></td>
                                     <td>
-                                        <a class="btn btn-primary btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)"
-                                           onclick="editLink(this);"><i
-                                                class="fa fa-edit"></i> <span>编辑</span></a>
-                                        <a class="btn btn-danger btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)"
-                                           th:onclick="'delLink('+${link.mid}+');'"><i
-                                                class="fa fa-trash-o"></i> <span>删除</span></a>
+                                        <a class="btn btn-primary btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)" onclick="editLink(this);"><i class="fa fa-edit"></i> <span>编辑</span></a>
+                                        <a class="btn btn-danger btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)" th:onclick="'delLink('+${link.id}+');'"><i class="fa fa-trash-o"></i>
+                                            <span>删除</span></a>
                                     </td>
                                 </tr>
                             </th:block>
@@ -54,27 +51,20 @@
 
                                         <div class="form-group">
                                             <label class="sr-only">链接标题</label>
-                                            <input aria-required="true" class="form-control" id="title" name="title"
-                                                   placeholder="请输入链接标题"
-                                                   required="required" type="text"/>
+                                            <input aria-required="true" class="form-control" id="title" name="title" placeholder="请输入链接标题" required="required" type="text"/>
                                         </div>
 
                                         <div class="form-group">
                                             <label class="sr-only">链接URL</label>
-                                            <input aria-required="true" class="form-control" id="url" name="url"
-                                                   placeholder="请输入链接地址" required="required"
-                                                   type="url"/>
+                                            <input aria-required="true" class="form-control" id="url" name="url" placeholder="请输入链接地址" required="required" type="url"/>
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="sr-only">链接LOGO</label>
-                                            <input class="form-control" id="logo" name="logo" placeholder="请输入链接LOGO，没有则不输入"
-                                                   type="url"/>
+                                            <label class="sr-only">链接LOGO</label> <input class="form-control" id="logo" name="logo" placeholder="请输入链接LOGO，没有则不输入" type="url"/>
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="sr-only">链接排序</label>
-                                            <input class="form-control" id="sort" name="sort" type="number" value="0"/>
+                                            <label class="sr-only">链接排序</label> <input class="form-control" id="sort" name="sort" type="number" value="0"/>
                                         </div>
 
                                         <button class="btn btn-success waves-effect waves-light m-l-10" type="submit">
@@ -103,12 +93,12 @@
         submitHandler: function (form) {
             var params = $("#linkForm").serialize();
             tale.post({
-                url : '/admin/links/save',
+                url: '/admin/links/save',
                 data: params,
                 success: function (result) {
                     $('#linkForm input').val('');
                     $('#linkForm #sort').val('0');
-                    if(result && result.code == 'success'){
+                    if (result && result.code == 'success') {
                         tale.alertOkAndReload('友链保存成功');
                     } else {
                         tale.alertError(result.msg || '友链保存失败');
@@ -136,13 +126,13 @@
 
     function delLink(mid) {
         tale.alertConfirm({
-            title:'确定删除该链接吗?',
+            title: '确定删除该链接吗?',
             then: function () {
                 tale.post({
-                    url : '/admin/links/delete',
+                    url: '/admin/links/delete',
                     data: {mid: mid},
                     success: function (result) {
-                        if(result && result.code == 'success'){
+                        if (result && result.code === 'success') {
                             tale.alertOkAndReload('链接删除成功');
                         } else {
                             tale.alertError(result.msg || '链接删除失败');
@@ -152,6 +142,7 @@
             }
         });
     }
+
     /*]]>*/
 
 </script>

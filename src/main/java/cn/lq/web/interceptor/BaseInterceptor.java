@@ -1,9 +1,9 @@
 package cn.lq.web.interceptor;
 
-import cn.lq.common.constant.Types;
-import cn.lq.common.constant.WebConst;
-import cn.lq.common.model.OptionsDomain;
-import cn.lq.common.model.UserDomain;
+import cn.lq.common.domain.constant.Types;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.po.ConfigPO;
+import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.utils.AdminCommons;
 import cn.lq.common.utils.Commons;
 import cn.lq.common.utils.IPKit;
@@ -14,11 +14,11 @@ import cn.lq.service.option.OptionService;
 import cn.lq.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -27,23 +27,25 @@ import java.util.Map;
 
 /**
  * 自定义拦截器
+ *
+ * @author liqian477
  */
 @Component
 public class BaseInterceptor implements HandlerInterceptor {
-    private static final Logger LOGGE = LoggerFactory.getLogger(BaseInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseInterceptor.class);
     private static final String USER_AGENT = "user-agent";
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private OptionService optionService;
 
 
-    @Autowired
+    @Resource
     private Commons commons;
 
-    @Autowired
+    @Resource
     private AdminCommons adminCommons;
 
     private MapCache cache = MapCache.single();
@@ -53,14 +55,14 @@ public class BaseInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
         String uri = request.getRequestURI();
 
-        LOGGE.info("UserAgent: {}", request.getHeader(USER_AGENT));
-        LOGGE.info("用户访问地址: {}, 来路地址: {}", uri, IPKit.getIpAddrByRequest(request));
+        LOGGER.info("UserAgent: {}", request.getHeader(USER_AGENT));
+        LOGGER.info("用户访问地址: {}, 来路地址: {}", uri, IPKit.getIpAddrByRequest(request));
 
 
         //请求拦截处理
-        UserDomain user = TaleUtils.getLoginUser(request);
+        UserPO user = TaleUtils.getLoginUser(request);
         if (null == user) {
-            Integer uid = TaleUtils.getCookieUid(request);
+            Long uid = TaleUtils.getCookieUid(request);
             if (null != uid) {
                 //这里还是有安全隐患,cookie是可以伪造的
                 user = userService.getUserInfoById(uid);
@@ -75,7 +77,7 @@ public class BaseInterceptor implements HandlerInterceptor {
             return false;
         }
         //设置get请求的token
-        if (request.getMethod().equals("GET")) {
+        if ("GET".equals(request.getMethod())) {
             String csrf_token = UUID.UU64();
             // 默认存储30分钟
             cache.hset(Types.CSRF_TOKEN.getType(), csrf_token, uri, 30 * 60);
@@ -86,8 +88,9 @@ public class BaseInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
-        OptionsDomain ov = optionService.getOptionByName("site_record");
-        httpServletRequest.setAttribute("commons", commons);//一些工具类和公共方法
+        ConfigPO ov = optionService.getOptionByCode("site_record");
+        //一些工具类和公共方法
+        httpServletRequest.setAttribute("commons", commons);
         httpServletRequest.setAttribute("option", ov);
         httpServletRequest.setAttribute("adminCommons", adminCommons);
         initSiteConfig(httpServletRequest);
@@ -101,10 +104,10 @@ public class BaseInterceptor implements HandlerInterceptor {
 
     private void initSiteConfig(HttpServletRequest request) {
         if (WebConst.initConfig.isEmpty()) {
-            List<OptionsDomain> options = optionService.getOptions();
+            List<ConfigPO> options = optionService.getOptions();
             Map<String, String> querys = new HashMap<>();
             options.forEach(option -> {
-                querys.put(option.getName(), option.getValue());
+                querys.put(option.getCode(), option.getValue());
             });
             WebConst.initConfig = querys;
         }

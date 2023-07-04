@@ -2,98 +2,140 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.lq.dao.CommentDao">
 
-    <sql id="BASE_TABLE">
-        t_comments
+    <!-- 所有字段的result map -->
+    <resultMap id="defaultResultMap" type="cn.lq.common.domain.po.CommentPO">
+        <result property="id" column="id"/>
+        <result property="contentId" column="content_id"/>
+        <result property="author" column="author"/>
+        <result property="authorId" column="author_id"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="mail" column="mail"/>
+        <result property="ip" column="ip"/>
+        <result property="agent" column="agent"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="parent" column="parent"/>
+        <result property="content" column="content"/>
+        <result property="created" column="created"/>
+        <result property="modified" column="modified"/>
+        <result property="deleted" column="is_deleted"/>
+    </resultMap>
+
+    <!-- 所有字段 -->
+    <sql id="allColumns">
+        id, content_id, author, author_id, owner_id, mail, ip, agent, type, status, parent, content, created, modified, is_deleted
     </sql>
 
-    <!-- 基本列 -->
-    <sql id="BASE_COLUMN">
-        cm.coid, cm.cid, cm.created, cm.author, cm.authorId, cm.ownerId, cm.mail,
-        cm.url, cm.ip, cm.agent, cm.type, cm.status, cm.parent, cm.content
+    <!-- 除ID的字段 -->
+    <sql id="columnsNoId">
+        content_id, author, author_id, owner_id, mail, ip, agent, type, status, parent, content, created, modified, is_deleted
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="dynamicWhere">
+        <where>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTime != null">
+                AND created <![CDATA[>=]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND created <![CDATA[<=]]> #{endTime}
+            </if>
+            <if test="parent != null">
+                AND parent = #{parent}
+            </if>
+            <if test="contentId != null">
+                AND content_id = #{contentId}
+            </if>
+            <choose>
+                <when test="deleted != null">
+                    AND is_deleted = #{deleted}
+                </when>
+                <otherwise>
+                    AND is_deleted = 0
+                </otherwise>
+            </choose>
+        </where>
     </sql>
 
     <!-- 新增评论 -->
-    <insert id="addComment" parameterType="cn.lq.common.model.CommentDomain">
-        INSERT INTO
-        <include refid="BASE_TABLE"/>
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            cid, created, author, authorId, ownerId, mail,
-            url, ip, agent, type, status, parent, content,
-        </trim>
-        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-            #{cid,jdbcType=INTEGER}, #{created, jdbcType=INTEGER},
-            #{author, jdbcType=VARCHAR}, #{authorId, jdbcType=INTEGER}, #{ownerId, jdbcType=INTEGER},
-            #{mail, jdbcType=VARCHAR}, #{url, jdbcType=VARCHAR}, #{ip, jdbcType=VARCHAR}, #{agent, jdbcType=VARCHAR},
-            #{type, jdbcType=VARCHAR}, #{status, jdbcType=VARCHAR}, #{parent, jdbcType=INTEGER},
-            #{content, jdbcType=LONGVARCHAR},
-        </trim>
+    <!--suppress SqlInsertValues -->
+    <insert id="insert" parameterType="cn.lq.common.domain.po.CommentPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comment (
+        <include refid="columnsNoId"/>
+        ) VALUES (#{contentId}, #{author}, #{authorId}, #{ownerId}, #{mail}, #{ip}, #{agent}, #{type}, #{status}, #{parent}, #{content}, now(), now(), 0)
     </insert>
 
     <!-- 删除评论 -->
-    <delete id="deleteComment">
-        DELETE FROM
-        <include refid="BASE_TABLE"/>
-        WHERE coid = #{coid, jdbcType=INTEGER}
-    </delete>
-
-    <!-- 更新评论的状态 -->
-    <update id="updateCommentStatus">
-        UPDATE
-        <include refid="BASE_TABLE"/>
-        SET status = #{status, jdbcType=VARCHAR}
-        WHERE coid = #{coid, jdbcType=INTEGER}
+    <update id="delete" parameterType="long">
+        UPDATE comment
+        SET is_deleted = 1,
+            modified   = now()
+        WHERE ID = #{id}
     </update>
 
-    <select id="getCommentById" resultType="cn.lq.common.model.CommentDomain">
-        SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        AS cm
-        WHERE cm.coid = #{coid, jdbcType=INTEGER}
-    </select>
+    <!-- 更新评论 -->
+    <update id="update" parameterType="cn.lq.common.domain.po.CommentPO">
+        UPDATE comment
+        <set>
+            <if test="contentId != null">
+                content_id = #{contentId},
+            </if>
+            <if test="author != null">
+                author = #{author},
+            </if>
+            <if test="authorId != null">
+                author_id = #{authorId},
+            </if>
+            <if test="ownerId != null">
+                owner_id = #{ownerId},
+            </if>
+            <if test="mail != null">
+                mail = #{mail},
+            </if>
+            <if test="ip != null">
+                ip = #{ip},
+            </if>
+            <if test="agent != null">
+                agent = #{agent},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="parent != null">
+                parent = #{parent},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            modified = now()
+        </set>
+        WHERE id = #{id}
+    </update>
 
-    <!-- 根据文章的主键获取评论列表:只显示正常的评论 -->
-    <select id="getCommentsByCId" resultType="cn.lq.common.model.CommentDomain">
+    <select id="queryForObject" resultMap="defaultResultMap">
         SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        AS cm
-        WHERE cm.cid = #{cid,jdbcType=INTEGER}
-        AND cm.status = 'approved'
-        ORDER BY cm.created
+        <include refid="allColumns"/>
+        FROM comment WHERE id = #{id}
     </select>
 
     <!-- 根据条件查找评论列表 -->
-    <select id="getCommentsByCond" resultType="cn.lq.common.model.CommentDomain"
-            parameterType="cn.lq.common.cond.CommentCond">
+    <select id="queryForList" resultMap="defaultResultMap" parameterType="cn.lq.common.domain.query.inner.CommentInnerQuery">
         SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        AS cm
-        <where>
-            <if test="status != null">
-                AND cm.status = #{status, jdbcType=VARCHAR}
-            </if>
-            <if test="startTime != null">
-                AND cm.created &gt;= #{startTime, jdbcType=INTEGER}
-            </if>
-            <if test="endTime != null">
-                AND cm.created &lt;= #{endTime, jdbcType=INTEGER}
-            </if>
-            <if test="parent != null">
-                AND cm.parent = #{parent,jdbcType=INTEGER}
-            </if>
-        </where>
-        ORDER BY cm.created
+        <include refid="allColumns"/>
+        FROM comment
+        <include refid="dynamicWhere"/>
+        ORDER BY created
     </select>
 
-    <select id="getCommentsCount" resultType="java.lang.Long">
-        SELECT count(*)
-        FROM
-        <include refid="BASE_TABLE"/>
+    <select id="queryForCount" resultType="java.lang.Integer" parameterType="cn.lq.common.domain.query.inner.CommentInnerQuery">
+        SELECT count(*) FROM comment
+        <include refid="dynamicWhere"/>
     </select>
 
 

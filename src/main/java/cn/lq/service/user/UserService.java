@@ -1,6 +1,6 @@
 package cn.lq.service.user;
 
-import cn.lq.common.model.UserDomain;
+import cn.lq.common.domain.po.UserPO;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,26 +11,18 @@ import org.springframework.stereotype.Service;
 public interface UserService {
 
     /**
-     * @Author: winterchen
-     * @Description: 更改用户信息
-     * @Date: 2018/4/20
+     * 更改用户信息
      */
-    int updateUserInfo(UserDomain user);
+    int updateUserInfo(UserPO user);
 
     /**
-     * @param uId 主键
-     * @Description: 根据主键编号获取用户信息
-     * @Date: 2018/4/20
+     * 根据主键编号获取用户信息
      */
-    UserDomain getUserInfoById(Integer uId);
-
+    UserPO getUserInfoById(Long uId);
 
     /**
      * 用户登录
-     *
-     * @param username 用户名
-     * @param password 密码
      */
-    UserDomain login(String username, String password);
+    UserPO login(String username, String password);
 
 }

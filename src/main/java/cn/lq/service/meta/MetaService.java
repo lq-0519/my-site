@@ -1,8 +1,8 @@
 package cn.lq.service.meta;
 
-import cn.lq.common.cond.MetaCond;
-import cn.lq.common.dto.MetaDto;
-import cn.lq.common.model.MetaDomain;
+import cn.lq.common.domain.po.MetaExtendPO;
+import cn.lq.common.domain.po.MetaPO;
+import cn.lq.common.domain.query.inner.MetaInnerQuery;
 
 import java.util.List;
 
@@ -17,16 +17,12 @@ public interface MetaService {
      * @param meta
      * @return
      */
-    void addMeta(MetaDomain meta);
+    void addMeta(MetaPO meta);
 
     /**
      * 添加
-     *
-     * @param type
-     * @param name
-     * @param mid
      */
-    void saveMeta(String type, String name, Integer mid);
+    void saveMeta(String type, String name, Long metaId);
 
 
     /**
@@ -36,7 +32,7 @@ public interface MetaService {
      * @param names
      * @param type
      */
-    void addMetas(Integer cid, String names, String type);
+    void addMetas(Long cid, String names, String type);
 
 
     /**
@@ -46,7 +42,7 @@ public interface MetaService {
      * @param name
      * @param type
      */
-    void saveOrUpdate(Integer cid, String name, String type);
+    void saveOrUpdate(Long cid, String name, String type);
 
     /**
      * 删除项目
@@ -54,7 +50,7 @@ public interface MetaService {
      * @param mid
      * @return
      */
-    void deleteMetaById(Integer mid);
+    void deleteMetaById(Long mid);
 
     /**
      * 更新项目
@@ -62,31 +58,18 @@ public interface MetaService {
      * @param meta
      * @return
      */
-    void updateMeta(MetaDomain meta);
-
-    /**
-     * 根据编号获取项目
-     *
-     * @param mid
-     * @return
-     */
-    MetaDomain getMetaById(Integer mid);
+    void updateMeta(MetaPO meta);
 
     /**
      * 获取所有的项目
      *
-     * @param metaCond 查询条件
+     * @param metaInnerQuery 查询条件
      * @return
      */
-    List<MetaDomain> getMetas(MetaCond metaCond);
+    List<MetaPO> getMetas(MetaInnerQuery metaInnerQuery);
 
     /**
      * 根据类型查询项目列表，带项目下面的文章数
-     *
-     * @param type
-     * @param orderby
-     * @param limit
-     * @return
      */
-    List<MetaDto> getMetaList(String type, String orderby, int limit);
+    List<MetaExtendPO> getMetaList(String type, String orderby, int limit);
 }

@@ -1,6 +1,6 @@
 package cn.lq.service.api;
 
-import cn.lq.common.constant.ErrorConstant;
+import cn.lq.common.domain.constant.ErrorConstant;
 import cn.lq.common.exception.BusinessException;
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;

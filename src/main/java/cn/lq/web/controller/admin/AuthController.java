@@ -1,9 +1,9 @@
 package cn.lq.web.controller.admin;
 
-import cn.lq.common.constant.LogActions;
-import cn.lq.common.constant.WebConst;
+import cn.lq.common.domain.constant.LogActions;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.UserDomain;
 import cn.lq.common.utils.IPKit;
 import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
@@ -66,12 +66,12 @@ public class AuthController extends BaseController {
         String ip = IPKit.getIpAddrByRequest(request);
         Integer error_count = cache.hget("login_error_count", ip);
         try {
-            UserDomain userInfo = userService.login(username, password);
+            UserPO userInfo = userService.login(username, password);
             request.getSession().setAttribute(WebConst.LOGIN_SESSION_KEY, userInfo);
             if (StringUtils.isNotBlank(remeber_me)) {
-                TaleUtils.setCookie(response, userInfo.getUid());
+                TaleUtils.setCookie(response, userInfo.getId());
             }
-            logService.addLog(LogActions.LOGIN.getAction(), null, request.getRemoteAddr(), userInfo.getUid());
+            logService.addLog(LogActions.LOGIN.getAction(), null, request.getRemoteAddr(), userInfo.getId());
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             error_count = null == error_count ? 1 : error_count + 1;

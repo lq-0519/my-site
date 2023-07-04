@@ -1,34 +1,30 @@
 package cn.lq.dao;
 
-import cn.lq.common.model.UserDomain;
-import org.apache.ibatis.annotations.Mapper;
+import cn.lq.common.domain.po.UserPO;
+import cn.lq.common.domain.query.inner.UserInnerQuery;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author winterchen
  * @date 2018/4/20
  */
-@Mapper
 public interface UserDao {
 
     /**
-     * @Author: winterchen
-     * @Description: 更改用户信息
-     * @Date: 2018/4/20
+     * 更改用户信息
      */
-    int updateUserInfo(UserDomain user);
+    int update(UserPO user);
 
     /**
-     * @param uId 主键
-     * @Author: winterchen
-     * @Description: 根据主键编号获取用户信息
-     * @Date: 2018/4/20
+     * 根据主键编号获取用户信息
      */
-    UserDomain getUserInfoById(@Param("uid") Integer uId);
+    UserPO queryForObject(@Param("id") Long id);
 
     /**
      * 根据用户名和密码获取用户信息
      */
-    UserDomain getUserInfoByCond(@Param("username") String username, @Param("password") String password);
+    List<UserPO> queryForList(UserInnerQuery userInnerQuery);
 
 }

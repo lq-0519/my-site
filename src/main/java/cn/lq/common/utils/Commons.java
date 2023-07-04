@@ -1,7 +1,7 @@
 package cn.lq.common.utils;
 
-import cn.lq.common.constant.WebConst;
-import cn.lq.common.model.ContentDomain;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.po.ContentPO;
 import com.github.pagehelper.PageInfo;
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.lang3.StringUtils;
@@ -26,11 +26,8 @@ import java.util.regex.Pattern;
 @Component
 public class Commons {
 
-
     /**
      * 网站链接
-     *
-     * @return
      */
     public static String site_url() {
         return site_url("/");
@@ -40,7 +37,6 @@ public class Commons {
      * 返回网站链接下的全址
      *
      * @param sub 后面追加的地址
-     * @return
      */
     public static String site_url(String sub) {
         return site_option("site_url") + sub;
@@ -56,14 +52,11 @@ public class Commons {
         String sdfDate = sdf.format(date);
         int pos = name.lastIndexOf(".");
         String suffix = name.substring(pos);
-        String rename = sdfDate + suffix;
-        return rename;
+        return sdfDate + suffix;
     }
 
     /**
      * 获取网站的描述
-     *
-     * @return
      */
     public static String site_desc() {
         return site_option("site_description");
@@ -75,8 +68,6 @@ public class Commons {
 
     /**
      * 获取网站的备案信息
-     *
-     * @return
      */
     public static String site_record() {
         return site_option("site_record");
@@ -84,8 +75,6 @@ public class Commons {
 
     /**
      * 获取网站标题
-     *
-     * @return
      */
     public static String site_title() {
         return site_option("site_title");
@@ -93,9 +82,6 @@ public class Commons {
 
     /**
      * 网站配置项
-     *
-     * @param key
-     * @return
      */
     public static String site_option(String key) {
         return site_option(key, "");
@@ -103,8 +89,6 @@ public class Commons {
 
     /**
      * 获取GitHub地址
-     *
-     * @return
      */
     public static String social_github() {
         return site_option("social_github");
@@ -112,8 +96,6 @@ public class Commons {
 
     /**
      * 获取google网站验证码
-     *
-     * @return
      */
     public static String google_site_verification() {
         return site_option("google_site_verification");
@@ -121,8 +103,6 @@ public class Commons {
 
     /**
      * 获取百度网站验证码
-     *
-     * @return
      */
     public static String baidu_site_verification() {
         return site_option("baidu_site_verification");
@@ -131,9 +111,7 @@ public class Commons {
     /**
      * 网站配置项
      *
-     * @param key
      * @param defalutValue 默认值
-     * @return
      */
     public static String site_option(String key, String defalutValue) {
         if (StringUtils.isBlank(key)) {
@@ -149,21 +127,23 @@ public class Commons {
 
     /**
      * 格式化unix时间戳为日期
-     *
-     * @param unixTime
-     * @return
      */
+    @Deprecated
     public static String fmtdate(Integer unixTime) {
         return fmtdate(unixTime, "yyyy-MM-dd");
     }
 
     /**
      * 格式化unix时间戳为日期
-     *
-     * @param unixTime
-     * @param patten
-     * @return
      */
+    public static String fmtdate(Date unixTime) {
+        return fmtdate(unixTime, "yyyy-MM-dd");
+    }
+
+    /**
+     * 格式化unix时间戳为日期
+     */
+    @Deprecated
     public static String fmtdate(Integer unixTime, String patten) {
         if (null != unixTime && StringUtils.isNotBlank(patten)) {
             return DateKit.formatDateByUnixTime(unixTime, patten);
@@ -171,25 +151,27 @@ public class Commons {
         return "";
     }
 
+
+    /**
+     * 格式化unix时间戳为日期
+     */
+    public static String fmtdate(Date unixTime, String patten) {
+        SimpleDateFormat format = new SimpleDateFormat(patten);
+        return unixTime != null ? format.format(unixTime) : "";
+    }
+
     /**
      * 英文格式的日期
-     *
-     * @param unixTime
-     * @return
      */
-    public static String fmtdate_en(Integer unixTime) {
+    public static String fmtdate_en(Date unixTime) {
         String fmtdate = fmtdate(unixTime, "d,MMM,yyyy");
         String[] dateArr = fmtdate.split(",");
-        String rs = "<span>" + dateArr[0] + "</span> " + dateArr[1] + "  " + dateArr[2];
-        return rs;
+        return "<span>" + dateArr[0] + "</span> " + dateArr[1] + "  " + dateArr[2];
     }
 
 
     /**
      * 英文格式的日期-月，日
-     *
-     * @param unixTime
-     * @return
      */
     public static String fmtdate_en_m(Integer unixTime) {
         return fmtdate(unixTime, "MMM d");
@@ -197,9 +179,6 @@ public class Commons {
 
     /**
      * 日期-年
-     *
-     * @param unixTime
-     * @return
      */
     public static String fmtdate_en_y(Integer unixTime) {
         return fmtdate(unixTime, "yyyy");
@@ -207,9 +186,6 @@ public class Commons {
 
     /**
      * 将中文的yyyy年MM月 - > yyyy
-     *
-     * @param date
-     * @return
      */
     public static String parsedate_zh_y_m(String date) {
         if (StringUtils.isNotBlank(date)) {
@@ -221,9 +197,6 @@ public class Commons {
 
     /**
      * 字符串转Date
-     *
-     * @param date
-     * @return
      */
     public static Date fmtdate_date(String date) {
         if (StringUtils.isNotBlank(date)) {
@@ -234,9 +207,6 @@ public class Commons {
 
     /**
      * 根据nuix时间戳获取Date
-     *
-     * @param nuixTime
-     * @return
      */
     public static Date fmtdate_unxtime(Integer nuixTime) {
         if (null != nuixTime) {
@@ -247,8 +217,6 @@ public class Commons {
 
     /**
      * 获取社交的链接地址
-     *
-     * @return
      */
     public static Map<String, String> social() {
         final String prefix = "social_";
@@ -268,9 +236,6 @@ public class Commons {
      * An :grinning:awesome :smiley:string &#128516;with a few :wink:emojis!
      * <p>
      * 这种格式的字符转换为emoji表情
-     *
-     * @param value
-     * @return
      */
     public static String emoji(String value) {
         return EmojiParser.parseToUnicode(value);
@@ -278,26 +243,21 @@ public class Commons {
 
     /**
      * 获取随机数
-     *
-     * @param max
-     * @param str
-     * @return
      */
     public static String random(int max, String str) {
         return UUID.random(1, max) + str;
     }
 
     public static String random(Long seed, int max, String str) {
-        if (seed == null)
+        if (seed == null) {
             return random(max, str);
+        }
         Random random = new Random(seed);
         return random.nextInt(max) + str;
     }
 
     /**
      * 如果blog没有配图，随机获取一张
-     *
-     * @return
      */
     public static String randomBlogPic(Long seed) {
         return "/site/images/blog-images/blog-" + random(seed, 12, ".jpg");
@@ -305,9 +265,6 @@ public class Commons {
 
     /**
      * 返回github头像地址
-     *
-     * @param email
-     * @return
      */
     public static String gravatar(String email) {
         String avatarUrl = "https://github.com/identicons/";
@@ -320,9 +277,6 @@ public class Commons {
 
     /**
      * 显示文章内容，转换markdown为html
-     *
-     * @param value
-     * @return
      */
     public static String article(String value) {
         if (StringUtils.isNotBlank(value)) {
@@ -335,31 +289,21 @@ public class Commons {
 
     /**
      * 返回文章链接地址
-     *
-     * @param contents
-     * @return
      */
-    public static String permalink(ContentDomain contents) {
-        return permalink(contents.getCid(), contents.getSlug());
+    public static String permalink(ContentPO contents) {
+        return permalink(contents.getId(), contents.getSlug());
     }
 
 
     /**
      * 返回文章链接地址
-     *
-     * @param cid
-     * @param slug
-     * @return
      */
-    public static String permalink(Integer cid, String slug) {
+    public static String permalink(Long cid, String slug) {
         return site_url("/article/" + (StringUtils.isNotBlank(slug) ? slug : cid.toString()));
     }
 
     /**
      * 判断分页中是否有数据
-     *
-     * @param paginator
-     * @return
      */
     public static boolean is_empty(PageInfo paginator) {
         return paginator == null || (paginator.getList() == null) || (paginator.getList().size() == 0);
@@ -367,10 +311,6 @@ public class Commons {
 
     /**
      * 截取字符串
-     *
-     * @param str
-     * @param len
-     * @return
      */
     public static String substr(String str, int len) {
         if (str.length() > len) {
@@ -381,9 +321,6 @@ public class Commons {
 
     /**
      * 返回作品文章地址
-     *
-     * @param cid
-     * @return
      */
     public static String photoPermalink(Integer cid) {
         return site_url("/photo/article/" + cid.toString());
@@ -391,9 +328,6 @@ public class Commons {
 
     /**
      * 返回blog文章地址
-     *
-     * @param cid
-     * @return
      */
     public static String blogPermalink(Integer cid) {
         return site_url("/blog/article/" + cid.toString());
@@ -401,9 +335,6 @@ public class Commons {
 
     /**
      * 获取blog归档地址
-     *
-     * @param date
-     * @return
      */
     public static String archivePermalink(String date) {
         return site_url("/blog/archives/" + date);
@@ -416,9 +347,6 @@ public class Commons {
 
     /**
      * 返回blog分类的地址
-     *
-     * @param categorie
-     * @return
      */
     public static String categoriePermalink(String categorie) {
         return site_url("/blog/categories/" + categorie);
@@ -426,9 +354,6 @@ public class Commons {
 
     /**
      * 返回blog标签页的地址
-     *
-     * @param tag
-     * @return
      */
     public static String tagPermalink(String tag) {
         return site_url("/blog/tag/" + tag);
@@ -436,8 +361,6 @@ public class Commons {
 
     /**
      * 获取文章第一张图片
-     *
-     * @return
      */
     public static String show_thumb(String content) {
         content = TaleUtils.mdToHtml(content);
@@ -460,12 +383,9 @@ public class Commons {
 
     /**
      * 获取文章中的所有图片
-     *
-     * @param content
-     * @return
      */
     public static List<String> show_all_thumb(String content) {
-        List<String> rs = new LinkedList();
+        List<String> rs = new LinkedList<>();
         content = TaleUtils.mdToHtml(content);
         if (content.contains("<img")) {
             String img = "";
@@ -490,9 +410,6 @@ public class Commons {
 
     /**
      * 获取文章的文字预览
-     *
-     * @param content
-     * @return
      */
     public static String show_p(String content) {
         String result = "";
@@ -512,16 +429,14 @@ public class Commons {
         result = result.replace("</img>", "");
         result = result.replace("<p>", "");
         result = result.replace("</p>", "");
-        if (result.length() > 20)
+        if (result.length() > 20) {
             result = result.substring(0, 20);
+        }
         return result;
     }
 
     /**
      * 获取文章中所有的文字
-     *
-     * @param content
-     * @return
      */
     public static List<String> show_all_p(String content) {
         List<String> rs = new LinkedList();
@@ -543,16 +458,13 @@ public class Commons {
 
     /**
      * 显示分类
-     *
-     * @param categories
-     * @return
      */
     public static String show_categories(String categories) throws UnsupportedEncodingException {
         if (StringUtils.isNotBlank(categories)) {
             String[] arr = categories.split(",");
-            StringBuffer sbuf = new StringBuffer();
+            StringBuilder sbuf = new StringBuilder();
             for (String c : arr) {
-                sbuf.append("<a class=\"article-category-link\" href=\"/blog/category/" + URLEncoder.encode(c, "UTF-8") + "\">" + c + "</a>");
+                sbuf.append("<a class=\"article-category-link\" href=\"/blog/category/").append(URLEncoder.encode(c, "UTF-8")).append("\">").append(c).append("</a>");
             }
             return sbuf.toString();
         }
@@ -561,16 +473,13 @@ public class Commons {
 
     /**
      * 显示标签
-     *
-     * @param tags
-     * @return
      */
     public static String show_tags(String tags) throws UnsupportedEncodingException {
         if (StringUtils.isNotBlank(tags)) {
             String[] arr = tags.split(",");
-            StringBuffer sbuf = new StringBuffer();
+            StringBuilder sbuf = new StringBuilder();
             for (String c : arr) {
-                sbuf.append("<li class=\"article-tag-list-item\"><a href=\"/blog/tag/" + URLEncoder.encode(c, "UTF-8") + "\">#" + c + "</a></li>");
+                sbuf.append("<li class=\"article-tag-list-item\"><a href=\"/blog/tag/").append(URLEncoder.encode(c, "UTF-8")).append("\">#").append(c).append("</a></li>");
             }
             return sbuf.toString();
         }
@@ -582,12 +491,12 @@ public class Commons {
      *
      * @param value 文章内容
      * @param len   要截取文字的个数
-     * @return
      */
     public static String intro(String value, int len) {
-        Integer pos = value.indexOf("<!--more-->");
-        if (null == pos || pos == 0 || pos == -1)
+        int pos = value.indexOf("<!--more-->");
+        if (pos == 0 || pos == -1) {
             pos = value.indexOf("<!-- more -->");
+        }
         if (pos != -1) {
             String html = value.substring(0, pos);
             return TaleUtils.mdToHtml(TaleUtils.mdToHtml(html));

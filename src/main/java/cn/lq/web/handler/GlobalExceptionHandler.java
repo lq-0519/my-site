@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * 统一异常处理
- * Created by winterchen on 2018/4/20.
+ *
+ * @author winterchen
+ * @date 2018/4/20
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {

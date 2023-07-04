@@ -32,8 +32,7 @@
 
                         <div class="col-sm-6 col-lg-3">
                             <div class="mini-stat clearfix bg-success bx-shadow">
-                                <span class="mini-stat-icon"><i aria-hidden="true"
-                                                                class="fa fa-cloud-upload"></i></span>
+                                <span class="mini-stat-icon"><i aria-hidden="true" class="fa fa-cloud-upload"></i></span>
                                 <div class="mini-stat-info text-right">
                                     上传了<span class="counter" th:text="${statistics.attachs}"></span>个附件
                                 </div>
@@ -59,11 +58,8 @@
                                 <div class="panel-body">
                                     <ul class="list-group">
                                         <li class="list-group-item" th:each="article : ${articles}">
-                            <span class="badge badge-primary"
-                                  th:text="${article.commentsNum}" th:title="${article.commentsNum}+'条评论'"></span>
-                                            <a target="_blank"
-                                               th:href="${commons.site_url('/blog/article/')}+${article.cid}"
-                                               th:text="${article.title}"></a>
+                                            <span class="badge badge-primary" th:text="${article.commentsNum}" th:title="${article.commentsNum}+'条评论'"></span>
+                                            <a target="_blank" th:href="${commons.site_url('/blog/article/')}+${article.id}" th:text="${article.title}"></a>
                                         </li>
                                     </ul>
                                 </div>
@@ -80,20 +76,15 @@
                                             还没有收到留言.
                                         </div>
                                     </div>
-                                    <ul class="list-group"
-                                        th:unless="${comments}==null and ${#lists.size(comments)}==0">
+                                    <ul class="list-group" th:unless="${comments}==null and ${#lists.size(comments)}==0">
                                         <li class="list-group-item" th:each="comment : ${comments}">
                                             <div th:if="${comment.url}!=null and ${comment.url}!=''">
-                                                <a target="_blank" th:href="@{${comment.url}}"
-                                                   th:text="${comment.author}"></a>
+                                                <a target="_blank" th:href="@{${comment.url}}" th:text="${comment.author}"></a>
                                             </div>
-                                            <th:block th:text="${comment.author}"
-                                                      th:unless="${comment.url}!=null and ${comment.url}!=''"/>
+                                            <th:block th:text="${comment.author}" th:unless="${comment.url}!=null and ${comment.url}!=''"/>
                                             于
                                             <th:block th:text="${commons.fmtdate(comment.created,'MM月dd日HH:mm')}"/>
-                                            ：<a
-                                                target="_blank"
-                                                th:href="${commons.site_url('/blog/article/')}+${comment.cid}+'#comments-content'" th:utext="${commons.article(comment.content)}"></a>
+                                            ：<a target="_blank" th:href="${commons.site_url('/blog/article/')}+${comment.id}+'#comments-content'" th:utext="${commons.article(comment.content)}"></a>
                                         </li>
                                     </ul>
                                 </div>

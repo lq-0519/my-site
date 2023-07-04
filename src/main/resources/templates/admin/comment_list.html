@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress HtmlUnknownTag -->
 <html lang="en" th:with="title='评论管理',active='comments'" xmlns:th="http://www.thymeleaf.org">
 <header th:replace="admin/header::headerFragment(${title},${active})"></header>
 <body class="fixed-left">
@@ -19,22 +20,19 @@
                                 <th>评论人</th>
                                 <th>评论时间</th>
                                 <th>评论人邮箱</th>
-                                <th>评论人网址</th>
                                 <th>评论状态</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
                             <th:block th:each="comment : ${comments.list}">
-                                <tr th:attr="cid=${comment.coid}">
+                                <tr th:attr="cid=${comment.id}">
                                     <td>
-                                        <a target="_blank"
-                                           th:href="@{${commons.site_url('/blog/article/')}+${comment.cid}+'#comments-content'}" th:utext="${commons.article(comment.content)}"></a>
+                                        <a target="_blank" th:href="@{${commons.site_url('/blog/article/')}+${comment.contentId}+'#comments-content'}" th:utext="${commons.article(comment.content)}"></a>
                                     </td>
                                     <td th:text="${comment.author}"></td>
                                     <td th:text="${commons.fmtdate(comment.created, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                     <td th:text="${comment.mail}"></td>
-                                    <td><a target="_blank" th:href="@{${comment.url}}" th:text="${comment.url}"></a>
                                     </td>
                                     <td>
                                         <th:block th:if="${comment.status == 'approved'}">
@@ -46,14 +44,11 @@
                                     </td>
                                     <td>
                                         <th:block th:if="${comment.status == 'not_audit'}">
-                                            <a class="btn btn-success btn-sm waves-effect waves-light m-b-5"
-                                               href="javascript:void(0)"
-                                               th:onclick="'updateStatus('+${comment.coid}+');'"><i
-                                                    class="fa fa-check-square-o"></i> <span>通过</span></a>
+                                            <a class="btn btn-success btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)" th:onclick="'updateStatus('+${comment.id}+');'"><i class="fa fa-check-square-o"></i>
+                                                <span>通过</span></a>
                                         </th:block>
-                                        <a class="btn btn-danger btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)"
-                                           th:onclick="'delComment('+${comment.coid}+');'"><i
-                                                class="fa fa-trash-o"></i> <span>删除</span></a>
+                                        <a class="btn btn-danger btn-sm waves-effect waves-light m-b-5" href="javascript:void(0)" th:onclick="'delComment('+${comment.id}+');'"><i class="fa fa-trash-o"></i>
+                                            <span>删除</span></a>
                                     </td>
                                 </tr>
                             </th:block>
@@ -80,7 +75,7 @@
                     url: '/admin/comments/delete',
                     data: {coid: coid},
                     success: function (result) {
-                        if (result && result.code == 'success') {
+                        if (result && result.code === 'success') {
                             tale.alertOkAndReload('评论删除成功');
                         } else {
                             tale.alertError(result.msg || '评论删除失败');
@@ -99,7 +94,7 @@
                     url: '/admin/comments/status',
                     data: {coid: coid, status: "approved"},
                     success: function (result) {
-                        if (result && result.code == 'success') {
+                        if (result && result.code === 'success') {
                             tale.alertOkAndReload('评论状态设置成功');
                         } else {
                             tale.alertError(result.msg || '评论设置失败');
@@ -109,6 +104,7 @@
             }
         });
     }
+
     /*]]>*/
 
 </script>

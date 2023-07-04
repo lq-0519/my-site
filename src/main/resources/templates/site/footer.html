@@ -2,22 +2,13 @@
 <html lang="en" th:fragment="footer(title,record,site_url)" xmlns:th="http://www.thymeleaf.org">
 <footer role="footer">
 
-    <!-- logo -->
-
-    <h1><a th:href="@{/}" title="avana LLC"><img
-            alt="Luis" style="width: 66px;"
-            th:src="@{https://cdn.jsdelivr.net/gh/WinterChenS/imgrpo/blog/20210816112027.png}" title="Luis"/></a></h1>
-
-
-    <!-- logo -->
-
     <!-- nav -->
 
     <nav role="footer-nav">
         <ul>
-            <li><a th:href="@{/}" title="Work">Work</a></li>
+            <li><a th:href="@{/}" title="Blog">Blog</a></li>
+            <li><a th:href="@{/work/index}" title="Work">Work</a></li>
             <li><a th:href="@{/about}" title="About">About</a></li>
-            <li><a th:href="@{/blog/index}" title="Blog">Blog</a></li>
         </ul>
     </nav>
 
@@ -28,22 +19,22 @@
             <th:block th:if="${index.value}!=null and ${index.value}!=''">
                 <th:block th:switch="${index.key}">
                     <th:block th:case="'csdn'">
-                        <li><a class="icon csdn" target="blank" th:href="@{${index.value}}"></a></li>
+                        <li><a class="icon csdn" target="blank" th:href="${index.value}"></a></li>
                     </th:block>
                     <th:block th:case="'jianshu'">
-                        <li><a class="icon jianshu" target="blank" th:href="@{${index.value}}"></a></li>
+                        <li><a class="icon jianshu" target="blank" th:href="${index.value}"></a></li>
                     </th:block>
                     <th:block th:case="'resume'">
                         <li><a class="icon resume" target="blank" th:href="@{${index.value}}"></a></li>
                     </th:block>
                     <th:block th:case="'weibo'">
-                        <li><a class="icon weibo" target="blank" th:href="@{${index.value}}"></a></li>
+                        <li><a class="icon weibo" target="blank" th:href="${index.value}"></a></li>
                     </th:block>
                     <th:block th:case="'zhihu'">
-                        <li><a class="icon zhihu" target="blank" th:href="@{${index.value}}"></a></li>
+                        <li><a class="icon zhihu" target="blank" th:href="${index.value}"></a></li>
                     </th:block>
                     <th:block th:case="'github'">
-                        <li><a class="icon github" target="blank" th:href="@{${index.value}}"></a></li>
+                        <li><a class="icon github" target="blank" th:href="${index.value}"></a></li>
                     </th:block>
                     <th:block th:case="'twitter'">
                         <li><a class="icon twitter" target="blank" th:href="@{${index.value}}"></a></li>
@@ -52,11 +43,12 @@
             </th:block>
         </th:block>
     </ul>
-    <p class="copy-right">&copy; 2018
+    <p class="copy-right">&copy; 2023
         <th:block th:text="${title}"></th:block>
     </p>
-    <th:block th:if="${record != null and record != ''}"><a class="copy-right" th:href="@{http://www.miitbeian.gov.cn/}"
-                                                            th:text="${record}"></a></th:block>
+    <th:block th:if="${record != null and record != ''}">
+        <a class="copy-right" th:href="@{http://www.miitbeian.gov.cn/}" th:text="${record}"></a>
+    </th:block>
 </footer>
 
 <!-- footer -->
@@ -102,13 +94,12 @@
 </script>
 <!-- 百度收录自动推送 -->
 <script>
-    (function(){
+    (function () {
         var bp = document.createElement('script');
         var curProtocol = window.location.protocol.split(':')[0];
         if (curProtocol === 'https') {
             bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-        }
-        else {
+        } else {
             bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
         var s = document.getElementsByTagName("script")[0];
@@ -116,7 +107,7 @@
     })();
 
     function linkFirend(link) {
-        window.location.href=link;
+        window.location.href = link;
     }
 
 </script>

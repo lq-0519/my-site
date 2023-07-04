@@ -1,78 +1,54 @@
 package cn.lq.dao;
 
-import cn.lq.common.cond.MetaCond;
-import cn.lq.common.dto.MetaDto;
-import cn.lq.common.model.MetaDomain;
-import org.apache.ibatis.annotations.Mapper;
+import cn.lq.common.domain.po.MetaExtendPO;
+import cn.lq.common.domain.po.MetaPO;
+import cn.lq.common.domain.query.inner.MetaInnerQuery;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * 项目dao
- * Created by winterchen on 2018/4/29.
+ * 元数据dao
+ *
+ * @author winterchen
+ * @date 2018/4/29
  */
-@Mapper
-@Component
 public interface MetaDao {
 
     /**
-     * 添加项目
-     *
-     * @param meta
-     * @return
+     * 添加元数据
      */
-    int addMeta(MetaDomain meta);
+    int insert(MetaPO meta);
 
     /**
-     * 删除项目
-     *
-     * @param mid
-     * @return
+     * 删除元数据
      */
-    int deleteMetaById(@Param("mid") Integer mid);
+    int delete(@Param("id") Long id);
 
     /**
-     * 更新项目
-     *
-     * @param meta
-     * @return
+     * 更新元数据
      */
-    int updateMeta(MetaDomain meta);
+    int update(MetaPO meta);
 
     /**
-     * 根据编号获取项目
-     *
-     * @param mid
-     * @return
+     * 根据编号获取元数据
      */
-    MetaDomain getMetaById(@Param("mid") Integer mid);
-
+    MetaPO queryForObject(@Param("id") Long id);
 
     /**
      * 根据条件查询
-     *
-     * @param metaCond
-     * @return
      */
-    List<MetaDomain> getMetasByCond(MetaCond metaCond);
+    List<MetaPO> queryForList(MetaInnerQuery metaInnerQuery);
 
     /**
      * 根据类型获取meta数量
-     *
-     * @param type
-     * @return
      */
-    Long getMetasCountByType(@Param("type") String type);
+    int queryForCount(MetaInnerQuery metaInnerQuery);
 
     /**
      * 根据sql查询
-     *
-     * @param paraMap
-     * @return
      */
-    List<MetaDto> selectFromSql(Map<String, Object> paraMap);
+    List<MetaExtendPO> selectFromSql(Map<String, Object> paraMap);
 
 }

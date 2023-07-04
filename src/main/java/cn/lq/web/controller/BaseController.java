@@ -1,10 +1,10 @@
 package cn.lq.web.controller;
 
-import cn.lq.common.cond.ContentCond;
-import cn.lq.common.constant.Types;
-import cn.lq.common.constant.WebConst;
-import cn.lq.common.dto.MetaDto;
-import cn.lq.common.model.UserDomain;
+import cn.lq.common.domain.constant.Types;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.po.MetaExtendPO;
+import cn.lq.common.domain.po.UserPO;
+import cn.lq.common.domain.query.inner.ContentInnerQuery;
 import cn.lq.common.utils.MapCache;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.service.meta.MetaService;
@@ -31,22 +31,19 @@ public abstract class BaseController {
 
     /**
      * 获取blog页面需要的公共数据
-     *
-     * @param request
-     * @return
      */
-    public BaseController blogBaseData(HttpServletRequest request, ContentCond contentCond) {
-//        List<MetaDto> categories = metaService.getMetaList(Types.CATEGORY.getType(), null, WebConst.MAX_POSTS);
-//        List<MetaDto> tags = metaService.getMetaList(Types.TAG.getType(), null, WebConst.MAX_POSTS);
-        List<MetaDto> links = metaService.getMetaList(Types.LINK.getType(), null, WebConst.MAX_POSTS);
+    public BaseController blogBaseData(HttpServletRequest request, ContentInnerQuery contentInnerQuery) {
+//        List<MetaExtendPO> categories = metaService.getMetaList(Types.CATEGORY.getType(), null, WebConst.MAX_POSTS);
+//        List<MetaExtendPO> tags = metaService.getMetaList(Types.TAG.getType(), null, WebConst.MAX_POSTS);
+        List<MetaExtendPO> links = metaService.getMetaList(Types.LINK.getType(), null, WebConst.MAX_POSTS);
 //        request.setAttribute("categories", categories);//分类
 //        request.setAttribute("tags", tags);//标签
         request.setAttribute("links", links);
 //        PageInfo<ContentDomain> recentlyArticles = contentService.getRecentlyArticle(1, 10);
-//        ContentCond cond = new ContentCond();
-//        cond.setType(contentCond.getType());
+//        ContentInnerQuery query = new ContentInnerQuery();
+//        query.setType(contentInnerQuery.getType());
 //        request.setAttribute("recentlyArticles", recentlyArticles);
-//        List<ArchiveDto> archives = siteService.getArchivesSimple(cond);
+//        List<ArchiveDto> archives = siteService.getArchivesSimple(query);
 //        request.setAttribute("archives", archives);//归档数据
 
         return this;
@@ -54,31 +51,21 @@ public abstract class BaseController {
 
     /**
      * 获取请求绑定的登录对象
-     *
-     * @param request
-     * @return
      */
-    public UserDomain user(HttpServletRequest request) {
+    public UserPO user(HttpServletRequest request) {
         return TaleUtils.getLoginUser(request);
     }
 
-    public Integer getUid(HttpServletRequest request) {
-        return this.user(request).getUid();
+    public Long getUid(HttpServletRequest request) {
+        return this.user(request).getId();
     }
 
     /**
      * 数组转字符串
-     *
-     * @param arr
-     * @return
      */
     public String join(String[] arr) {
         StringBuilder ret = new StringBuilder();
-        String[] var3 = arr;
-        int var4 = arr.length;
-
-        for (int var5 = 0; var5 < var4; ++var5) {
-            String item = var3[var5];
+        for (String item : arr) {
             ret.append(',').append(item);
         }
 

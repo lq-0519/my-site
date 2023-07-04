@@ -1,8 +1,9 @@
 package cn.lq.web.controller.admin;
 
-import cn.lq.common.constant.LogActions;
-import cn.lq.common.constant.WebConst;
-import cn.lq.common.model.OptionsDomain;
+import cn.lq.common.domain.constant.LogActions;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.po.ConfigPO;
+import cn.lq.common.utils.CollectionUtils;
 import cn.lq.common.utils.GsonUtils;
 import cn.lq.common.utils.Response;
 import cn.lq.service.log.LogService;
@@ -13,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,9 +46,9 @@ public class SettingController extends BaseController {
     @ApiOperation("进入设置页")
     @GetMapping(value = "")
     public String setting(HttpServletRequest request) {
-        List<OptionsDomain> optionsList = optionService.getOptions();
+        List<ConfigPO> optionsList = optionService.getOptions();
         Map<String, String> options = new HashMap<>();
-        optionsList.forEach((option) -> options.put(option.getName(), option.getValue()));
+        optionsList.forEach((option) -> options.put(option.getCode(), option.getValue()));
         request.setAttribute("options", options);
         return "admin/setting";
     }
@@ -65,11 +65,11 @@ public class SettingController extends BaseController {
             optionService.saveOptions(queries);
 
             //刷新设置
-            List<OptionsDomain> options = optionService.getOptions();
+            List<ConfigPO> options = optionService.getOptions();
             if (!CollectionUtils.isEmpty(options)) {
                 WebConst.initConfig.clear();
-                for (OptionsDomain option : options) {
-                    WebConst.initConfig.put(option.getName(), option.getValue());
+                for (ConfigPO option : options) {
+                    WebConst.initConfig.put(option.getCode(), option.getValue());
                 }
             }
 

@@ -1,97 +1,112 @@
 package cn.lq.service.content.impl;
 
-import cn.lq.common.cond.ContentCond;
-import cn.lq.common.constant.ErrorConstant;
-import cn.lq.common.constant.Types;
-import cn.lq.common.constant.WebConst;
+import cn.lq.common.domain.bo.ContentBO;
+import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Types;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.enums.CommentStatusEnum;
+import cn.lq.common.domain.po.CommentPO;
+import cn.lq.common.domain.po.ContentMetaBindPO;
+import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.query.inner.CommentInnerQuery;
+import cn.lq.common.domain.query.inner.ContentInnerQuery;
+import cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery;
+import cn.lq.common.domain.vo.ContentVO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.CommentDomain;
-import cn.lq.common.model.ContentDomain;
-import cn.lq.common.model.RelationShipDomain;
-import cn.lq.dao.CommentDao;
-import cn.lq.dao.ContentDao;
-import cn.lq.dao.RelationShipDao;
+import cn.lq.common.utils.BeanConverter;
+import cn.lq.common.utils.CollectionUtils;
+import cn.lq.common.utils.MapCache;
+import cn.lq.common.utils.PageUtils;
+import cn.lq.manager.CommentManager;
+import cn.lq.manager.ContentManager;
+import cn.lq.manager.ContentMetaBindManager;
 import cn.lq.service.content.ContentService;
 import cn.lq.service.meta.MetaService;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * Created by winterchen on 2018/4/29.
+ * @author winterchen
+ * @date 2018/4/29
  */
-@Service
+@Service("contentService")
 public class ContentServiceImpl implements ContentService {
 
-    @Autowired
-    private ContentDao contentDao;
+    private final MapCache cache = MapCache.single();
+    @Resource
+    private ContentManager contentManager;
 
-    @Autowired
-    private CommentDao commentDao;
+    @Resource
+    private CommentManager commentManager;
 
-    @Autowired
+    @Resource
     private MetaService metaService;
 
-    @Autowired
-    private RelationShipDao relationShipDao;
+    @Resource
+    private ContentMetaBindManager contentMetaBindManager;
 
 
     @Transactional
     @Override
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void addArticle(ContentDomain contentDomain) {
-        if (null == contentDomain) {
+    public void addArticle(ContentBO contentBO) {
+        if (null == contentBO) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        if (StringUtils.isBlank(contentDomain.getTitle())) {
+        if (StringUtils.isBlank(contentBO.getTitle())) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.TITLE_CAN_NOT_EMPTY);
         }
-        if (contentDomain.getTitle().length() > WebConst.MAX_TITLE_COUNT) {
+        if (contentBO.getTitle().length() > WebConst.MAX_TITLE_COUNT) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.TITLE_IS_TOO_LONG);
         }
-        if (StringUtils.isBlank(contentDomain.getContent())) {
+        if (StringUtils.isBlank(contentBO.getContent())) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.CONTENT_CAN_NOT_EMPTY);
         }
-        if (contentDomain.getContent().length() > WebConst.MAX_TEXT_COUNT) {
+        if (contentBO.getContent().length() > WebConst.MAX_TEXT_COUNT) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.CONTENT_IS_TOO_LONG);
         }
 
         //标签和分类
-        String tags = contentDomain.getTags();
-        String categories = contentDomain.getCategories();
-
-        contentDao.addArticle(contentDomain);
-
-        int cid = contentDomain.getCid();
-        metaService.addMetas(cid, tags, Types.TAG.getType());
-        metaService.addMetas(cid, categories, Types.CATEGORY.getType());
+        String tags = contentBO.getTags();
+        String categories = contentBO.getCategories();
+        ContentPO contentPO = BeanConverter.convert(ContentPO.class, contentBO);
+        contentManager.insert(contentPO);
+        Long contentId = contentPO.getId();
+        metaService.addMetas(contentId, tags, Types.TAG.getType());
+        metaService.addMetas(contentId, categories, Types.CATEGORY.getType());
     }
 
     @Override
     @Transactional
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void deleteArticleById(Integer cid) {
-        if (null == cid)
+    public void deleteArticleById(Long contentId) {
+        if (null == contentId) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        contentDao.deleteArticleById(cid);
+        }
+        contentManager.delete(contentId);
         //同时也要删除该文章下的所有评论
-        List<CommentDomain> comments = commentDao.getCommentsByCId(cid);
+        CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
+        commentInnerQuery.setContentId(contentId);
+        commentInnerQuery.setStatus(CommentStatusEnum.APPROVED.getStatus());
+        List<CommentPO> comments = commentManager.queryForList(commentInnerQuery);
         if (null != comments && comments.size() > 0) {
             comments.forEach(comment -> {
-                commentDao.deleteComment(comment.getCoid());
+                commentManager.delete(comment.getId());
             });
         }
         //删除标签和分类关联
-        List<RelationShipDomain> relationShips = relationShipDao.getRelationShipByCid(cid);
+        ContentMetaBindInnerQuery query = new ContentMetaBindInnerQuery();
+        query.setContentId(contentId);
+        List<ContentMetaBindPO> relationShips = contentMetaBindManager.queryForList(query);
         if (null != relationShips && relationShips.size() > 0) {
-            relationShipDao.deleteRelationShipByCid(cid);
+            contentMetaBindManager.deleteByQuery(query);
         }
 
     }
@@ -99,14 +114,16 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void updateArticleById(ContentDomain contentDomain) {
+    public void updateArticleById(ContentBO contentBO) {
         //标签和分类
-        String tags = contentDomain.getTags();
-        String categories = contentDomain.getCategories();
-
-        contentDao.updateArticleById(contentDomain);
-        int cid = contentDomain.getCid();
-        relationShipDao.deleteRelationShipByCid(cid);
+        String tags = contentBO.getTags();
+        String categories = contentBO.getCategories();
+        ContentPO contentPO = BeanConverter.convert(ContentPO.class, contentBO);
+        contentManager.update(contentPO);
+        Long cid = contentBO.getId();
+        ContentMetaBindInnerQuery delQuery = new ContentMetaBindInnerQuery();
+        delQuery.setContentId(cid);
+        contentMetaBindManager.deleteByQuery(delQuery);
         metaService.addMetas(cid, tags, Types.TAG.getType());
         metaService.addMetas(cid, categories, Types.CATEGORY.getType());
 
@@ -116,57 +133,87 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void updateCategory(String ordinal, String newCatefory) {
-        ContentCond cond = new ContentCond();
+        ContentInnerQuery cond = new ContentInnerQuery();
         cond.setCategory(ordinal);
-        List<ContentDomain> atricles = contentDao.getArticlesByCond(cond);
+        List<ContentPO> atricles = contentManager.queryForList(cond);
         atricles.forEach(atricle -> {
             atricle.setCategories(atricle.getCategories().replace(ordinal, newCatefory));
-            contentDao.updateArticleById(atricle);
+            contentManager.update(atricle);
         });
     }
 
 
     @Override
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void updateContentByCid(ContentDomain content) {
-        if (null != content && null != content.getCid()) {
-            contentDao.updateArticleById(content);
+    public void updateContentByCid(ContentPO content) {
+        if (null != content && null != content.getId()) {
+            contentManager.update(content);
         }
     }
 
     @Override
     @Cacheable(value = "atricleCache", key = "'atricleById_' + #p0")
-    public ContentDomain getArticleById(Integer cid) {
-        if (null == cid)
+    public ContentPO getArticleById(Long cid) {
+        if (null == cid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        return contentDao.getArticleById(cid);
+        }
+
+        return contentManager.queryForObject(cid);
     }
 
     @Override
     @Cacheable(value = "atricleCaches", key = "'articlesByCond_' + #p1 + 'type_' + #p0.type")
-    public PageInfo<ContentDomain> getArticlesByCond(ContentCond contentCond, int pageNum, int pageSize) {
-        if (null == contentCond)
+    public PageInfo<ContentVO> queryContentPage(ContentInnerQuery contentInnerQuery, int pageNum, int pageSize) {
+        if (null == contentInnerQuery) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        PageHelper.startPage(pageNum, pageSize);
-        List<ContentDomain> contents = contentDao.getArticlesByCond(contentCond);
-        PageInfo<ContentDomain> pageInfo = new PageInfo<>(contents);
-        return pageInfo;
+        }
+
+        List<ContentPO> list = PageUtils.pack(pageNum, pageSize, () -> contentManager.queryForList(contentInnerQuery)).getList();
+        if (CollectionUtils.isEmpty(list)) {
+            return new PageInfo<>();
+        } else {
+            return new PageInfo<>(BeanConverter.convertToList(ContentVO.class, list));
+        }
     }
 
     @Override
-    @Cacheable(value = "atricleCaches", key = "'recentlyArticle_' + #p0")
-    public PageInfo<ContentDomain> getRecentlyArticle(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<ContentDomain> recentlyArticle = contentDao.getRecentlyArticle();
-        PageInfo<ContentDomain> pageInfo = new PageInfo<>(recentlyArticle);
-        return pageInfo;
+    public PageInfo<ContentPO> searchContent(String param, int pageNun, int pageSize) {
+        // TODO: liqian477 2023/7/4 分页待实现
+        return null;
     }
 
     @Override
-    public PageInfo<ContentDomain> searchArticle(String param, int pageNun, int pageSize) {
-        PageHelper.startPage(pageNun, pageSize);
-        List<ContentDomain> contentDomains = contentDao.searchArticle(param);
-        PageInfo<ContentDomain> pageInfo = new PageInfo<>(contentDomains);
-        return pageInfo;
+    public ContentVO getArticleDetail(Long contentId) {
+        if (contentId == null) {
+            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+        }
+
+        ContentPO contentPO = contentManager.queryForObject(contentId);
+        ContentVO contentVO = BeanConverter.convert(ContentVO.class, contentPO);
+        CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
+        commentInnerQuery.setContentId(contentId);
+        commentInnerQuery.setStatus(CommentStatusEnum.APPROVED.getStatus());
+        int commentsCount = commentManager.queryForCount(commentInnerQuery);
+        contentVO.setCommentsNum(commentsCount);
+        return contentVO;
+    }
+
+    @Override
+    public void updateArticleHit(Long contentId, Integer contentHits) {
+        Integer hits = cache.hget("article", "hits");
+        if (contentHits == null) {
+            contentHits = 0;
+        }
+
+        hits = null == hits ? 1 : hits + 1;
+        if (hits >= WebConst.HIT_EXCEED) {
+            ContentPO temp = new ContentPO();
+            temp.setId(contentId);
+            temp.setHits(contentHits + hits);
+            updateContentByCid(temp);
+            cache.hset("article", "hits", 1);
+        } else {
+            cache.hset("article", "hits", hits);
+        }
     }
 }

@@ -29,7 +29,7 @@
                     dataType: 'json',
                     success: function (result) {
                         $('#comment-form input[name=coid]').val('');
-                        if (result && result.code == 'success') {
+                        if (result && result.code === 'success') {
                             alert("评论已提交至后台审核!");
                             window.location.reload();
                         } else {
@@ -43,6 +43,7 @@
             }
         };
     })();
+
     function getCommentCookie(name) {
         var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
         if (arr = document.cookie.match(reg))
@@ -50,11 +51,13 @@
         else
             return null;
     }
+
     function addCommentInputValue() {
         document.getElementById('author').value = getCommentCookie('tale_remember_author');
         document.getElementById('mail').value = getCommentCookie('tale_remember_mail');
         document.getElementById('url').value = getCommentCookie('tale_remember_url');
     }
+
     addCommentInputValue();
     /*]]>*/
 

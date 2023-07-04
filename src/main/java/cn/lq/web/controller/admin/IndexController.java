@@ -1,13 +1,13 @@
 package cn.lq.web.controller.admin;
 
-import cn.lq.common.constant.LogActions;
-import cn.lq.common.constant.WebConst;
-import cn.lq.common.dto.StatisticsDto;
+import cn.lq.common.domain.constant.LogActions;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.dto.StatisticsDto;
+import cn.lq.common.domain.po.CommentPO;
+import cn.lq.common.domain.po.LogPO;
+import cn.lq.common.domain.po.UserPO;
+import cn.lq.common.domain.vo.ContentVO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.CommentDomain;
-import cn.lq.common.model.ContentDomain;
-import cn.lq.common.model.LogDomain;
-import cn.lq.common.model.UserDomain;
 import cn.lq.common.utils.GsonUtils;
 import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
@@ -21,7 +21,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,12 +28,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
- * Created by winterchen on 2018/4/30.
+ * @author winterchen
+ * @date 2018/4/30
  */
 @Api("后台首页")
 @Controller("adminIndexController")
@@ -43,13 +44,13 @@ public class IndexController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
-    @Autowired
+    @Resource
     private SiteService siteService;
 
-    @Autowired
+    @Resource
     private LogService logService;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
 
@@ -57,12 +58,12 @@ public class IndexController extends BaseController {
     @GetMapping(value = {"", "/index"})
     public String index(HttpServletRequest request) {
         LOGGER.info("Enter admin index method");
-        List<CommentDomain> comments = siteService.getComments(5);
-        List<ContentDomain> contents = siteService.getNewArticles(5);
+        List<CommentPO> comments = siteService.getComments(5);
+        List<ContentVO> contents = siteService.getNewArticles(5);
         StatisticsDto statistics = siteService.getStatistics();
         // 取最新的20条日志
-        PageInfo<LogDomain> logs = logService.getLogs(1, 5);
-        List<LogDomain> list = logs.getList();
+        PageInfo<LogPO> logs = logService.getLogs(1, 5);
+        List<LogPO> list = logs.getList();
         request.setAttribute("comments", comments);
         request.setAttribute("articles", contents);
         request.setAttribute("statistics", statistics);
@@ -79,24 +80,23 @@ public class IndexController extends BaseController {
         return "admin/profile";
     }
 
-
     /**
      * 保存个人信息
      */
     @PostMapping(value = "/profile")
     @ResponseBody
-    public Response saveProfile(@RequestParam String screenName, @RequestParam String email, HttpServletRequest request, HttpSession session) {
-        UserDomain users = this.user(request);
+    public Response<?> saveProfile(@RequestParam String screenName, @RequestParam String email, HttpServletRequest request, HttpSession session) {
+        UserPO users = this.user(request);
         if (StringUtils.isNotBlank(screenName) && StringUtils.isNotBlank(email)) {
-            UserDomain temp = new UserDomain();
-            temp.setUid(users.getUid());
+            UserPO temp = new UserPO();
+            temp.setId(users.getId());
             temp.setScreenName(screenName);
             temp.setEmail(email);
             userService.updateUserInfo(temp);
             logService.addLog(LogActions.UP_INFO.getAction(), GsonUtils.toJsonString(temp), request.getRemoteAddr(), this.getUid(request));
 
             //更新session中的数据
-            UserDomain original = (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            UserPO original = (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
             original.setScreenName(screenName);
             original.setEmail(email);
             session.setAttribute(WebConst.LOGIN_SESSION_KEY, original);
@@ -109,8 +109,8 @@ public class IndexController extends BaseController {
      */
     @PostMapping(value = "/password")
     @ResponseBody
-    public Response upPwd(@RequestParam String oldPassword, @RequestParam String password, HttpServletRequest request, HttpSession session) {
-        UserDomain users = this.user(request);
+    public Response<?> upPwd(@RequestParam String oldPassword, @RequestParam String password, HttpServletRequest request, HttpSession session) {
+        UserPO users = this.user(request);
         if (StringUtils.isBlank(oldPassword) || StringUtils.isBlank(password)) {
             return Response.fail("请确认信息输入完整");
         }
@@ -118,20 +118,20 @@ public class IndexController extends BaseController {
         if (!users.getPassword().equals(TaleUtils.MD5encode(users.getUsername() + oldPassword))) {
             return Response.fail("旧密码错误");
         }
-        if (password.length() < 6 || password.length() > 14) {
-            return Response.fail("请输入6-14位密码");
+        if (password.length() < 6 || password.length() > 64) {
+            return Response.fail("请输入6-64位密码");
         }
 
         try {
-            UserDomain temp = new UserDomain();
-            temp.setUid(users.getUid());
+            UserPO temp = new UserPO();
+            temp.setId(users.getId());
             String pwd = TaleUtils.MD5encode(users.getUsername() + password);
             temp.setPassword(pwd);
             userService.updateUserInfo(temp);
             logService.addLog(LogActions.UP_PWD.getAction(), null, request.getRemoteAddr(), this.getUid(request));
 
             //更新session中的数据
-            UserDomain original = (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            UserPO original = (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
             original.setPassword(pwd);
             session.setAttribute(WebConst.LOGIN_SESSION_KEY, original);
             return Response.success();
@@ -145,6 +145,4 @@ public class IndexController extends BaseController {
             return Response.fail(msg);
         }
     }
-
-
 }

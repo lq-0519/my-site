@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lq.dao.AttachmentDao">
+
+    <!-- 所有字段的result map -->
+    <resultMap id="defaultResultMap" type="cn.lq.common.domain.po.AttachmentPO">
+        <result property="id" column="id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileType" column="file_type"/>
+        <result property="fileKey" column="file_key"/>
+        <result property="userId" column="user_id"/>
+        <result property="created" column="created"/>
+        <result property="modified" column="modified"/>
+        <result property="deleted" column="is_deleted"/>
+    </resultMap>
+
+    <resultMap id="attachmentUserResultMap" type="cn.lq.common.domain.po.AttachmentUserPO" extends="defaultResultMap">
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <!-- 所有字段 -->
+    <sql id="allColumns">
+        id, file_name, file_type, file_key, user_id, created, modified, is_deleted
+    </sql>
+
+    <!-- 除ID的字段 -->
+    <sql id="columnsNoId">
+        file_name, file_type, file_key, user_id, created, modified, is_deleted
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="dynamicWhere">
+        <where>
+            <if test="fileName != null">
+                AND a.file_name = #{fileName}
+            </if>
+            <choose>
+                <when test="deleted != null">
+                    AND a.is_deleted = #{deleted}
+                </when>
+                <otherwise>
+                    AND a.is_deleted = 0
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 新增单个附件 -->
+    <!--suppress SqlInsertValues -->
+    <insert id="insert" parameterType="cn.lq.common.domain.po.AttachmentPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO attachment (
+        <include refid="columnsNoId"/>
+        ) VALUES (#{fileName}, #{fileType}, #{fileKey}, #{userId}, now(), now(), 0)
+    </insert>
+
+    <!-- 删除附件 -->
+    <update id="delete" parameterType="long">
+        UPDATE attachment
+        SET is_deleted = 1,
+            modified   = now()
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 更新附件信息 -->
+    <update id="update" parameterType="cn.lq.common.domain.po.AttachmentPO">
+        UPDATE attachment
+        <set>
+            <if test="fileName != null">
+                file_name = #{fileName},
+            </if>
+            <if test="fileType != null">
+                file_type = #{fileType},
+            </if>
+            <if test="fileKey != null">
+                file_key = #{fileKey},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            modified = now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据主键获取附件信息 -->
+    <select id="queryAttachmentUserById" resultMap="attachmentUserResultMap">
+        SELECT
+        <include refid="allColumns"/>, username FROM attachment AS a LEFT JOIN `user` AS u ON a.user_id = u.id WHERE a.id = #{id}
+    </select>
+
+    <!-- 查找所有的附件 -->
+    <select id="queryAttachmentUserList" resultMap="attachmentUserResultMap" parameterType="cn.lq.common.domain.query.inner.AttachmentInnerQuery">
+        SELECT
+        <include refid="allColumns"/>, username FROM attachment AS a LEFT JOIN `user` AS u ON a.user_id = u.id
+        <include refid="dynamicWhere"/>
+        ORDER BY a.created DESC
+    </select>
+
+    <!-- 查找附件的数量 -->
+    <select id="queryForCount" resultType="java.lang.Integer" parameterType="cn.lq.common.domain.query.inner.AttachmentInnerQuery">
+        SELECT count(*) FROM attachment AS a
+        <include refid="dynamicWhere"/>
+    </select>
+
+</mapper>

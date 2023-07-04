@@ -1,37 +1,29 @@
 package cn.lq.dao;
 
-import cn.lq.common.model.LogDomain;
-import org.apache.ibatis.annotations.Mapper;
+import cn.lq.common.domain.po.LogPO;
+import cn.lq.common.domain.query.inner.LogInnerQuery;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 /**
- * Created by winterchen on 2018/4/29.
+ * @author winterchen
+ * @date 2018/4/29
  */
-@Mapper
 public interface LogDao {
 
     /**
      * 添加日志
-     *
-     * @param logDomain
-     * @return
      */
-    int addLog(LogDomain logDomain);
+    int insert(LogPO logPO);
 
     /**
      * 删除日志
-     *
-     * @param id
-     * @return
      */
-    int deleteLogById(@Param("id") Integer id);
+    int delete(@Param("id") Long id);
 
     /**
      * 获取日志
-     *
-     * @return
      */
-    List<LogDomain> getLogs();
+    List<LogPO> queryForList(LogInnerQuery logInnerQuery);
 }

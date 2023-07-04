@@ -45,8 +45,7 @@
                         <form id="articleForm" novalidate="novalidate" role="form">
                             <input id="categories" name="categories" type="hidden"/>
                             <input id="type" name="type" type="hidden"/>
-                            <input id="cid" name="cid"
-                                   th:value="${contents!=null and contents.cid!=null}?${contents.cid}: ''" type="hidden"/>
+                            <input id="cid" name="cid" th:value="${contents!=null and contents.id!=null}?${contents.id}: ''" type="hidden"/>
                             <input id="status" name="status"
                                    th:value="${contents!=null and contents.status !=null}?${contents.status}: 'publish'"
                                    type="hidden"/>
@@ -152,7 +151,7 @@
                                 <a class="btn btn-default waves-effect waves-light" th:href="@{/admin/article}">返回列表</a>
                                 <button class="btn btn-primary waves-effect waves-light" onclick="subArticle('publish');"
                                         type="button">
-                                    保存文章
+                                    发布文章
                                 </button>
                                 <button class="btn btn-warning waves-effect waves-light" onclick="subArticle('draft');"
                                         type="button">
@@ -169,13 +168,13 @@
 </div>
 <div th:replace="admin/footer :: footer"></div>
 <script type="text/javascript">
-    $(function() {
+    $(function () {
         editormd("my-editormd", {//注意1：这里的就是上面的DIV的id属性值
-            width   : "90%",
-            height  : 640,
-            syncScrolling : "single",
-            path    : "/admin/editormd/lib/",//注意2：你的路径
-            saveHTMLToTextarea : true,//注意3：这个配置，方便post提交表单
+            width: "90%",
+            height: 640,
+            syncScrolling: "single",
+            path: "/admin/editormd/lib/",//注意2：你的路径
+            saveHTMLToTextarea: true,//注意3：这个配置，方便post提交表单
             /**上传图片相关配置如下*/
             imageUpload: true,
             imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"], //图片上传格式

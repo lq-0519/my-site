@@ -1,16 +1,16 @@
 package cn.lq.service.comment.impl;
 
-import cn.lq.common.cond.CommentCond;
-import cn.lq.common.constant.ErrorConstant;
+import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.enums.CommentStatusEnum;
+import cn.lq.common.domain.po.CommentPO;
+import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.query.inner.CommentInnerQuery;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.CommentDomain;
-import cn.lq.common.model.ContentDomain;
-import cn.lq.common.utils.DateKit;
+import cn.lq.common.utils.PageUtils;
 import cn.lq.common.utils.TaleUtils;
-import cn.lq.dao.CommentDao;
+import cn.lq.manager.CommentManager;
 import cn.lq.service.comment.CommentService;
 import cn.lq.service.content.ContentService;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author winterchen
  * @date 2018/4/29
  */
-@Service
+@Service("commentService")
 public class CommentServiceImpl implements CommentService {
 
     private static final Map<String, String> STATUS_MAP = new ConcurrentHashMap<>();
@@ -43,7 +43,7 @@ public class CommentServiceImpl implements CommentService {
     private static final String STATUS_BLANK = "not_audit";
 
     @Resource
-    private CommentDao commentDao;
+    private CommentManager commentManager;
 
     @Resource
     private ContentService contentService;
@@ -56,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
-    public void addComment(CommentDomain comments) {
+    public void addComment(CommentPO comments) {
         String msg = null;
         if (null == comments) {
             msg = "评论对象为空";
@@ -74,29 +74,22 @@ public class CommentServiceImpl implements CommentService {
             if (comments.getContent().length() < 5 || comments.getContent().length() > 2000) {
                 msg = "评论字数在5-2000个字符";
             }
-            if (null == comments.getCid()) {
+            if (null == comments.getContentId()) {
                 msg = "评论文章不能为空";
             }
             if (msg != null) {
                 throw BusinessException.withErrorCode(msg);
             }
-            ContentDomain article = contentService.getArticleById(comments.getCid());
+            ContentPO article = contentService.getArticleById(comments.getContentId());
             if (null == article) {
                 throw BusinessException.withErrorCode("该文章不存在");
             }
+
             comments.setOwnerId(article.getAuthorId());
             comments.setStatus(STATUS_MAP.get(STATUS_BLANK));
-            comments.setCreated(DateKit.getCurrentUnixTime());
-            commentDao.addComment(comments);
+            commentManager.insert(comments);
 
-            ContentDomain temp = new ContentDomain();
-            temp.setCid(article.getCid());
-            Integer count = article.getCommentsNum();
-            if (null == count) {
-                count = 0;
-            }
-            temp.setCommentsNum(count + 1);
-            contentService.updateContentByCid(temp);
+            // TODO: liqian477 2023/6/27 更新评论数
         }
 
     }
@@ -104,75 +97,71 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
-    public void deleteComment(Integer coid) {
+    public void deleteComment(Long coid) {
         if (null == coid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
         // 如果删除的评论存在子评论，一并删除
         //查找当前评论是否有子评论
-        CommentCond commentCond = new CommentCond();
-        commentCond.setParent(coid);
-        CommentDomain comment = commentDao.getCommentById(coid);
-        List<CommentDomain> childComments = commentDao.getCommentsByCond(commentCond);
+        CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
+        commentInnerQuery.setParent(coid);
+        List<CommentPO> childComments = commentManager.queryForList(commentInnerQuery);
         Integer count = 0;
         //删除子评论
         if (null != childComments && childComments.size() > 0) {
-            for (CommentDomain childComment : childComments) {
-                commentDao.deleteComment(childComment.getCoid());
+            for (CommentPO childComment : childComments) {
+                commentManager.delete(childComment.getId());
                 count++;
             }
         }
         //删除当前评论
-        commentDao.deleteComment(coid);
+        commentManager.delete(coid);
         count++;
 
-        //更新当前文章的评论数
-        ContentDomain contentDomain = contentService.getArticleById(comment.getCid());
-        if (null != contentDomain
-                && null != contentDomain.getCommentsNum()
-                && contentDomain.getCommentsNum() != 0) {
-            contentDomain.setCommentsNum(contentDomain.getCommentsNum() - count);
-            contentService.updateContentByCid(contentDomain);
-        }
+        // TODO: liqian477 2023/6/27 更新评论数
     }
 
     @Override
     @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
-    public void updateCommentStatus(Integer coid, String status) {
-        if (null == coid) {
+    public void updateCommentStatus(Long commentId, String status) {
+        if (null == commentId) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        commentDao.updateCommentStatus(coid, status);
+        CommentPO commentPO = new CommentPO();
+        commentPO.setId(commentId);
+        commentPO.setStatus(status);
+        commentManager.update(commentPO);
     }
 
     @Override
     @Cacheable(value = "commentCache", key = "'commentById_' + #p0")
-    public CommentDomain getCommentById(Integer coid) {
+    public CommentPO getCommentById(Long coid) {
         if (null == coid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
 
-        return commentDao.getCommentById(coid);
+        return commentManager.queryForObject(coid);
     }
 
     @Override
     @Cacheable(value = "commentCache", key = "'commentsByCId_' + #p0")
-    public List<CommentDomain> getCommentsByCId(Integer cid) {
-        if (null == cid) {
+    public List<CommentPO> getCommentsByCId(Long contentId) {
+        if (null == contentId) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        return commentDao.getCommentsByCId(cid);
+        CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
+        commentInnerQuery.setContentId(contentId);
+        commentInnerQuery.setStatus(CommentStatusEnum.APPROVED.getStatus());
+        return commentManager.queryForList(commentInnerQuery);
     }
 
     @Override
     @Cacheable(value = "commentCache", key = "'commentsByCond_' + #p1")
-    public PageInfo<CommentDomain> getCommentsByCond(CommentCond commentCond, int pageNum, int pageSize) {
-        if (null == commentCond) {
+    public PageInfo<CommentPO> getCommentsByCond(CommentInnerQuery commentInnerQuery, int pageNum, int pageSize) {
+        if (null == commentInnerQuery) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        PageHelper.startPage(pageNum, pageSize);
-        List<CommentDomain> comments = commentDao.getCommentsByCond(commentCond);
-        PageInfo<CommentDomain> pageInfo = new PageInfo<>(comments);
-        return pageInfo;
+
+        return PageUtils.pack(pageNum, pageSize, () -> commentManager.queryForList(commentInnerQuery));
     }
 }

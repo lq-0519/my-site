@@ -83,12 +83,12 @@
             var url = $('#articleForm #cid').val() != '' ? '/admin/page/modify' : '/admin/page/publish';
 
             tale.post({
-                url:url,
-                data:params,
+                url: url,
+                data: params,
                 success: function (result) {
                     if (result && result.code == 'success') {
                         tale.alertOk({
-                            text:'页面保存成功',
+                            text: '页面保存成功',
                             then: function () {
                                 setTimeout(function () {
                                     window.location.href = '/admin/page';

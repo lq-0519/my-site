@@ -200,10 +200,10 @@
     function saveSetting() {
         var param = $('#global-form').serialize();
         tale.post({
-            url : '/admin/setting',
+            url: '/admin/setting',
             data: param,
             success: function (result) {
-                if(result && result.code == 'success'){
+                if (result && result.code == 'success') {
                     tale.alertOk('设置保存成功');
                 } else {
                     tale.alertError(result.msg || '设置保存失败');
@@ -218,10 +218,10 @@
     function saveIndiviSetting() {
         var param = $('#indivi-form').serialize();
         tale.post({
-            url : '/admin/setting',
+            url: '/admin/setting',
             data: param,
             success: function (result) {
-                if(result && result.code == 'success'){
+                if (result && result.code == 'success') {
                     tale.alertOk('设置保存成功');
                 } else {
                     tale.alertError(result.msg || '设置保存失败');
@@ -229,6 +229,7 @@
             }
         });
     }
+
     /**
      * 设置是否允许重新安装
      */
@@ -254,16 +255,16 @@
             bk_path: $('#backup_dir').val()
         };
         tale.post({
-            url : '/admin/setting/backup',
+            url: '/admin/setting/backup',
             data: param,
             success: function (result) {
-                if(result && result.code == 'success'){
-                    if(result.payload && result.payload.attach_path){
-                        swal('备份成功', '您的附件备份在 <mark>'+ result.payload.attach_path +'</mark><br/><br/>' +
-                            '主题备份存储在 <mark>'+ result.payload.theme_path +'</mark>', 'success');
+                if (result && result.code == 'success') {
+                    if (result.payload && result.payload.attach_path) {
+                        swal('备份成功', '您的附件备份在 <mark>' + result.payload.attach_path + '</mark><br/><br/>' +
+                            '主题备份存储在 <mark>' + result.payload.theme_path + '</mark>', 'success');
                         $('#backup_dir').val('');
                     }
-                    if(result.payload.sql_path){
+                    if (result.payload.sql_path) {
                         window.location.href = '/upload/' + result.payload.sql_path;
                     }
                 } else {

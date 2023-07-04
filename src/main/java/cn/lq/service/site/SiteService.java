@@ -1,75 +1,51 @@
 package cn.lq.service.site;
 
-import cn.lq.common.cond.ContentCond;
-import cn.lq.common.dto.ArchiveDto;
-import cn.lq.common.dto.MetaDto;
-import cn.lq.common.dto.StatisticsDto;
-import cn.lq.common.model.CommentDomain;
-import cn.lq.common.model.ContentDomain;
+import cn.lq.common.domain.dto.ArchiveDto;
+import cn.lq.common.domain.dto.StatisticsDto;
+import cn.lq.common.domain.po.CommentPO;
+import cn.lq.common.domain.po.MetaExtendPO;
+import cn.lq.common.domain.query.inner.ContentInnerQuery;
+import cn.lq.common.domain.vo.ContentVO;
 
 import java.util.List;
 
 /**
  * 站点服务
- * Created by winterchen on 2018/4/30.
+ *
+ * @author winterchen
+ * @date 2018/4/30
  */
 public interface SiteService {
 
     /**
      * 获取评论列表
-     *
-     * @param limit
-     * @return
      */
-    List<CommentDomain> getComments(int limit);
+    List<CommentPO> getComments(int limit);
 
     /**
      * 获取最新的文章
-     *
-     * @param limit
-     * @return
      */
-    List<ContentDomain> getNewArticles(int limit);
+    List<ContentVO> getNewArticles(int limit);
 
     /**
      * 获取单条评论
-     *
-     * @param coid
-     * @return
      */
-    CommentDomain getComment(Integer coid);
+    CommentPO getComment(Long id);
 
     /**
      * 获取 后台统计数据
-     *
-     * @return
      */
     StatisticsDto getStatistics();
 
     /**
-     * 获取归档列表 - 只是获取日期和数量
-     *
-     * @param contentCond
-     * @return
-     */
-    List<ArchiveDto> getArchivesSimple(ContentCond contentCond);
-
-    /**
      * 获取归档列表
      *
-     * @param contentCond 查询条件（只包含开始时间和结束时间）
-     * @return
+     * @param contentInnerQuery 查询条件（只包含开始时间和结束时间）
      */
-    List<ArchiveDto> getArchives(ContentCond contentCond);
-
+    List<ArchiveDto> getArchives(ContentInnerQuery contentInnerQuery);
 
     /**
      * 获取分类/标签列表
-     *
-     * @param type
-     * @param orderBy
-     * @param limit
-     * @return
      */
-    List<MetaDto> getMetas(String type, String orderBy, int limit);
+    List<MetaExtendPO> getMetas(String type, String orderBy, int limit);
 }

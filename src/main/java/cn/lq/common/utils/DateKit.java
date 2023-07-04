@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,9 +25,9 @@ public class DateKit {
     public static final int INTERVAL_HOUR = 5;
     public static final int INTERVAL_MINUTE = 6;
     public static final int INTERVAL_SECOND = 7;
-    public static final Date tempDate = new Date((new Long("-2177481952000")).longValue());
+    public static final Date TEMP_DATE = new Date(new Long("-2177481952000"));
     private static final Logger LOGGER = LoggerFactory.getLogger(DateKit.class);
-    private static List<SimpleDateFormat> dateFormats = new ArrayList(12) {
+    private static final List<SimpleDateFormat> dateFormats = new ArrayList(12) {
         private static final long serialVersionUID = 2249396579858199535L;
 
         {
@@ -54,8 +53,8 @@ public class DateKit {
 
     public static boolean isToday(Date date) {
         Date now = new Date();
-        boolean result = true;
-        result &= date.getYear() == now.getYear();
+        boolean result;
+        result = date.getYear() == now.getYear();
         result &= date.getMonth() == now.getMonth();
         result &= date.getDate() == now.getDate();
         return result;
@@ -66,8 +65,7 @@ public class DateKit {
             date2 = new Date();
         }
 
-        long day = (date2.getTime() - date1.getTime()) / 86400000L;
-        return day;
+        return (date2.getTime() - date1.getTime()) / 86400000L;
     }
 
     public static boolean compareDate(String date1, String date2) {
@@ -104,9 +102,7 @@ public class DateKit {
     public static String dateFormat(Date date, String dateFormat) {
         if (date != null) {
             SimpleDateFormat format = new SimpleDateFormat(dateFormat);
-            if (date != null) {
-                return format.format(date);
-            }
+            return format.format(date);
         }
 
         return "";
@@ -116,15 +112,13 @@ public class DateKit {
     public static String birthdayFormat(Date date) {
         if (date != null) {
             SimpleDateFormat format = null;
-            if (date.before(tempDate)) {
+            if (date.before(TEMP_DATE)) {
                 format = new SimpleDateFormat("MM-dd");
             } else {
                 format = new SimpleDateFormat("yyyy-MM-dd");
             }
 
-            if (date != null) {
-                return format.format(date);
-            }
+            return format.format(date);
         }
 
         return "";
@@ -171,7 +165,7 @@ public class DateKit {
 
     public static String getDaysAgo(int interval) {
         Date date = new Date();
-        long time = date.getTime() / 1000L - (long) (interval * 60 * 60 * 24);
+        long time = date.getTime() / 1000L - ((long) interval * 60 * 60 * 24);
         date.setTime(time * 1000L);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -213,11 +207,11 @@ public class DateKit {
 
     public static Date getThisWeekStartTime() {
         Calendar today = Calendar.getInstance();
-        today.set(7, today.getFirstDayOfWeek());
+        today.set(Calendar.DAY_OF_WEEK, today.getFirstDayOfWeek());
         Calendar weekFirstDay = Calendar.getInstance();
         weekFirstDay.clear();
-        weekFirstDay.set(1, today.get(1));
-        weekFirstDay.set(2, today.get(2));
+        weekFirstDay.set(Calendar.YEAR, today.get(1));
+        weekFirstDay.set(Calendar.MONTH, today.get(Calendar.MONTH));
         weekFirstDay.set(5, today.get(5));
         return weekFirstDay.getTime();
     }
@@ -229,8 +223,7 @@ public class DateKit {
             Date today = new Date();
             SimpleDateFormat simpleFormat = new SimpleDateFormat(format);
             result = simpleFormat.format(today);
-        } catch (Exception var4) {
-            ;
+        } catch (Exception ignored) {
         }
 
         return result;
@@ -261,25 +254,28 @@ public class DateKit {
         long time = date.getTime() / 1000L;
         switch (interval) {
             case 1:
-                time += (long) (n * 86400);
+                time += n * 86400L;
                 break;
             case 2:
-                time += (long) (n * 604800);
+                time += n * 604800L;
                 break;
             case 3:
-                time += (long) (n * 2678400);
+                time += n * 2678400L;
                 break;
             case 4:
-                time += (long) (n * 31536000);
+                time += n * 31536000L;
                 break;
             case 5:
-                time += (long) (n * 3600);
+                time += n * 3600L;
                 break;
             case 6:
-                time += (long) (n * 60);
+                time += n * 60L;
                 break;
             case 7:
-                time += (long) n;
+                time += n;
+                break;
+            default:
+                break;
         }
 
         Date result = new Date();
@@ -410,15 +406,15 @@ public class DateKit {
     }
 
     public static String getTime(int format) {
-        StringBuffer cTime = new StringBuffer(10);
+        StringBuilder cTime = new StringBuilder(10);
         Calendar time = Calendar.getInstance();
-        int miltime = time.get(14);
-        int second = time.get(13);
-        int minute = time.get(12);
-        int hour = time.get(11);
-        int day = time.get(5);
-        int month = time.get(2) + 1;
-        int year = time.get(1);
+        int miltime = time.get(Calendar.MILLISECOND);
+        int second = time.get(Calendar.SECOND);
+        int minute = time.get(Calendar.MINUTE);
+        int hour = time.get(Calendar.HOUR_OF_DAY);
+        int day = time.get(Calendar.DATE);
+        int month = time.get(Calendar.MONTH) + 1;
+        int year = time.get(Calendar.YEAR);
         if (format != 14) {
             if (year >= 2000) {
                 year -= 2000;
@@ -619,14 +615,13 @@ public class DateKit {
 
     public static String getStringNowTime() {
         Date date = new Date();
-        String dateStr = dateFormat(date);
-        return dateStr;
+        return dateFormat(date);
     }
 
     public static long getSpecifyTimeSec(long time, int range) {
         Date date = new Date((time * 1000L + 28800000L) / 86400000L * 86400000L - 28800000L);
         long zeroTime = date.getTime() / 1000L;
-        long specifyTime = (long) (range * 24 * 3600);
+        long specifyTime = (long) range * 24 * 3600;
         return zeroTime + specifyTime;
     }
 
@@ -639,16 +634,12 @@ public class DateKit {
         if (null == input) {
             return null;
         } else {
-            Iterator var2 = dateFormats.iterator();
 
-            while (var2.hasNext()) {
-                SimpleDateFormat format = (SimpleDateFormat) var2.next();
-
+            for (SimpleDateFormat format : dateFormats) {
                 try {
                     format.setLenient(false);
                     date = format.parse(input);
-                } catch (ParseException var5) {
-                    ;
+                } catch (ParseException ignored) {
                 }
 
                 if (date != null) {
@@ -662,25 +653,25 @@ public class DateKit {
 
     public static Long getTodayTime() {
         Calendar today = Calendar.getInstance();
-        today.set(11, 0);
-        today.set(12, 0);
-        today.set(13, 0);
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
         return Long.valueOf(String.valueOf(today.getTimeInMillis()).substring(0, 10));
     }
 
     public static Long getYesterdayTime() {
         Calendar today = Calendar.getInstance();
-        today.set(11, -24);
-        today.set(12, 0);
-        today.set(13, 0);
+        today.set(Calendar.HOUR_OF_DAY, -24);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
         return Long.valueOf(String.valueOf(today.getTimeInMillis()).substring(0, 10));
     }
 
     public static Long getTomorrowTime() {
         Calendar tomorrow = Calendar.getInstance();
-        tomorrow.set(11, 24);
-        tomorrow.set(12, 0);
-        tomorrow.set(13, 0);
+        tomorrow.set(Calendar.HOUR_OF_DAY, 24);
+        tomorrow.set(Calendar.MINUTE, 0);
+        tomorrow.set(Calendar.SECOND, 0);
         return Long.valueOf(String.valueOf(tomorrow.getTimeInMillis()).substring(0, 10));
     }
 

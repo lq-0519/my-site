@@ -1,99 +1,64 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!--suppress HtmlUnknownTag, CheckTagEmptyBody -->
 <html lang="en" th:fragment="comments" xmlns:th="http://www.thymeleaf.org">
 <body>
 
 <div class="comment-allow" th:if="${article.allowComment}">
     <div id="comments-content" th:if="${article}!=null">
-        <div class="comments-pan" th:id="${article.cid ?: 0}">
+        <div class="comments-pan" th:id="${article.id ?: 0}">
 
             <h3>
                 <th:block th:text="${article.commentsNum ?: 0}"></th:block>
-                Comments
+                条评论
             </h3>
 
             <ul class="comments-reply" th:if="${comments}">
                 <th:block th:each="comment :${comments}">
-                    <li th:id="'li-comment-'+${comment.coid}">
+                    <li th:id="'li-comment-'+${comment.id}">
 
-                        <figure th:id="'comment-'+${comment.coid}">
-
-                            <img alt="" class="img-responsive"
-                                 th:src="@{${commons.gravatar(comment.mail)}(s='80',r='G',d='')}"/>
-
+                        <figure th:id="'comment-'+${comment.id}">
+                            <!--suppress RequiredAttributes -->
+                            <img alt="" class="img-responsive" th:src="@{${commons.gravatar(comment.mail)}(s='80',r='G',d='')}"/>
                         </figure>
 
                         <section>
-
-                            <h4><a target="blank" th:href="${comment.url}" th:text="${comment.author}"></a></h4>
-
+                            <h4 th:text="${comment.author}"></h4>
                             <div class="date-pan">
                                 <th:block th:text="${commons.fmtdate(comment.created)}"></th:block>
                             </div>
-
                             <th:block th:utext="${commons.article(comment.content)}"></th:block>
-
                         </section>
-
 
                     </li>
                 </th:block>
 
-
             </ul>
             <div class="commentys-form">
-
-                <h4>Leave a comment</h4>
-
-
+                <h4>留下你的评论~</h4>
                 <div class="row">
-
-                    <form class="comment-form" id="comment-form" onsubmit="return TaleComment.subComment();"
-                          role="form">
-
-                        <input id="coid" name="coid" type="hidden"/>
-                        <input id="cid" name="cid" th:value="${article.cid}" type="hidden"/>
+                    <form class="comment-form" id="comment-form" onsubmit="return TaleComment.subComment();" role="form">
+                        <input id="coid" name="coid" type="hidden"/> <input id="cid" name="cid" th:value="${article.id}" type="hidden"/>
                         <input name="_csrf_token" th:value="${_csrf_token}" type="hidden"/>
                         <div class="col-xs-12 col-sm-4 col-md-4">
+                            <!--suppress HtmlFormInputWithoutLabel -->
                             <input id="author" maxlength="12" name="author" placeholder="姓名 (*)" type="text"/>
                         </div>
-
                         <div class="col-xs-12 col-sm-4 col-md-4">
-
-                            <input id="mail" name="mail" placeholder="邮箱 (*)"
-                                   type="email"
-                            />
-
-                        </div>
-
-                        <div class="col-xs-12 col-sm-4 col-md-4">
-
-                            <input id="url" name="url" placeholder="网址 (http://)"
-                                   type="url"
-                            />
-
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <input id="mail" name="mail" placeholder="邮箱 (*)" type="email"/>
                         </div>
 
                         <div class="clearfix"></div>
 
                         <div class="col-xs-12 col-sm-12 col-md-12">
-
-                                <textarea id="textarea" maxlength="2000" minlength="5"
-                                          name="text" placeholder="以上信息可以为空,评论不能为空哦!"
-                                          required="required"></textarea>
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <textarea id="textarea" maxlength="2000" minlength="1" name="text" placeholder="以上信息可以为空,评论不能为空哦!" required="required"></textarea>
                         </div>
 
                         <div class="text-center">
-
                             <input id="misubmit" type="submit" value="Post Comment"/>
-
                         </div>
-
-
                     </form>
-
                 </div>
-
-
             </div>
         </div>
     </div>

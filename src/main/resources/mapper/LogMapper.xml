@@ -2,45 +2,68 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.lq.dao.LogDao">
 
-    <sql id="BASE_TABLE">
-        t_logs
+    <!-- 所有字段的result map -->
+    <resultMap id="defaultResultMap" type="cn.lq.common.domain.po.LogPO">
+        <result property="id" column="id"/>
+        <result property="action" column="action"/>
+        <result property="data" column="data"/>
+        <result property="userId" column="user_id"/>
+        <result property="ip" column="ip"/>
+        <result property="created" column="created"/>
+        <result property="modified" column="modified"/>
+        <result property="deleted" column="is_deleted"/>
+    </resultMap>
+
+    <!-- 所有字段 -->
+    <sql id="allColumns">
+        id, action, data, user_id, ip, created, modified, is_deleted
     </sql>
 
-    <!-- 基本列 -->
-    <sql id="BASE_COLUMN">
-        l.id, l.action, l.data, l.authorId, l.ip, l.created
+    <!-- 除ID的字段 -->
+    <sql id="columnsNoId">
+        action, data, user_id, ip, created, modified, is_deleted
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="dynamicWhere">
+        <where>
+            <if test="action != null">
+                AND action = #{action}
+            </if>
+            <choose>
+                <when test="deleted != null">
+                    AND is_deleted = #{deleted}
+                </when>
+                <otherwise>
+                    AND is_deleted = 0
+                </otherwise>
+            </choose>
+        </where>
     </sql>
 
     <!-- 新增日志记录 -->
-    <insert id="addLog" parameterType="cn.lq.common.model.LogDomain">
-        INSERT INTO
-        <include refid="BASE_TABLE"/>
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            action, data, authorId, ip, created,
-        </trim>
-        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-            #{action, jdbcType=VARCHAR}, #{data, jdbcType=VARCHAR},
-            #{authorId, jdbcType=INTEGER}, #{ip, jdbcType=VARCHAR}, UNIX_TIMESTAMP(NOW()),
-        </trim>
+    <!--suppress SqlInsertValues -->
+    <insert id="insert" parameterType="cn.lq.common.domain.po.LogPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO log (
+        <include refid="columnsNoId"/>
+        ) VALUES (#{action}, #{data}, #{userId}, #{ip}, now(), now(), 0)
     </insert>
 
-
     <!-- 删除日志 -->
-    <delete id="deleteLogById">
-        DELETE FROM
-        <include refid="BASE_TABLE"/>
-        WHERE id = #{id, jdbcType=INTEGER}
-    </delete>
+    <update id="delete" parameterType="long">
+        UPDATE log
+        SET is_deleted = 1,
+            modified   = now()
+        WHERE ID = #{id}
+    </update>
 
     <!-- 查找日志 -->
-    <select id="getLogs" resultType="cn.lq.common.model.LogDomain">
+    <select id="queryForList" resultMap="defaultResultMap" parameterType="cn.lq.common.domain.query.inner.LogInnerQuery">
         SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        AS l
-        ORDER BY l.id DESC
+        <include refid="allColumns"/>
+        FROM log
+        <include refid="dynamicWhere"/>
+        ORDER BY created DESC
     </select>
-
 
 </mapper>

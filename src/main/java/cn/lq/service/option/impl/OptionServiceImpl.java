@@ -1,9 +1,10 @@
 package cn.lq.service.option.impl;
 
-import cn.lq.common.constant.ErrorConstant;
+import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.po.ConfigPO;
+import cn.lq.common.domain.query.inner.ConfigInnerQuery;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.OptionsDomain;
-import cn.lq.dao.OptionDao;
+import cn.lq.manager.ConfigManager;
 import cn.lq.service.option.OptionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,30 +26,20 @@ import java.util.Map;
 public class OptionServiceImpl implements OptionService {
 
     @Resource
-    private OptionDao optionDao;
-
-    @Override
-    @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
-    public void deleteOptionByName(String name) {
-        if (StringUtils.isBlank(name)) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        }
-        optionDao.deleteOptionByName(name);
-
-    }
+    private ConfigManager configManager;
 
     @Override
     @Transactional
     @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
-    public void updateOptionByName(String name, String value) {
-        if (StringUtils.isBlank(name)) {
+    public void updateOptionByCode(String code, String value) {
+        if (StringUtils.isBlank(code)) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        OptionsDomain option = new OptionsDomain();
-        option.setName(name);
+        ConfigPO option = new ConfigPO();
         option.setValue(value);
-        optionDao.updateOptionByName(option);
-
+        ConfigInnerQuery configInnerQuery = new ConfigInnerQuery();
+        configInnerQuery.setCode(code);
+        configManager.updateByQuery(option, configInnerQuery);
     }
 
     @Override
@@ -56,21 +47,23 @@ public class OptionServiceImpl implements OptionService {
     @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
     public void saveOptions(Map<String, String> options) {
         if (null != options && !options.isEmpty()) {
-            options.forEach(this::updateOptionByName);
+            options.forEach(this::updateOptionByCode);
         }
     }
 
     @Override
-    @Cacheable(value = "optionCache", key = "'optionByName_' + #p0")
-    public OptionsDomain getOptionByName(String name) {
-        if (StringUtils.isBlank(name))
+    @Cacheable(value = "optionCache", key = "'optionByCode_' + #p0")
+    public ConfigPO getOptionByCode(String code) {
+        if (StringUtils.isBlank(code)) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        return optionDao.getOptionByName(name);
+        }
+
+        return configManager.getConfigByCode(code);
     }
 
     @Override
     @Cacheable(value = "optionsCache", key = "'options_'")
-    public List<OptionsDomain> getOptions() {
-        return optionDao.getOptions();
+    public List<ConfigPO> getOptions() {
+        return configManager.queryForList(new ConfigInnerQuery());
     }
 }

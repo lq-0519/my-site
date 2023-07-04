@@ -1,30 +1,24 @@
 <!DOCTYPE html>
-<html lang="en" th:fragment="header"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:fragment="header" xmlns:th="http://www.thymeleaf.org">
 <header role="header">
     <div class="container">
 
         <!-- logo -->
-
-        <h1><a th:href="@{/}" title="avana LLC"><img
-                alt="avana LLC" style="width: 66px;"
-                th:src="@{https://cdn.jsdelivr.net/gh/WinterChenS/imgrpo/blog/20210816112027.png}" title="avana LLC"/></a>
+        <h1>
+            <a th:href="@{/}" title="壹仟的博客网站">
+                <!--suppress RequiredAttributes -->
+                <img alt="壹仟的博客网站" style="width: 66px;" th:src="@{/site/images/logo.png}" title="壹仟的博客网站"/> </a>
         </h1>
-
         <!-- logo -->
 
         <!-- nav -->
-
         <nav class="navy" role="header-nav">
             <ul>
-                <li th:class="${active == 'work' ? 'nav-active':''}"><a th:href="@{/}" title="Work">Work</a></li>
-                <li th:class="${active == 'about' ? 'nav-active':''}"><a th:href="@{/about}" title="About">About</a>
-                </li>
-                <li th:class="${active == 'blog' ? 'nav-active':''}"><a th:href="@{/blog/index}" title="Blog">Blog</a>
-                </li>
+                <li th:class="${active == 'blog' ? 'nav-active':''}"><a th:href="@{/}" title="Blog">Blog</a></li>
+                <li th:class="${active == 'work' ? 'nav-active':''}"><a th:href="@{/work/index}" title="Work">Work</a></li>
+                <li th:class="${active == 'about' ? 'nav-active':''}"><a th:href="@{/about}" title="About">About</a></li>
             </ul>
         </nav>
-
         <!-- nav -->
 
     </div>

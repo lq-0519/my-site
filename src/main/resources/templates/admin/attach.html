@@ -78,19 +78,13 @@
                         <th:block th:unless="${commons.is_empty(attachs)}">
                             <th:block th:each="attach : ${attachs.list}">
                                 <div class="col-md-2 text-center m-t-10">
-                                    <a target="_blank" th:href="${attach.fkey}">
-                                        <img class="attach-img"
-                                             th:src="@{${attach.ftype == 'image'}?${attach.fkey}: '/admin/images/attach.png'}"
-                                             th:title="${attach.fname}"/>
-                                    </a>
+                                    <a target="_blank" th:href="${attach.fileKey}">
+                                        <img class="attach-img" th:src="@{${attach.fileType == 'image'}?${attach.fileKey}: '/admin/images/attach.png'}" th:title="${attach.fileName}"/> </a>
                                     <div class="clearfix m-t-10">
-                <span class="attach-text" data-placement="top" data-toggle="tooltip"
-                      th:attr="data-original-title=${attach.fname}"
-                      th:text="${commons.substr(attach.fname, 12)}"></span>
+                <span class="attach-text" data-placement="top" data-toggle="tooltip" th:attr="data-original-title=${attach.fileName}" th:text="${commons.substr(attach.fileName, 12)}"></span>
                                     </div>
                                     <div class="clearfix">
-                                        <button class="btn btn-warning btn-sm waves-effect waves-light m-t-5 copy" th:attr="url=${attach.fkey}"
-                                                type="button">
+                                        <button class="btn btn-warning btn-sm waves-effect waves-light m-t-5 copy" th:attr="url=${attach.fileKey}" type="button">
                                             <i class="fa fa-copy"></i> <span>复制</span>
                                         </button>
                                         <button class="btn btn-danger btn-sm waves-effect waves-light m-t-5"
@@ -163,6 +157,7 @@
             }
         });
     }
+
     /*]]>*/
 
 </script>

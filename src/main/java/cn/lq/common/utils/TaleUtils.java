@@ -1,10 +1,11 @@
 package cn.lq.common.utils;
 
-import cn.lq.common.constant.WebConst;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.UserDomain;
-import cn.lq.web.controller.admin.AttAchController;
+import cn.lq.web.controller.admin.AttachmentController;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.node.Node;
@@ -31,6 +32,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,33 +44,27 @@ public class TaleUtils {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaleUtils.class);
-
-    /**
-     * 一个月
-     */
-    private static final int one_month = 30 * 24 * 60 * 60;
     /**
      * 匹配邮箱正则
      */
     private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern SLUG_REGEX = Pattern.compile("^[A-Za-z0-9_-]{5,100}$", Pattern.CASE_INSENSITIVE);
-    // 使用双重检查锁的单例方式需要添加 volatile 关键字
-    private static volatile DataSource newDataSource;
     /**
      * markdown解析器
      */
-    private static Parser parser = Parser.builder().build();
+    private static final Parser parser = Parser.builder().build();
     /**
      * 获取文件所在目录
      */
-    private static String location = TaleUtils.class.getClassLoader().getResource("").getPath();
+    private static final String location = Objects.requireNonNull(TaleUtils.class.getClassLoader().getResource("")).getPath();
+    /**
+     * 使用双重检查锁的单例方式需要添加 volatile 关键字
+     */
+    private static volatile DataSource newDataSource;
 
     /**
      * 判断是否是邮箱
-     *
-     * @param emailStr
-     * @return
      */
     public static boolean isEmail(String emailStr) {
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
@@ -120,23 +116,23 @@ public class TaleUtils {
 
     /**
      * 获取新的数据源
-     *
-     * @return
      */
     public static DataSource getNewDataSource() {
-        if (newDataSource == null) synchronized (TaleUtils.class) {
-            if (newDataSource == null) {
-                Properties properties = TaleUtils.getPropFromFile("application-default.properties");
-                if (properties.size() == 0) {
-                    return newDataSource;
+        if (newDataSource == null) {
+            synchronized (TaleUtils.class) {
+                if (newDataSource == null) {
+                    Properties properties = TaleUtils.getPropFromFile("application-default.properties");
+                    if (properties.size() == 0) {
+                        return newDataSource;
+                    }
+                    DriverManagerDataSource managerDataSource = new DriverManagerDataSource();
+                    managerDataSource.setDriverClassName("com.mysql.jdbc.Driver");
+                    managerDataSource.setPassword(properties.getProperty("spring.datasource.password"));
+                    String str = "jdbc:mysql://" + properties.getProperty("spring.datasource.url") + "/" + properties.getProperty("spring.datasource.dbname") + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+                    managerDataSource.setUrl(str);
+                    managerDataSource.setUsername(properties.getProperty("spring.datasource.username"));
+                    newDataSource = managerDataSource;
                 }
-                DriverManagerDataSource managerDataSource = new DriverManagerDataSource();
-                managerDataSource.setDriverClassName("com.mysql.jdbc.Driver");
-                managerDataSource.setPassword(properties.getProperty("spring.datasource.password"));
-                String str = "jdbc:mysql://" + properties.getProperty("spring.datasource.url") + "/" + properties.getProperty("spring.datasource.dbname") + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-                managerDataSource.setUrl(str);
-                managerDataSource.setUsername(properties.getProperty("spring.datasource.username"));
-                newDataSource = managerDataSource;
             }
         }
         return newDataSource;
@@ -144,31 +140,26 @@ public class TaleUtils {
 
     /**
      * 返回当前登录用户
-     *
-     * @return
      */
-    public static UserDomain getLoginUser(HttpServletRequest request) {
+    public static UserPO getLoginUser(HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (null == session) {
             return null;
         }
-        return (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+        return (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
     }
 
 
     /**
      * 获取cookie中的用户id
-     *
-     * @param request
-     * @return
      */
-    public static Integer getCookieUid(HttpServletRequest request) {
+    public static Long getCookieUid(HttpServletRequest request) {
         if (null != request) {
             Cookie cookie = cookieRaw(WebConst.USER_IN_COOKIE, request);
             if (cookie != null && cookie.getValue() != null) {
                 try {
                     String uid = Tools.deAes(cookie.getValue(), WebConst.AES_SALT);
-                    return StringUtils.isNotBlank(uid) && Tools.isNumber(uid) ? Integer.valueOf(uid) : null;
+                    return StringUtils.isNotBlank(uid) && NumberUtils.isNumber(uid) ? Long.valueOf(uid) : null;
                 } catch (Exception e) {
                 }
             }
@@ -198,11 +189,8 @@ public class TaleUtils {
 
     /**
      * 设置记住密码cookie
-     *
-     * @param response
-     * @param uid
      */
-    public static void setCookie(HttpServletResponse response, Integer uid) {
+    public static void setCookie(HttpServletResponse response, Long uid) {
         try {
             String val = Tools.enAes(uid.toString(), WebConst.AES_SALT);
             boolean isSSL = false;
@@ -218,9 +206,6 @@ public class TaleUtils {
 
     /**
      * 提取html中的文字
-     *
-     * @param html
-     * @return
      */
     public static String htmlToText(String html) {
         if (StringUtils.isNotBlank(html)) {
@@ -231,9 +216,6 @@ public class TaleUtils {
 
     /**
      * markdown转换为html
-     *
-     * @param markdown
-     * @return
      */
     public static String mdToHtml(String markdown) {
         if (StringUtils.isBlank(markdown)) {
@@ -250,9 +232,6 @@ public class TaleUtils {
 
     /**
      * 退出登录状态
-     *
-     * @param session
-     * @param response
      */
     public static void logout(HttpSession session, HttpServletResponse response) {
         session.removeAttribute(WebConst.LOGIN_SESSION_KEY);
@@ -275,7 +254,7 @@ public class TaleUtils {
         value = value.replaceAll("\\(", "&#40;").replaceAll("\\)", "&#41;");
         value = value.replaceAll("'", "&#39;");
         value = value.replaceAll("eval\\((.*)\\)", "");
-        value = value.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
+        value = value.replaceAll("[\"'][\\s]*javascript:(.*)[\"']", "\"\"");
         value = value.replaceAll("script", "");
         return value;
     }
@@ -295,10 +274,10 @@ public class TaleUtils {
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Avoid anything in a src='...' type of expression
-            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*\\\'(.*?)\\\'", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*'(.*?)'", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
-            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+            scriptPattern = Pattern.compile("src[\r\n]*=[\r\n]*\"(.*?)\"", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             cleanValue = scriptPattern.matcher(cleanValue).replaceAll("");
 
             // Remove any lonesome </script> tag
@@ -334,9 +313,6 @@ public class TaleUtils {
 
     /**
      * 判断是否是合法路径
-     *
-     * @param slug
-     * @return
      */
     public static boolean isPath(String slug) {
         if (StringUtils.isNotBlank(slug)) {
@@ -352,17 +328,11 @@ public class TaleUtils {
 
     /**
      * 判断文件是否是图片类型
-     *
-     * @param imageFile
-     * @return
      */
     public static boolean isImage(InputStream imageFile) {
         try {
             Image img = ImageIO.read(imageFile);
-            if (img == null || img.getWidth(null) <= 0 || img.getHeight(null) <= 0) {
-                return false;
-            }
-            return true;
+            return img != null && img.getWidth(null) > 0 && img.getHeight(null) > 0;
         } catch (Exception e) {
             return false;
         }
@@ -370,31 +340,26 @@ public class TaleUtils {
 
     /**
      * 随机数
-     *
-     * @param size
-     * @return
      */
     public static String getRandomNumber(int size) {
-        String num = "";
+        StringBuilder num = new StringBuilder();
 
         for (int i = 0; i < size; ++i) {
             double a = Math.random() * 9.0D;
             a = Math.ceil(a);
             int randomNum = (new Double(a)).intValue();
-            num = num + randomNum;
+            num.append(randomNum);
         }
 
-        return num;
+        return num.toString();
     }
 
     /**
      * 获取保存文件的位置,jar所在目录的路径
-     *
-     * @return
      */
     public static String getUplodFilePath() {
         String path = TaleUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        path = path.substring(1, path.length());
+        path = path.substring(1);
         try {
             path = java.net.URLDecoder.decode(path, "utf-8");
         } catch (UnsupportedEncodingException e) {
@@ -408,8 +373,8 @@ public class TaleUtils {
 
     public static String getFileKey(String name) {
         String prefix = "/upload/" + DateKit.dateFormat(new Date(), "yyyy/MM");
-        if (!new File(AttAchController.CLASSPATH + prefix).exists()) {
-            new File(AttAchController.CLASSPATH + prefix).mkdirs();
+        if (!new File(AttachmentController.CLASSPATH + prefix).exists()) {
+            new File(AttachmentController.CLASSPATH + prefix).mkdirs();
         }
 
         name = StringUtils.trimToNull(name);
@@ -423,7 +388,7 @@ public class TaleUtils {
             if (index >= 0) {
                 ext = StringUtils.trimToNull(name.substring(index + 1));
             }
-            return prefix + "/" + UUID.UU32() + "." + (ext == null ? null : (ext));
+            return prefix + "/" + UUID.UU32() + "." + ext;
         }
     }
 }

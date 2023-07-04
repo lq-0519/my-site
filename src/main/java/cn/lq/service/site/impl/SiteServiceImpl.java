@@ -1,30 +1,36 @@
 package cn.lq.service.site.impl;
 
-import cn.lq.common.cond.CommentCond;
-import cn.lq.common.cond.ContentCond;
-import cn.lq.common.constant.ErrorConstant;
-import cn.lq.common.constant.Types;
-import cn.lq.common.constant.WebConst;
-import cn.lq.common.dto.ArchiveDto;
-import cn.lq.common.dto.MetaDto;
-import cn.lq.common.dto.StatisticsDto;
+import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Types;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.dto.ArchiveDto;
+import cn.lq.common.domain.dto.StatisticsDto;
+import cn.lq.common.domain.po.CommentPO;
+import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.po.MetaExtendPO;
+import cn.lq.common.domain.query.inner.AttachmentInnerQuery;
+import cn.lq.common.domain.query.inner.CommentInnerQuery;
+import cn.lq.common.domain.query.inner.ContentInnerQuery;
+import cn.lq.common.domain.query.inner.MetaInnerQuery;
+import cn.lq.common.domain.vo.ContentVO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.CommentDomain;
-import cn.lq.common.model.ContentDomain;
+import cn.lq.common.utils.BeanConverter;
 import cn.lq.common.utils.DateKit;
-import cn.lq.dao.AttAchDao;
-import cn.lq.dao.CommentDao;
-import cn.lq.dao.ContentDao;
-import cn.lq.dao.MetaDao;
+import cn.lq.common.utils.PageUtils;
+import cn.lq.manager.AttachmentManager;
+import cn.lq.manager.CommentManager;
+import cn.lq.manager.ContentManager;
+import cn.lq.manager.MetaManager;
 import cn.lq.service.site.SiteService;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,57 +38,66 @@ import java.util.Map;
 
 /**
  * 站点服务
- * Created by winterchen on 2018/4/30.
+ *
+ * @author winterchen
+ * @date 2018/4/30
  */
 @Service
 public class SiteServiceImpl implements SiteService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SiteServiceImpl.class);
 
-    @Autowired
-    private CommentDao commentDao;
+    @Resource
+    private CommentManager commentManager;
 
-    @Autowired
-    private ContentDao contentDao;
+    @Resource
+    private ContentManager contentManager;
 
-    @Autowired
-    private MetaDao metaDao;
+    @Resource
+    private MetaManager metaManager;
 
-    @Autowired
-    private AttAchDao attAchDao;
+    @Resource
+    private AttachmentManager attachmentManager;
 
     @Override
     @Cacheable(value = "siteCache", key = "'comments_' + #p0")
-    public List<CommentDomain> getComments(int limit) {
+    public List<CommentPO> getComments(int limit) {
         LOGGER.debug("Enter recentComments method:limit={}", limit);
         if (limit < 0 || limit > 10) {
             limit = 10;
         }
         PageHelper.startPage(1, limit);
-        List<CommentDomain> rs = commentDao.getCommentsByCond(new CommentCond());
+        PageInfo<CommentPO> pageInfo = PageUtils.pack(1, limit, () -> commentManager.queryForList(new CommentInnerQuery()));
         LOGGER.debug("Exit recentComments method");
-        return rs;
+        return pageInfo.getList();
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'newArticles_' + #p0")
-    public List<ContentDomain> getNewArticles(int limit) {
-        LOGGER.debug("Enter recentArticles method:limit={}", limit);
-        if (limit < 0 || limit > 10)
+    public List<ContentVO> getNewArticles(int limit) {
+        if (limit < 0 || limit > 10) {
             limit = 10;
-        PageHelper.startPage(1, limit);
-        List<ContentDomain> rs = contentDao.getArticlesByCond(new ContentCond());
-        LOGGER.debug("Exit recentArticles method");
-        return rs;
+        }
+
+        List<ContentPO> rs = PageUtils.pack(1, limit, () -> contentManager.queryForList(new ContentInnerQuery())).getList();
+        List<ContentVO> contentVOS = BeanConverter.convertToList(ContentVO.class, rs);
+        //noinspection ConstantConditions
+        for (ContentVO contentVO : contentVOS) {
+            int count = commentManager.queryForCount(new CommentInnerQuery(contentVO.getId()));
+            contentVO.setCommentsNum(count);
+        }
+        return contentVOS;
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'comment_' + #p0")
-    public CommentDomain getComment(Integer coid) {
+    public CommentPO getComment(Long id) {
         LOGGER.debug("Enter recentComment method");
-        if (null == coid)
+        if (null == id) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        CommentDomain comment = commentDao.getCommentById(coid);
+        }
+
+        CommentPO comment = commentManager.queryForObject(id);
         LOGGER.debug("Exit recentComment method");
         return comment;
     }
@@ -92,16 +107,17 @@ public class SiteServiceImpl implements SiteService {
     public StatisticsDto getStatistics() {
         LOGGER.debug("Enter recentStatistics method");
         //文章总数
-        Long artices = contentDao.getArticleCount();
+        int count = contentManager.queryForCount(new ContentInnerQuery());
 
-        Long comments = commentDao.getCommentsCount();
+        int comments = commentManager.queryForCount(new CommentInnerQuery());
+        MetaInnerQuery metaInnerQuery = new MetaInnerQuery();
+        metaInnerQuery.setType(Types.LINK.getType());
+        int links = metaManager.queryForCount(metaInnerQuery);
 
-        Long links = metaDao.getMetasCountByType(Types.LINK.getType());
-
-        Long atts = attAchDao.getAttsCount();
+        int atts = attachmentManager.queryForCount(new AttachmentInnerQuery());
 
         StatisticsDto rs = new StatisticsDto();
-        rs.setArticles(artices);
+        rs.setArticles(count);
         rs.setAttachs(atts);
         rs.setComments(comments);
         rs.setLinks(links);
@@ -111,29 +127,20 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
-    @Cacheable(value = "siteCache", key = "'archivesSimple_' + #p0")
-    public List<ArchiveDto> getArchivesSimple(ContentCond contentCond) {
-        LOGGER.debug("Enter getArchives method");
-        List<ArchiveDto> archives = contentDao.getArchive(contentCond);
-        LOGGER.debug("Exit getArchives method");
-        return archives;
-    }
-
-    @Override
     @Cacheable(value = "siteCache", key = "'archives_' + #p0")
-    public List<ArchiveDto> getArchives(ContentCond contentCond) {
+    public List<ArchiveDto> getArchives(ContentInnerQuery contentInnerQuery) {
         LOGGER.debug("Enter getArchives method");
-        List<ArchiveDto> archives = contentDao.getArchive(contentCond);
-        parseArchives(archives, contentCond);
+        List<ArchiveDto> archives = contentManager.getArchive(contentInnerQuery);
+        parseArchives(archives, contentInnerQuery);
         LOGGER.debug("Exit getArchives method");
         return archives;
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'metas_' + #p0")
-    public List<MetaDto> getMetas(String type, String orderBy, int limit) {
+    public List<MetaExtendPO> getMetas(String type, String orderBy, int limit) {
         LOGGER.debug("Enter metas method:type={},order={},limit={}", type, orderBy, limit);
-        List<MetaDto> retList = null;
+        List<MetaExtendPO> retList = null;
         if (StringUtils.isNotBlank(type)) {
             if (StringUtils.isBlank(orderBy)) {
                 orderBy = "count desc, a.mid desc";
@@ -145,25 +152,23 @@ public class SiteServiceImpl implements SiteService {
             paraMap.put("type", type);
             paraMap.put("order", orderBy);
             paraMap.put("limit", limit);
-            retList = metaDao.selectFromSql(paraMap);
+            retList = metaManager.selectFromSql(paraMap);
         }
         LOGGER.debug("Exit metas method");
         return retList;
     }
 
-    private void parseArchives(List<ArchiveDto> archives, ContentCond contentCond) {
+    private void parseArchives(List<ArchiveDto> archives, ContentInnerQuery contentInnerQuery) {
         if (null != archives) {
             archives.forEach(archive -> {
                 String date = archive.getDate();
                 Date sd = DateKit.dateFormat(date, "yyyy年MM月");
-                int start = DateKit.getUnixTimeByDate(sd);
-                int end = DateKit.getUnixTimeByDate(DateKit.dateAdd(DateKit.INTERVAL_MONTH, sd, 1)) - 1;
-                ContentCond cond = new ContentCond();
-                cond.setStartTime(start);
+                Date end = DateKit.dateAdd(DateKit.INTERVAL_SECOND, DateKit.dateAdd(DateKit.INTERVAL_MONTH, sd, 1), -1);
+                ContentInnerQuery cond = new ContentInnerQuery();
+                cond.setStartTime(sd);
                 cond.setEndTime(end);
-                cond.setType(contentCond.getType());
-                List<ContentDomain> contentss = contentDao.getArticlesByCond(cond);
-                archive.setArticles(contentss);
+                cond.setType(contentInnerQuery.getType());
+                archive.setArticles(contentManager.queryForList(cond));
             });
         }
     }

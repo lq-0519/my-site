@@ -12,12 +12,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 
 /**
  * 请求的日志处理
- * Created by winterchen on 2018/4/28.
+ *
+ * @author winterchen
+ * @date 2018/4/28
  */
 @Aspect
 @Component
@@ -40,7 +41,6 @@ public class WebLogAspect {
         //接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        HttpSession session = request.getSession();
         // 记录下请求内容
         LOGGER.info("URL : " + request.getRequestURL().toString());
         LOGGER.info("HTTP_METHOD : " + request.getMethod());
@@ -54,7 +54,8 @@ public class WebLogAspect {
         // 处理完请求，返回内容
         LOGGER.info("RESPONSE : " + ret);
         LOGGER.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
-        startTime.remove();//用完之后记得清除，不然可能导致内存泄露;
+        //用完之后记得清除，不然可能导致内存泄露;
+        startTime.remove();
     }
 
 }

@@ -2,128 +2,125 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.lq.dao.MetaDao">
 
-    <sql id="BASE_TABLE">
-        t_metas
+    <!-- 所有字段的result map -->
+    <resultMap id="defaultResultMap" type="cn.lq.common.domain.po.MetaPO">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="slug" column="slug"/>
+        <result property="type" column="type"/>
+        <result property="description" column="description"/>
+        <result property="sort" column="sort"/>
+        <result property="created" column="created"/>
+        <result property="modified" column="modified"/>
+        <result property="deleted" column="is_deleted"/>
+    </resultMap>
+
+    <resultMap id="metaExtendPO" type="cn.lq.common.domain.po.MetaExtendPO" extends="defaultResultMap">
+        <result column="count" property="count"/>
+    </resultMap>
+
+    <!-- 所有字段 -->
+    <sql id="allColumns">
+        id, name, slug, type, description, sort, created, modified, is_deleted
     </sql>
 
-    <sql id="RELATION_SHIP_TABLE">
-        <include refid="cn.lq.dao.RelationShipDao.BASE_TABLE"/>
+    <!-- 除ID的字段 -->
+    <sql id="columnsNoId">
+        name, slug, type, description, sort, created, modified, is_deleted
     </sql>
 
-    <!-- 基本列 -->
-    <sql id="BASE_COLUMN">
-        m.mid, m.name, m.slug, m.type, m.description, m.sort, m.parent
-    </sql>
-
-    <!-- 添加项目信息 -->
-    <insert id="addMeta" parameterType="cn.lq.common.model.MetaDomain" useGeneratedKeys="true" keyProperty="mid">
-        INSERT INTO
-        <include refid="BASE_TABLE"/>
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            name, slug, type, description, sort, parent
-        </trim>
-        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
-            #{name, jdbcType=VARCHAR}, #{slug, jdbcType=VARCHAR}, #{type, jdbcType=VARCHAR},
-            #{description, jdbcType=VARCHAR}, #{sort, jdbcType=INTEGER}, #{parent, jdbcType=INTEGER}
-        </trim>
-    </insert>
-
-    <!-- 删除项目 -->
-    <delete id="deleteMetaById">
-        DELETE FROM
-        <include refid="BASE_TABLE"/>
-        WHERE mid = #{mid, jdbcType=INTEGER}
-    </delete>
-
-    <!-- 更新项目 -->
-    <update id="updateMeta" parameterType="cn.lq.common.model.MetaDomain">
-        UPDATE
-        <include refid="BASE_TABLE"/>
-        <set>
-            <if test="name != null">
-                name = #{name, jdbcType=VARCHAR},
-            </if>
-            <if test="slug != null">
-                slug = #{slug, jdbcType=VARCHAR},
-            </if>
-            <if test="type != null">
-                type = #{type, jdbcType=VARCHAR},
-            </if>
-            <if test="description != null">
-                description = #{description, jdbcType=VARCHAR},
-            </if>
-            <if test="sort != null">
-                sort = #{sort, jdbcType=INTEGER},
-            </if>
-            <if test="parent != null">
-                parent = #{parent, jdbcType=INTEGER},
-            </if>
-        </set>
-        WHERE mid = #{mid, jdbcType=INTEGER}
-    </update>
-
-    <!-- 根据主键编号获取项目 -->
-    <select id="getMetaById" resultType="cn.lq.common.model.MetaDomain">
-        SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        AS m
-        WHERE m.mid = #{mid, jdbcType=INTEGER}
-    </select>
-
-    <!-- 根据条件获取项目 -->
-    <select id="getMetasByCond" resultType="cn.lq.common.model.MetaDomain"
-            parameterType="cn.lq.common.cond.MetaCond">
-        SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        AS m
+    <!-- 查询条件 -->
+    <sql id="dynamicWhere">
         <where>
             <if test="name != null">
-                AND m.name = #{name,jdbcType=VARCHAR}
+                AND name = #{name}
             </if>
             <if test="type != null">
-                AND m.type = #{type, jdbcType=VARCHAR}
+                AND type = #{type}
             </if>
+            <choose>
+                <when test="deleted != null">
+                    AND is_deleted = #{deleted}
+                </when>
+                <otherwise>
+                    AND is_deleted = 0
+                </otherwise>
+            </choose>
         </where>
-        ORDER BY m.sort
+    </sql>
+
+
+    <!-- 添加元数据信息 -->
+    <!--suppress SqlInsertValues -->
+    <insert id="insert" parameterType="cn.lq.common.domain.po.MetaPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO meta (
+        <include refid="columnsNoId"/>
+        ) VALUES (#{name}, #{slug}, #{type}, #{description}, #{sort}, now(), now(), 0)
+    </insert>
+
+    <!-- 删除元数据 -->
+    <update id="delete" parameterType="long">
+        UPDATE meta
+        SET is_deleted = 1,
+            modified   = now()
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 更新元数据 -->
+    <update id="update" parameterType="cn.lq.common.domain.po.MetaPO">
+        UPDATE meta
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="slug != null">
+                slug = #{slug},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="description != null">
+                `description` = #{description},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            modified = now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据主键编号获取元数据 -->
+    <select id="queryForObject" resultMap="defaultResultMap">
+        SELECT
+        <include refid="allColumns"/>
+        FROM meta WHERE id = #{id}
     </select>
 
-    <select id="getMetasCountByType" resultType="java.lang.Long">
-        SELECT count(*)
-        FROM
-        <include refid="BASE_TABLE"/>
-        WHERE type = #{type, jdbcType=VARCHAR}
+    <!-- 根据条件获取元数据 -->
+    <select id="queryForList" resultMap="defaultResultMap" parameterType="cn.lq.common.domain.query.inner.MetaInnerQuery">
+        SELECT
+        <include refid="allColumns"/>
+        FROM meta
+        <include refid="dynamicWhere"/>
+        ORDER BY sort
     </select>
 
-    <resultMap id="BaseResultMap" type="cn.lq.common.model.MetaDomain">
-        <id column="mid" jdbcType="INTEGER" property="mid"/>
-        <result column="name" jdbcType="VARCHAR" property="name"/>
-        <result column="slug" jdbcType="VARCHAR" property="slug"/>
-        <result column="type" jdbcType="VARCHAR" property="type"/>
-        <result column="description" jdbcType="VARCHAR" property="description"/>
-        <result column="sort" jdbcType="INTEGER" property="sort"/>
-        <result column="parent" jdbcType="INTEGER" property="parent"/>
-    </resultMap>
+    <select id="queryForCount" resultType="java.lang.Integer" parameterType="cn.lq.common.domain.query.inner.CommentInnerQuery">
+        SELECT count(*) FROM meta
+        <include refid="dynamicWhere"/>
+    </select>
 
-    <resultMap id="MetaDto" type="cn.lq.common.dto.MetaDto" extends="BaseResultMap">
-        <result column="count" property="count" jdbcType="INTEGER"/>
-    </resultMap>
-
-    <select id="selectFromSql" resultMap="MetaDto" parameterType="Map">
-        select
-        a.*,
-        count(b.cid) as count
-        from
-        <include refid="BASE_TABLE"/>
-        AS a
-        left join
-        <include refid="RELATION_SHIP_TABLE"/>
-        AS b on a.mid = b.mid
-        where a.type = #{type}
-        group by a.mid
+    <select id="selectFromSql" resultMap="metaExtendPO" parameterType="Map">
+        select t1.*,
+               count(t2.content_id) as count
+        from meta
+                 AS t1
+                 left join
+             content_meta_bind
+                 AS t2 on t1.id = t2.meta_id
+        where t1.type = #{type}
+        group by t1.id
         order by #{order}
         limit #{limit}
     </select>

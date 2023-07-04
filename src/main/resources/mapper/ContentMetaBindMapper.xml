@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lq.dao.ContentMetaBindDao">
+
+    <!-- 所有字段的result map -->
+    <resultMap id="defaultResultMap" type="cn.lq.common.domain.po.ContentMetaBindPO">
+        <result property="id" column="id"/>
+        <result property="contentId" column="content_id"/>
+        <result property="metaId" column="meta_id"/>
+        <result property="created" column="created"/>
+        <result property="modified" column="modified"/>
+        <result property="deleted" column="is_deleted"/>
+    </resultMap>
+
+    <!-- 所有字段 -->
+    <sql id="allColumns">
+        id, content_id, meta_id, created, modified, is_deleted
+    </sql>
+
+    <!-- 除ID的字段 -->
+    <sql id="columnsNoId">
+        content_id, meta_id, created, modified, is_deleted
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="dynamicWhere">
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="contentId != null">
+                AND content_id = #{contentId}
+            </if>
+            <if test="metaId != null">
+                AND meta_id = #{metaId}
+            </if>
+            <choose>
+                <when test="deleted != null">
+                    AND is_deleted = #{deleted}
+                </when>
+                <otherwise>
+                    AND is_deleted = 0
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!--suppress SqlInsertValues -->
+    <insert id="insert" parameterType="cn.lq.common.domain.po.ContentMetaBindPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO content_meta_bind (
+        <include refid="columnsNoId"/>
+        ) VALUES (#{contentId}, #{metaId}, now(), now(), 0)
+    </insert>
+
+    <!-- 根据id删除记录 -->
+    <!--suppress SqlWithoutWhere -->
+    <update id="deleteByQuery" parameterType="cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery">
+        UPDATE content_meta_bind SET is_deleted = 1, modified = now()
+        <include refid="dynamicWhere"/>
+    </update>
+
+    <select id="queryForList" resultMap="defaultResultMap" parameterType="cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery">
+        SELECT
+        <include refid="allColumns"/>
+        FROM content_meta_bind
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <!-- 查找数量 -->
+    <select id="queryForCount" resultType="java.lang.Integer" parameterType="cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery">
+        SELECT count(*) FROM content_meta_bind
+        <include refid="dynamicWhere"/>
+    </select>
+
+
+</mapper>

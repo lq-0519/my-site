@@ -1,7 +1,7 @@
 package cn.lq.common.utils;
 
 
-import cn.lq.common.model.MetaDomain;
+import cn.lq.common.domain.po.MetaPO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public final class AdminCommons {
     /**
      * 判断category和cat的交集
      */
-    public static boolean exist_cat(MetaDomain category, String cats) {
+    public static boolean exist_cat(MetaPO category, String cats) {
         String[] arr = StringUtils.split(cats, ",");
         if (null != arr && arr.length > 0) {
             for (String c : arr) {

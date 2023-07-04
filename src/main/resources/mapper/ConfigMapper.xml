@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lq.dao.ConfigDao">
+
+    <!-- 所有字段的result map -->
+    <resultMap id="defaultResultMap" type="cn.lq.common.domain.po.ConfigPO">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="value" column="value"/>
+        <result property="description" column="description"/>
+        <result property="created" column="created"/>
+        <result property="modified" column="modified"/>
+        <result property="deleted" column="is_deleted"/>
+    </resultMap>
+
+    <!-- 所有字段 -->
+    <sql id="allColumns">
+        id, code, value, description, created, modified, is_deleted
+    </sql>
+
+    <!-- 除ID的字段 -->
+    <sql id="columnsNoId">
+        code, value, description, created, modified, is_deleted
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="dynamicWhere">
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="code != null">
+                AND code = #{code}
+            </if>
+            <if test="value != null">
+                AND value = #{value}
+            </if>
+            <if test="description != null">
+                AND description = #{description}
+            </if>
+            <choose>
+                <when test="deleted != null">
+                    AND is_deleted = #{deleted}
+                </when>
+                <otherwise>
+                    AND is_deleted = 0
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 删除网站配置 -->
+    <!--suppress SqlWithoutWhere -->
+    <update id="deleteByQuery" parameterType="cn.lq.common.domain.query.inner.ConfigInnerQuery">
+        UPDATE config SET is_deleted = 1, modified = now()
+        <include refid="dynamicWhere"/>
+    </update>
+
+    <!-- 更新网站配置 -->
+    <update id="updateByQuery">
+        UPDATE config
+        <set>
+            <if test="update.code != null">
+                code = #{update.code},
+            </if>
+            <if test="update.value != null">
+                value = #{update.value},
+            </if>
+            <if test="update.description != null">
+                description = #{update.description},
+            </if>
+            modified = now()
+        </set>
+        <where>
+            <if test="query.id != null">
+                AND id = #{query.id}
+            </if>
+            <if test="query.code != null">
+                AND code = #{query.code}
+            </if>
+            <if test="query.value != null">
+                AND value = #{query.value}
+            </if>
+            <if test="query.description != null">
+                AND description = #{query.description}
+            </if>
+            <choose>
+                <when test="query.deleted != null">
+                    AND is_deleted = #{query.deleted}
+                </when>
+                <otherwise>
+                    AND is_deleted = 0
+                </otherwise>
+            </choose>
+        </where>
+    </update>
+
+    <select id="queryForList" resultMap="defaultResultMap" parameterType="cn.lq.common.domain.query.inner.ConfigInnerQuery">
+        SELECT
+        <include refid="allColumns"/>
+        FROM config
+        <include refid="dynamicWhere"/>
+    </select>
+
+</mapper>

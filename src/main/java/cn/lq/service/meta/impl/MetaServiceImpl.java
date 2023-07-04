@@ -1,79 +1,86 @@
 package cn.lq.service.meta.impl;
 
-import cn.lq.common.cond.MetaCond;
-import cn.lq.common.constant.ErrorConstant;
-import cn.lq.common.constant.Types;
-import cn.lq.common.constant.WebConst;
-import cn.lq.common.dto.MetaDto;
+import cn.lq.common.domain.bo.ContentBO;
+import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Types;
+import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.po.ContentMetaBindPO;
+import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.po.MetaExtendPO;
+import cn.lq.common.domain.po.MetaPO;
+import cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery;
+import cn.lq.common.domain.query.inner.MetaInnerQuery;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.model.ContentDomain;
-import cn.lq.common.model.MetaDomain;
-import cn.lq.common.model.RelationShipDomain;
-import cn.lq.dao.MetaDao;
-import cn.lq.dao.RelationShipDao;
+import cn.lq.manager.ContentMetaBindManager;
+import cn.lq.manager.MetaManager;
 import cn.lq.service.content.ContentService;
 import cn.lq.service.meta.MetaService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by winterchen on 2018/4/29.
+ * MetaServiceImpl
+ *
+ * @author winterchen
+ * @date 2018/4/29
  */
 @Service
 @Transactional
 public class MetaServiceImpl implements MetaService {
 
-    @Autowired
-    private MetaDao metaDao;
+    @Resource
+    private MetaManager metaManager;
 
-    @Autowired
-    private RelationShipDao relationShipDao;
+    @Resource
+    private ContentMetaBindManager contentMetaBindManager;
 
 
-    @Autowired
+    @Resource
     private ContentService contentService;
 
     @Override
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
-    public void addMeta(MetaDomain meta) {
-        if (null == meta)
+    public void addMeta(MetaPO meta) {
+        if (null == meta) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        metaDao.addMeta(meta);
+        }
+        metaManager.insert(meta);
 
     }
 
     @Override
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
-    public void saveMeta(String type, String name, Integer mid) {
+    public void saveMeta(String type, String name, Long metaId) {
         if (StringUtils.isNotBlank(type) && StringUtils.isNotBlank(name)) {
-            MetaCond metaCond = new MetaCond();
-            metaCond.setName(name);
-            metaCond.setType(type);
-            List<MetaDomain> metas = metaDao.getMetasByCond(metaCond);
+            MetaInnerQuery metaInnerQuery = new MetaInnerQuery();
+            metaInnerQuery.setName(name);
+            metaInnerQuery.setType(type);
+            List<MetaPO> metas = metaManager.queryForList(metaInnerQuery);
             if (null == metas || metas.size() == 0) {
-                MetaDomain metaDomain = new MetaDomain();
-                metaDomain.setName(name);
-                if (null != mid) {
-                    MetaDomain meta = metaDao.getMetaById(mid);
-                    if (null != meta)
-                        metaDomain.setMid(mid);
+                MetaPO metaPO = new MetaPO();
+                metaPO.setName(name);
+                if (null != metaId) {
+                    MetaPO meta = metaManager.queryForObject(metaId);
+                    if (null != meta) {
+                        metaPO.setId(metaId);
+                    }
 
-                    metaDao.updateMeta(metaDomain);
+                    metaManager.update(metaPO);
                     //更新原有的文章分类
                     if (meta != null) {
                         contentService.updateCategory(meta.getName(), name);
                     }
                 } else {
-                    metaDomain.setType(type);
-                    metaDao.addMeta(metaDomain);
+                    metaPO.setType(type);
+                    metaManager.insert(metaPO);
                 }
             } else {
                 throw BusinessException.withErrorCode(ErrorConstant.Meta.META_IS_EXIST);
@@ -85,9 +92,10 @@ public class MetaServiceImpl implements MetaService {
 
     @Override
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
-    public void addMetas(Integer cid, String names, String type) {
-        if (null == cid)
+    public void addMetas(Long cid, String names, String type) {
+        if (null == cid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+        }
 
         if (StringUtils.isNotBlank(names) && StringUtils.isNotBlank(type)) {
             String[] nameArr = StringUtils.split(names, ",");
@@ -99,58 +107,63 @@ public class MetaServiceImpl implements MetaService {
 
     @Override
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
-    public void saveOrUpdate(Integer cid, String name, String type) {
-        MetaCond metaCond = new MetaCond();
-        metaCond.setName(name);
-        metaCond.setType(type);
-        List<MetaDomain> metas = this.getMetas(metaCond);
+    public void saveOrUpdate(Long cid, String name, String type) {
+        MetaInnerQuery metaInnerQuery = new MetaInnerQuery();
+        metaInnerQuery.setName(name);
+        metaInnerQuery.setType(type);
+        List<MetaPO> metas = this.getMetas(metaInnerQuery);
 
-        int mid;
-        MetaDomain metaDomain;
+        Long mid;
+        MetaPO metaPO;
         if (metas.size() == 1) {
-            MetaDomain meta = metas.get(0);
-            mid = meta.getMid();
+            MetaPO meta = metas.get(0);
+            mid = meta.getId();
         } else if (metas.size() > 1) {
             throw BusinessException.withErrorCode(ErrorConstant.Meta.NOT_ONE_RESULT);
         } else {
-            metaDomain = new MetaDomain();
-            metaDomain.setSlug(name);
-            metaDomain.setName(name);
-            metaDomain.setType(type);
-            this.addMeta(metaDomain);
-            mid = metaDomain.getMid();
+            metaPO = new MetaPO();
+            metaPO.setSlug(name);
+            metaPO.setName(name);
+            metaPO.setType(type);
+            this.addMeta(metaPO);
+            mid = metaPO.getId();
         }
         if (mid != 0) {
-            Long count = relationShipDao.getCountById(cid, mid);
+            ContentMetaBindInnerQuery contentMetaBindInnerQuery = new ContentMetaBindInnerQuery();
+            contentMetaBindInnerQuery.setContentId(cid);
+            contentMetaBindInnerQuery.setMetaId(mid);
+            int count = contentMetaBindManager.queryForCount(contentMetaBindInnerQuery);
             if (count == 0) {
-                RelationShipDomain relationShip = new RelationShipDomain();
-                relationShip.setCid(cid);
-                relationShip.setMid(mid);
-                relationShipDao.addRelationShip(relationShip);
+                ContentMetaBindPO relationShip = new ContentMetaBindPO();
+                relationShip.setContentId(cid);
+                relationShip.setMetaId(mid);
+                contentMetaBindManager.insert(relationShip);
             }
-
         }
     }
 
     @Override
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
-    public void deleteMetaById(Integer mid) {
-        if (null == mid)
+    public void deleteMetaById(Long mid) {
+        if (null == mid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+        }
 
-        MetaDomain meta = metaDao.getMetaById(mid);
+        MetaPO meta = metaManager.queryForObject(mid);
         if (null != meta) {
             String type = meta.getType();
             String name = meta.getName();
-            metaDao.deleteMetaById(mid);
+            metaManager.delete(mid);
             //需要把相关的数据删除
-            List<RelationShipDomain> relationShips = relationShipDao.getRelationShipByMid(mid);
+            ContentMetaBindInnerQuery contentMetaBindInnerQuery = new ContentMetaBindInnerQuery();
+            contentMetaBindInnerQuery.setMetaId(mid);
+            List<ContentMetaBindPO> relationShips = contentMetaBindManager.queryForList(contentMetaBindInnerQuery);
             if (null != relationShips && relationShips.size() > 0) {
-                for (RelationShipDomain relationShip : relationShips) {
-                    ContentDomain article = contentService.getArticleById(relationShip.getCid());
+                for (ContentMetaBindPO relationShip : relationShips) {
+                    ContentPO article = contentService.getArticleById(relationShip.getContentId());
                     if (null != article) {
-                        ContentDomain temp = new ContentDomain();
-                        temp.setCid(relationShip.getCid());
+                        ContentBO temp = new ContentBO();
+                        temp.setId(relationShip.getContentId());
                         if (type.equals(Types.CATEGORY.getType())) {
                             temp.setCategories(reMeta(name, article.getCategories()));
                         }
@@ -161,7 +174,9 @@ public class MetaServiceImpl implements MetaService {
                         contentService.updateArticleById(temp);
                     }
                 }
-                relationShipDao.deleteRelationShipByMid(mid);
+                ContentMetaBindInnerQuery delQuery = new ContentMetaBindInnerQuery();
+                delQuery.setMetaId(mid);
+                contentMetaBindManager.deleteByQuery(delQuery);
             }
         }
 
@@ -170,31 +185,24 @@ public class MetaServiceImpl implements MetaService {
 
     @Override
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
-    public void updateMeta(MetaDomain meta) {
-        if (null == meta || null == meta.getMid())
+    public void updateMeta(MetaPO meta) {
+        if (null == meta || null == meta.getId()) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        metaDao.updateMeta(meta);
+        }
 
-    }
-
-    @Override
-    @Cacheable(value = "metaCache", key = "'metaById_' + #p0")
-    public MetaDomain getMetaById(Integer mid) {
-        if (null == mid)
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        return metaDao.getMetaById(mid);
+        metaManager.update(meta);
     }
 
     @Override
     @Cacheable(value = "metaCaches", key = "'metas_' + #p0")
-    public List<MetaDomain> getMetas(MetaCond metaCond) {
-        return metaDao.getMetasByCond(metaCond);
+    public List<MetaPO> getMetas(MetaInnerQuery metaInnerQuery) {
+        return metaManager.queryForList(metaInnerQuery);
     }
 
 
     @Override
     @Cacheable(value = "metaCaches", key = "'metaList_' + #p0")
-    public List<MetaDto> getMetaList(String type, String orderby, int limit) {
+    public List<MetaExtendPO> getMetaList(String type, String orderby, int limit) {
         if (StringUtils.isNotBlank(type)) {
             if (StringUtils.isBlank(orderby)) {
                 orderby = "count desc, a.mid desc";
@@ -206,7 +214,7 @@ public class MetaServiceImpl implements MetaService {
             paraMap.put("type", type);
             paraMap.put("order", orderby);
             paraMap.put("limit", limit);
-            return metaDao.selectFromSql(paraMap);
+            return metaManager.selectFromSql(paraMap);
         }
         return null;
     }
