@@ -1,10 +1,8 @@
 package cn.lq.service.site;
 
-import cn.lq.common.domain.dto.ArchiveDto;
 import cn.lq.common.domain.dto.StatisticsDto;
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.po.MetaExtendPO;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
 
 import java.util.List;
@@ -36,13 +34,6 @@ public interface SiteService {
      * 获取 后台统计数据
      */
     StatisticsDto getStatistics();
-
-    /**
-     * 获取归档列表
-     *
-     * @param contentInnerQuery 查询条件（只包含开始时间和结束时间）
-     */
-    List<ArchiveDto> getArchives(ContentInnerQuery contentInnerQuery);
 
     /**
      * 获取分类/标签列表

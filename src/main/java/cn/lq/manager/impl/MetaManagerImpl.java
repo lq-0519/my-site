@@ -3,7 +3,7 @@ package cn.lq.manager.impl;
 import cn.lq.common.domain.po.MetaExtendPO;
 import cn.lq.common.domain.po.MetaPO;
 import cn.lq.common.domain.query.inner.MetaInnerQuery;
-import cn.lq.dao.MetaDao;
+import cn.lq.dao.mysql.MetaDao;
 import cn.lq.manager.MetaManager;
 import org.springframework.stereotype.Service;
 

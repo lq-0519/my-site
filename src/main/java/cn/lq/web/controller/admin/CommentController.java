@@ -1,13 +1,13 @@
 package cn.lq.web.controller.admin;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.query.inner.CommentInnerQuery;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.Response;
 import cn.lq.service.comment.CommentService;
 import cn.lq.web.controller.BaseController;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -45,7 +45,7 @@ public class CommentController extends BaseController {
             @ApiParam(name = "page", value = "页数") @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @ApiParam(name = "limit", value = "每页条数") @RequestParam(name = "limit", required = false, defaultValue = "15") int limit,
             HttpServletRequest request) {
-        PageInfo<CommentPO> comments = commentService.getCommentsByCond(new CommentInnerQuery(), page, limit);
+        PageVO<CommentPO> comments = commentService.getCommentsByCond(new CommentInnerQuery(), page, limit);
         request.setAttribute("comments", comments);
         return "admin/comment_list";
     }
@@ -59,7 +59,7 @@ public class CommentController extends BaseController {
         try {
             CommentPO comment = commentService.getCommentById(commentId);
             if (null == comment) {
-                throw BusinessException.withErrorCode(ErrorConstant.Comment.COMMENT_NOT_EXIST);
+                throw BusinessException.withErrorCode(Constant.Comment.COMMENT_NOT_EXIST);
             }
 
             commentService.deleteComment(commentId);

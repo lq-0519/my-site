@@ -1,14 +1,14 @@
 package cn.lq.service.attach.impl;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.po.AttachmentPO;
 import cn.lq.common.domain.po.AttachmentUserPO;
 import cn.lq.common.domain.query.inner.AttachmentInnerQuery;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.PageUtils;
 import cn.lq.manager.AttachmentManager;
 import cn.lq.service.attach.AttachmentService;
-import com.github.pagehelper.PageInfo;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @CacheEvict(value = {"attCaches", "attCache"}, allEntries = true, beforeInvocation = true)
     public void addAttAch(AttachmentPO attachmentPO) {
         if (null == attachmentPO) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         attachmentManager.insert(attachmentPO);
@@ -42,7 +42,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @CacheEvict(value = {"attCaches", "attCache"}, allEntries = true, beforeInvocation = true)
     public void deleteAttAch(Long id) {
         if (null == id) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         attachmentManager.delete(id);
     }
@@ -51,7 +51,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @CacheEvict(value = {"attCaches", "attCache"}, allEntries = true, beforeInvocation = true)
     public void updateAttAch(AttachmentPO attachmentPO) {
         if (null == attachmentPO || null == attachmentPO.getId()) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         attachmentManager.update(attachmentPO);
@@ -61,7 +61,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Cacheable(value = "attCache", key = "'attAchById' + #p0")
     public AttachmentUserPO getAttachmentUserById(Long id) {
         if (null == id) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         return attachmentManager.queryAttachmentUserById(id);
@@ -69,7 +69,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Cacheable(value = "attCaches", key = "'atts' + #p0")
-    public PageInfo<AttachmentUserPO> getAttachmentUserPage(int pageNum, int pageSize) {
+    public PageVO<AttachmentUserPO> getAttachmentUserPage(int pageNum, int pageSize) {
         return PageUtils.pack(pageNum, pageSize, () -> attachmentManager.queryAttachmentUserList(new AttachmentInnerQuery()));
     }
 }

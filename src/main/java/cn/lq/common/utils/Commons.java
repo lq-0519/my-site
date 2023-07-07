@@ -1,7 +1,7 @@
 package cn.lq.common.utils;
 
 import cn.lq.common.domain.constant.WebConst;
-import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.po.es.ContentEsPO;
 import com.github.pagehelper.PageInfo;
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.lang3.StringUtils;
@@ -290,7 +290,7 @@ public class Commons {
     /**
      * 返回文章链接地址
      */
-    public static String permalink(ContentPO contents) {
+    public static String permalink(ContentEsPO contents) {
         return permalink(contents.getId(), contents.getSlug());
     }
 
@@ -305,7 +305,7 @@ public class Commons {
     /**
      * 判断分页中是否有数据
      */
-    public static boolean is_empty(PageInfo paginator) {
+    public static boolean is_empty(PageInfo<?> paginator) {
         return paginator == null || (paginator.getList() == null) || (paginator.getList().size() == 0);
     }
 
@@ -322,14 +322,14 @@ public class Commons {
     /**
      * 返回作品文章地址
      */
-    public static String photoPermalink(Integer cid) {
+    public static String photoPermalink(Long cid) {
         return site_url("/photo/article/" + cid.toString());
     }
 
     /**
      * 返回blog文章地址
      */
-    public static String blogPermalink(Integer cid) {
+    public static String blogPermalink(Long cid) {
         return site_url("/blog/article/" + cid.toString());
     }
 

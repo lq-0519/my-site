@@ -1,6 +1,6 @@
 package cn.lq.web.controller.admin;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.po.MetaPO;
 import cn.lq.common.domain.query.inner.MetaInnerQuery;
@@ -69,7 +69,7 @@ public class LinksController extends BaseController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw BusinessException.withErrorCode(ErrorConstant.Meta.ADD_META_FAIL);
+            throw BusinessException.withErrorCode(Constant.Meta.ADD_META_FAIL);
         }
         return Response.success();
     }
@@ -84,7 +84,7 @@ public class LinksController extends BaseController {
             metaService.deleteMetaById(id);
         } catch (Exception e) {
             e.printStackTrace();
-            throw BusinessException.withErrorCode(ErrorConstant.Meta.ADD_META_FAIL);
+            throw BusinessException.withErrorCode(Constant.Meta.ADD_META_FAIL);
         }
 
         return Response.success();

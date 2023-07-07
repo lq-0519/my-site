@@ -1,10 +1,8 @@
 package cn.lq.manager;
 
-import cn.lq.common.domain.dto.ArchiveDto;
-import cn.lq.common.domain.po.ContentPO;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
-
-import java.util.List;
+import cn.lq.common.domain.po.es.ContentEsPO;
+import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
+import org.springframework.data.domain.Page;
 
 /**
  * ContentManager
@@ -12,40 +10,39 @@ import java.util.List;
  * @author liqian477
  */
 public interface ContentManager {
+
     /**
      * 添加文章
+     * 插入es
      */
-    int insert(ContentPO contentPO);
+    long insert(ContentEsPO contentEsPO);
 
     /**
      * 根据编号删除文章
+     * 删除es
      */
-    int delete(Long id);
+    void delete(Long id);
 
     /**
      * 更新文章
      */
-    int update(ContentPO contentPO);
+    @SuppressWarnings("UnusedReturnValue")
+    int update(ContentEsPO contentEsPO);
 
     /**
      * 根据编号获取文章
+     * 查es
      */
-    ContentPO queryForObject(Long id);
+    ContentEsPO queryForObject(Long id);
 
     /**
-     * 根据条件获取文章列表
+     * 查总数
      */
-    List<ContentPO> queryForList(ContentInnerQuery contentInnerQuery);
+    long queryForCount(ContentEsInnerQuery contentEsInnerQuery);
 
     /**
-     * 获取文章总数量
+     * 分页查询
      */
-    int queryForCount(ContentInnerQuery contentInnerQuery);
+    Page<ContentEsPO> queryForPage(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize);
 
-    /**
-     * 获取归档数据
-     *
-     * @param contentInnerQuery 查询条件（只包含开始时间和结束时间）
-     */
-    List<ArchiveDto> getArchive(ContentInnerQuery contentInnerQuery);
 }

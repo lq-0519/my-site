@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.lq.dao.LogDao">
+<mapper namespace="cn.lq.dao.mysql.LogDao">
 
     <!-- 所有字段的result map -->
     <resultMap id="defaultResultMap" type="cn.lq.common.domain.po.LogPO">
-        <result property="id" column="id"/>
+        <id property="id" column="id"/>
         <result property="action" column="action"/>
         <result property="data" column="data"/>
         <result property="userId" column="user_id"/>

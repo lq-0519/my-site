@@ -1,4 +1,7 @@
-package cn.lq.common.domain.query.inner;
+package cn.lq.common.domain.query.inner.es;
+
+import cn.lq.common.domain.anno.EsQueryField;
+import cn.lq.common.domain.enums.EsQueryWayEnum;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,38 +12,62 @@ import java.util.Date;
  * @author winterchen
  * @date 2018/4/29
  */
-public class ContentInnerQuery extends BaseInnerQuery implements Serializable {
-
+public class ContentEsInnerQuery extends BaseEsInnerQuery implements Serializable {
+    /**
+     * 内容标题
+     */
+    @EsQueryField(way = EsQueryWayEnum.LIKE)
+    private String title;
+    /**
+     * 内容
+     */
+    private String content;
     /**
      * 标签
      */
+    @EsQueryField
     private String tag;
     /**
      * 类别
      */
+    @EsQueryField
     private String category;
     /**
      * 状态
      */
+    @EsQueryField
     private String status;
-    /**
-     * 标题
-     */
-    private String title;
     /**
      * 文章类型
      */
+    @EsQueryField
     private String type;
-
     /**
      * 开始时间戳
      */
+    @EsQueryField(field = "created", way = EsQueryWayEnum.GTE)
     private Date startTime;
-
     /**
      * 结束时间戳
      */
+    @EsQueryField(field = "created", way = EsQueryWayEnum.LTE)
     private Date endTime;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     public String getTag() {
         return tag;
@@ -64,14 +91,6 @@ public class ContentInnerQuery extends BaseInnerQuery implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getType() {
@@ -100,11 +119,12 @@ public class ContentInnerQuery extends BaseInnerQuery implements Serializable {
 
     @Override
     public String toString() {
-        return "ContentInnerQuery{" +
-                "tag='" + tag + '\'' +
+        return "ContentEsInnerQuery{" +
+                "title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", tag='" + tag + '\'' +
                 ", category='" + category + '\'' +
                 ", status='" + status + '\'' +
-                ", title='" + title + '\'' +
                 ", type='" + type + '\'' +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +

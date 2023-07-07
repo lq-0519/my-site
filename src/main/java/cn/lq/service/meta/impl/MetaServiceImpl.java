@@ -1,13 +1,12 @@
 package cn.lq.service.meta.impl;
 
-import cn.lq.common.domain.bo.ContentBO;
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.ContentMetaBindPO;
-import cn.lq.common.domain.po.ContentPO;
 import cn.lq.common.domain.po.MetaExtendPO;
 import cn.lq.common.domain.po.MetaPO;
+import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery;
 import cn.lq.common.domain.query.inner.MetaInnerQuery;
 import cn.lq.common.exception.BusinessException;
@@ -50,7 +49,7 @@ public class MetaServiceImpl implements MetaService {
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void addMeta(MetaPO meta) {
         if (null == meta) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         metaManager.insert(meta);
 
@@ -83,7 +82,7 @@ public class MetaServiceImpl implements MetaService {
                     metaManager.insert(metaPO);
                 }
             } else {
-                throw BusinessException.withErrorCode(ErrorConstant.Meta.META_IS_EXIST);
+                throw BusinessException.withErrorCode(Constant.Meta.META_IS_EXIST);
 
             }
 
@@ -94,7 +93,7 @@ public class MetaServiceImpl implements MetaService {
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void addMetas(Long cid, String names, String type) {
         if (null == cid) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         if (StringUtils.isNotBlank(names) && StringUtils.isNotBlank(type)) {
@@ -119,7 +118,7 @@ public class MetaServiceImpl implements MetaService {
             MetaPO meta = metas.get(0);
             mid = meta.getId();
         } else if (metas.size() > 1) {
-            throw BusinessException.withErrorCode(ErrorConstant.Meta.NOT_ONE_RESULT);
+            throw BusinessException.withErrorCode(Constant.Meta.NOT_ONE_RESULT);
         } else {
             metaPO = new MetaPO();
             metaPO.setSlug(name);
@@ -146,7 +145,7 @@ public class MetaServiceImpl implements MetaService {
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void deleteMetaById(Long mid) {
         if (null == mid) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         MetaPO meta = metaManager.queryForObject(mid);
@@ -160,9 +159,9 @@ public class MetaServiceImpl implements MetaService {
             List<ContentMetaBindPO> relationShips = contentMetaBindManager.queryForList(contentMetaBindInnerQuery);
             if (null != relationShips && relationShips.size() > 0) {
                 for (ContentMetaBindPO relationShip : relationShips) {
-                    ContentPO article = contentService.getArticleById(relationShip.getContentId());
+                    ContentEsPO article = contentService.getArticleById(relationShip.getContentId());
                     if (null != article) {
-                        ContentBO temp = new ContentBO();
+                        ContentEsPO temp = new ContentEsPO();
                         temp.setId(relationShip.getContentId());
                         if (type.equals(Types.CATEGORY.getType())) {
                             temp.setCategories(reMeta(name, article.getCategories()));
@@ -187,7 +186,7 @@ public class MetaServiceImpl implements MetaService {
     @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void updateMeta(MetaPO meta) {
         if (null == meta || null == meta.getId()) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         metaManager.update(meta);

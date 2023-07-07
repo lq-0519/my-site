@@ -1,20 +1,18 @@
 package cn.lq.web.controller.admin;
 
-import cn.lq.common.domain.bo.ContentBO;
 import cn.lq.common.domain.constant.LogActions;
 import cn.lq.common.domain.constant.Types;
-import cn.lq.common.domain.po.ContentPO;
 import cn.lq.common.domain.po.MetaPO;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
+import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.MetaInnerQuery;
-import cn.lq.common.domain.vo.ContentVO;
+import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.Response;
 import cn.lq.service.content.ContentService;
 import cn.lq.service.log.LogService;
 import cn.lq.service.meta.MetaService;
 import cn.lq.web.controller.BaseController;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -55,11 +53,10 @@ public class ArticleController extends BaseController {
 
     @ApiOperation("文章页")
     @GetMapping(value = "")
-    public String index(
-            HttpServletRequest request,
-            @ApiParam(name = "page", value = "页数") @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-            @ApiParam(name = "limit", value = "每页数量") @RequestParam(name = "limit", required = false, defaultValue = "15") int limit) {
-        PageInfo<ContentVO> articles = contentService.queryContentPage(new ContentInnerQuery(), page, limit);
+    public String index(HttpServletRequest request,
+                        @ApiParam(name = "page", value = "页数") @RequestParam(name = "page", required = false, defaultValue = "1") int page,
+                        @ApiParam(name = "limit", value = "每页数量") @RequestParam(name = "limit", required = false, defaultValue = "15") int limit) {
+        PageVO<ContentEsPO> articles = contentService.queryContentPage(new ContentEsInnerQuery(), page, limit);
         request.setAttribute("articles", articles);
         return "admin/article_list";
     }
@@ -88,28 +85,26 @@ public class ArticleController extends BaseController {
             @ApiParam(name = "tags", value = "标签") @RequestParam(name = "tags", required = false) String tags,
             @ApiParam(name = "categories", value = "分类") @RequestParam(name = "categories", required = false, defaultValue = "默认分类") String categories,
             @ApiParam(name = "allowComment", value = "是否允许评论", required = true) @RequestParam(name = "allowComment") Boolean allowComment) {
-        ContentBO contentBO = new ContentBO();
-        contentBO.setTitle(title);
-        contentBO.setTitlePic(titlePic);
-        contentBO.setSlug(slug);
-        contentBO.setContent(content);
-        contentBO.setType(type);
-        contentBO.setStatus(status);
-        contentBO.setTags(type.equals(Types.ARTICLE.getType()) ? tags : null);
+        ContentEsPO contentEsPO = new ContentEsPO();
+        contentEsPO.setTitle(title);
+        contentEsPO.setTitlePic(titlePic);
+        contentEsPO.setSlug(slug);
+        contentEsPO.setContent(content);
+        contentEsPO.setType(type);
+        contentEsPO.setStatus(status);
+        contentEsPO.setTags(type.equals(Types.ARTICLE.getType()) ? tags : null);
         //只允许博客文章有分类，防止作品被收入分类
-        contentBO.setCategories(type.equals(Types.ARTICLE.getType()) ? categories : null);
-        contentBO.setAllowComment(allowComment ? 1 : 0);
+        contentEsPO.setCategories(type.equals(Types.ARTICLE.getType()) ? categories : null);
+        contentEsPO.setAllowComment(allowComment ? 1 : 0);
 
-        contentService.addArticle(contentBO);
+        contentService.addArticle(contentEsPO);
         return Response.success();
     }
 
     @ApiOperation("文章编辑页")
     @GetMapping(value = "/{cid}")
-    public String editArticle(
-            @ApiParam(name = "cid", value = "文章编号", required = true) @PathVariable Long cid,
-            HttpServletRequest request) {
-        ContentPO content = contentService.getArticleById(cid);
+    public String editArticle(@ApiParam(name = "cid", value = "文章编号", required = true) @PathVariable Long cid, HttpServletRequest request) {
+        ContentEsPO content = contentService.getArticleById(cid);
         request.setAttribute("contents", content);
         MetaInnerQuery metaInnerQuery = new MetaInnerQuery();
         metaInnerQuery.setType(Types.CATEGORY.getType());
@@ -132,28 +127,27 @@ public class ArticleController extends BaseController {
                                      @ApiParam(name = "tags", value = "标签") @RequestParam(name = "tags", required = false) String tags,
                                      @ApiParam(name = "categories", value = "分类") @RequestParam(name = "categories", required = false, defaultValue = "默认分类") String categories,
                                      @ApiParam(name = "allowComment", value = "是否允许评论", required = true) @RequestParam(name = "allowComment") Boolean allowComment) {
-        ContentBO contentBO = new ContentBO();
-        contentBO.setId(cid);
-        contentBO.setTitle(title);
-        contentBO.setTitlePic(titlePic);
-        contentBO.setSlug(slug);
-        contentBO.setContent(content);
-        contentBO.setType(type);
-        contentBO.setStatus(status);
-        contentBO.setTags(tags);
-        contentBO.setCategories(categories);
-        contentBO.setAllowComment(allowComment ? 1 : 0);
+        ContentEsPO contentEsPO = new ContentEsPO();
+        contentEsPO.setId(cid);
+        contentEsPO.setTitle(title);
+        contentEsPO.setTitlePic(titlePic);
+        contentEsPO.setSlug(slug);
+        contentEsPO.setContent(content);
+        contentEsPO.setType(type);
+        contentEsPO.setStatus(status);
+        contentEsPO.setTags(tags);
+        contentEsPO.setCategories(categories);
+        contentEsPO.setAllowComment(allowComment ? 1 : 0);
 
-        contentService.updateArticleById(contentBO);
+        contentService.updateArticleById(contentEsPO);
         return Response.success();
     }
 
     @ApiOperation("删除文章")
     @PostMapping(value = "/delete")
     @ResponseBody
-    public Response<?> deleteArticle(
-            @ApiParam(name = "cid", value = "文章主键", required = true) @RequestParam(name = "cid") Long cid,
-            HttpServletRequest request) {
+    public Response<?> deleteArticle(@ApiParam(name = "cid", value = "文章主键", required = true) @RequestParam(name = "cid") Long cid,
+                                     HttpServletRequest request) {
         contentService.deleteArticleById(cid);
         logService.addLog(LogActions.DEL_ARTICLE.getAction(), cid + "", request.getRemoteAddr(), this.getUid(request));
         return Response.success();

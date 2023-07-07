@@ -1,21 +1,19 @@
 package cn.lq.web.controller;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.constant.WebConst;
-import cn.lq.common.domain.dto.ArchiveDto;
 import cn.lq.common.domain.po.CommentPO;
-import cn.lq.common.domain.po.ContentPO;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
+import cn.lq.common.domain.po.es.ContentEsPO;
+import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.utils.DateKit;
 import cn.lq.common.utils.IPKit;
 import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.service.comment.CommentService;
 import cn.lq.service.content.ContentService;
-import cn.lq.service.site.SiteService;
 import com.github.pagehelper.PageInfo;
 import com.vdurmont.emoji.EmojiParser;
 import io.swagger.annotations.Api;
@@ -39,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URLEncoder;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,8 +52,6 @@ public class HomeController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
     @Resource
     private ContentService contentService;
-    @Resource
-    private SiteService siteService;
     @Resource
     private CommentService commentService;
 
@@ -79,14 +74,14 @@ public class HomeController extends BaseController {
             HttpServletRequest request,
             @PathVariable("p") int p, @RequestParam(value = "limit", required = false, defaultValue = "11") int limit) {
         p = p < 0 || p > WebConst.MAX_PAGE ? 1 : p;
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-        PageInfo<ContentVO> articles = contentService.queryContentPage(contentInnerQuery, p, limit);
+        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
+        contentEsInnerQuery.setType(Types.ARTICLE.getType());
+        PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, p, limit);
         //文章列表
         request.setAttribute("articles", articles);
         request.setAttribute("type", "articles");
         request.setAttribute("active", "blog");
-//        this.blogBaseData(request, contentInnerQuery);//获取公共分类标签等数据
+//        this.blogBaseData(request, contentEsInnerQuery);//获取公共分类标签等数据
         return "site/blog";
     }
 
@@ -105,56 +100,14 @@ public class HomeController extends BaseController {
     public String getArticleDetail(@ApiParam(name = "cid", value = "文章主键", required = true) @PathVariable("cid") Long cid, HttpServletRequest request) {
         ContentVO article = contentService.getArticleDetail(cid);
         request.setAttribute("article", article);
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-//        this.blogBaseData(request, contentInnerQuery);//获取公共分类标签等数据
+        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
+        contentEsInnerQuery.setType(Types.ARTICLE.getType());
+//        this.blogBaseData(request, contentEsInnerQuery);//获取公共分类标签等数据
         contentService.updateArticleHit(article.getId(), article.getHits());
         List<CommentPO> commentsPaginator = commentService.getCommentsByCId(cid);
         request.setAttribute("comments", commentsPaginator);
         request.setAttribute("active", "blog");
         return "site/blog-details";
-    }
-
-    @ApiOperation("归档页-按日期")
-    @GetMapping(value = "/blog/archives/{date}")
-    public String archives(@ApiParam(name = "date", value = "归档日期", required = true) @PathVariable("date") String date, HttpServletRequest request) {
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        Date sd = DateKit.dateFormat(date, "yyyy年MM月");
-        Date date2 = DateKit.dateAdd(DateKit.INTERVAL_SECOND, DateKit.dateAdd(DateKit.INTERVAL_MONTH, sd, 1), -1);
-        contentInnerQuery.setStartTime(sd);
-        contentInnerQuery.setEndTime(date2);
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-        List<ArchiveDto> archives = siteService.getArchives(contentInnerQuery);
-        request.setAttribute("archives_list", archives);
-//        this.blogBaseData(request, contentInnerQuery);//获取公共分类标签等数据
-        return "blog/archives";
-    }
-
-    @ApiOperation("归档页-按年份")
-    @GetMapping(value = "/blog/archives/year/{year}")
-    public String archivesAtYear(@ApiParam(name = "year", value = "归档日期", required = true) @PathVariable("year") String year,
-                                 HttpServletRequest request) {
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        Date start = DateKit.getYearStartDay(year, "yyyy");
-        Date end = DateKit.getYearEndDay(year, "yyyy");
-        contentInnerQuery.setStartTime(start);
-        contentInnerQuery.setEndTime(end);
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-        List<ArchiveDto> archives = siteService.getArchives(contentInnerQuery);
-        request.setAttribute("archives_list", archives);
-//        this.blogBaseData(request, contentInnerQuery);//获取公共分类标签等数据
-        return "blog/archives";
-    }
-
-    @ApiOperation("归档页")
-    @GetMapping(value = {"/blog/archives", "/blog/archives/index"})
-    public String archives(HttpServletRequest request) {
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-        List<ArchiveDto> archives = siteService.getArchives(contentInnerQuery);
-        request.setAttribute("archives_list", archives);
-//        this.blogBaseData(request,contentInnerQuery);//获取公共分类标签等数据
-        return "blog/archives";
     }
 
     @ApiOperation("分类")
@@ -172,16 +125,15 @@ public class HomeController extends BaseController {
             @ApiParam(name = "page", value = "页数", required = true) @PathVariable("page") int page,
             @ApiParam(name = "limit", value = "条数", required = true) @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
             HttpServletRequest request) {
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-        contentInnerQuery.setCategory(category);
-        PageInfo<ContentVO> articles = contentService.queryContentPage(contentInnerQuery, page, limit);
-//        this.blogBaseData(request,contentInnerQuery);//获取公共分类标签等数据
+        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
+        contentEsInnerQuery.setType(Types.ARTICLE.getType());
+        contentEsInnerQuery.setCategory(category);
+        PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, page, limit);
+//        this.blogBaseData(request,contentEsInnerQuery);//获取公共分类标签等数据
         request.setAttribute("articles_list", articles);
         request.setAttribute("type", "categories");
         request.setAttribute("param_name", category);
         return "blog/categories";
-
     }
 
     @ApiOperation("标签页")
@@ -199,11 +151,11 @@ public class HomeController extends BaseController {
             @ApiParam(name = "page", value = "页数", required = true) @PathVariable("page") int page,
             @ApiParam(name = "limit", value = "条数") @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
             HttpServletRequest request) {
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        contentInnerQuery.setTag(tag);
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-        PageInfo<ContentVO> articles = contentService.queryContentPage(contentInnerQuery, page, limit);
-//        this.blogBaseData(request,contentInnerQuery);//获取公共分类标签等数据
+        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
+        contentEsInnerQuery.setTag(tag);
+        contentEsInnerQuery.setType(Types.ARTICLE.getType());
+        PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, page, limit);
+//        this.blogBaseData(request,contentEsInnerQuery);//获取公共分类标签等数据
         request.setAttribute("articles_list", articles);
         request.setAttribute("type", "tag");
         request.setAttribute("param_name", tag);
@@ -225,10 +177,10 @@ public class HomeController extends BaseController {
             @ApiParam(name = "page", value = "页数", required = true) @PathVariable("page") int page,
             @ApiParam(name = "limit", value = "条数") @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
             HttpServletRequest request) {
-        PageInfo<ContentPO> pageInfo = contentService.searchContent(param, page, limit);
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        contentInnerQuery.setType(Types.ARTICLE.getType());
-//        this.blogBaseData(request,contentInnerQuery);//获取公共分类标签等数据
+        PageInfo<ContentEsPO> pageInfo = contentService.searchContent(param, page, limit);
+        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
+        contentEsInnerQuery.setType(Types.ARTICLE.getType());
+//        this.blogBaseData(request,contentEsInnerQuery);//获取公共分类标签等数据
         request.setAttribute("articles", pageInfo);
         request.setAttribute("type", "search");
         request.setAttribute("param_name", param);
@@ -303,7 +255,7 @@ public class HomeController extends BaseController {
             return Response.success();
         } catch (Exception e) {
             logger.error("comment 评论出现异常", e);
-            throw BusinessException.withErrorCode(ErrorConstant.Comment.ADD_NEW_COMMENT_FAIL);
+            throw BusinessException.withErrorCode(Constant.Comment.ADD_NEW_COMMENT_FAIL);
         }
     }
 
@@ -323,9 +275,9 @@ public class HomeController extends BaseController {
             @ApiParam(name = "limit", value = "条数") @RequestParam(name = "limit", required = false, defaultValue = "9999") int limit,
             HttpServletRequest request) {
         page = page < 0 || page > WebConst.MAX_PAGE ? 1 : page;
-        ContentInnerQuery contentInnerQuery = new ContentInnerQuery();
-        contentInnerQuery.setType(Types.PHOTO.getType());
-        PageInfo<ContentVO> articles = contentService.queryContentPage(contentInnerQuery, page, limit);
+        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
+        contentEsInnerQuery.setType(Types.PHOTO.getType());
+        PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, page, limit);
         request.setAttribute("archives", articles);
         request.setAttribute("active", "work");
         return "site/index";
@@ -334,7 +286,7 @@ public class HomeController extends BaseController {
     @ApiOperation("作品内容")
     @GetMapping(value = "/photo/article/{cid}")
     public String article(@PathVariable("cid") Long cid, HttpServletRequest request) {
-        ContentPO article = contentService.getArticleById(cid);
+        ContentEsPO article = contentService.getArticleById(cid);
         contentService.updateArticleHit(article.getId(), article.getHits());
         request.setAttribute("archive", article);
         request.setAttribute("active", "work");

@@ -4,6 +4,7 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,7 +65,7 @@ public class BeanConverter {
      */
     public static <T, S> List<T> convertToList(Class<T> targetClass, List<S> sourceList) {
         if (CollectionUtils.isEmpty(sourceList)) {
-            return null;
+            return new ArrayList<>();
         }
 
         // 获取源集合元素的class类

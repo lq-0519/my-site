@@ -1,4 +1,4 @@
-package cn.lq.dao;
+package cn.lq.dao.mysql;
 
 import cn.lq.common.domain.po.MetaExtendPO;
 import cn.lq.common.domain.po.MetaPO;

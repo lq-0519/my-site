@@ -13,7 +13,7 @@ public class StatisticsDto implements Serializable {
     /**
      * 文章数
      */
-    private Integer articles;
+    private Long articles;
     /**
      * 评论数
      */
@@ -27,11 +27,11 @@ public class StatisticsDto implements Serializable {
      */
     private Integer attachs;
 
-    public Integer getArticles() {
+    public Long getArticles() {
         return articles;
     }
 
-    public void setArticles(Integer articles) {
+    public void setArticles(Long articles) {
         this.articles = articles;
     }
 

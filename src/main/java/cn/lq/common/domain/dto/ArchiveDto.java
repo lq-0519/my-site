@@ -1,18 +1,20 @@
 package cn.lq.common.domain.dto;
 
-import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.po.es.ContentEsPO;
 
 import java.util.List;
 
 /**
  * 文章归档类
- * Created by winterchen on 2018/4/30.
+ *
+ * @author winterchen
+ * @date 2018/4/30
  */
 public class ArchiveDto {
 
     private String date;
     private String count;
-    private List<ContentPO> articles;
+    private List<ContentEsPO> articles;
 
     public String getDate() {
         return date;
@@ -30,11 +32,11 @@ public class ArchiveDto {
         this.count = count;
     }
 
-    public List<ContentPO> getArticles() {
+    public List<ContentEsPO> getArticles() {
         return articles;
     }
 
-    public void setArticles(List<ContentPO> articles) {
+    public void setArticles(List<ContentEsPO> articles) {
         this.articles = articles;
     }
 }

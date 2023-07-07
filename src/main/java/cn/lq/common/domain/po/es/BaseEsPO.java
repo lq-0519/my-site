@@ -1,29 +1,36 @@
-package cn.lq.common.domain.po;
+package cn.lq.common.domain.po.es;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author liqian477
- * @date 2023/06/27 14:25
+ * @date 2023/07/05 15:04
  */
-public class BasePO implements Serializable {
-
+public class BaseEsPO implements Serializable {
     /**
      * id
      */
+    @Id
     private Long id;
     /**
      * 创建时间
      */
+    @Field(type = FieldType.Date)
     private Date created;
     /**
      * 修改时间
      */
+    @Field(type = FieldType.Date)
     private Date modified;
     /**
      * 是否删除
      */
+    @Field(type = FieldType.Integer)
     private Integer deleted;
 
     public Long getId() {
@@ -62,7 +69,7 @@ public class BasePO implements Serializable {
     public String toString() {
         return "BaseEsPO{" +
                 "id=" + id +
-                ", create=" + created +
+                ", created=" + created +
                 ", modified=" + modified +
                 ", deleted=" + deleted +
                 '}';

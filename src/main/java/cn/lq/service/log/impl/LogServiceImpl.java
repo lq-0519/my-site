@@ -1,13 +1,13 @@
 package cn.lq.service.log.impl;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.po.LogPO;
 import cn.lq.common.domain.query.inner.LogInnerQuery;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.PageUtils;
 import cn.lq.manager.LogManager;
 import cn.lq.service.log.LogService;
-import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,13 +37,13 @@ public class LogServiceImpl implements LogService {
     @Override
     public void deleteLogById(Long id) {
         if (null == id) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         logManager.delete(id);
     }
 
     @Override
-    public PageInfo<LogPO> getLogs(int pageNum, int pageSize) {
+    public PageVO<LogPO> getLogs(int pageNum, int pageSize) {
         return PageUtils.pack(pageNum, pageSize, () -> logManager.queryForList(new LogInnerQuery()));
     }
 }

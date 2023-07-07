@@ -4,10 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 文章实体
- *
- * @author liqian
- * @date 2023-06-27 17:18:13
+ * @author liqian477
+ * @date 2023/07/07 10:18
  */
 public class ContentVO implements Serializable {
 
@@ -84,12 +82,28 @@ public class ContentVO implements Serializable {
      */
     private Integer commentsNum;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getTitlePic() {
@@ -178,22 +192,6 @@ public class ContentVO implements Serializable {
 
     public void setAllowFeed(Integer allowFeed) {
         this.allowFeed = allowFeed;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public Date getCreated() {

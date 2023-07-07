@@ -1,4 +1,4 @@
-package cn.lq.dao;
+package cn.lq.dao.mysql;
 
 import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.domain.query.inner.UserInnerQuery;

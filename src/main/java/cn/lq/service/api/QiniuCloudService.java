@@ -1,6 +1,6 @@
 package cn.lq.service.api;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.exception.BusinessException;
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
@@ -62,10 +62,10 @@ public class QiniuCloudService {
         } catch (QiniuException ex) {
             Response r = ex.response;
             LOGGER.error(r.toString());
-            throw BusinessException.withErrorCode(ErrorConstant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(ex.getMessage());
+            throw BusinessException.withErrorCode(Constant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(ex.getMessage());
         } catch (IOException e) {
             LOGGER.error("file upload failed", e);
-            throw BusinessException.withErrorCode(ErrorConstant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
+            throw BusinessException.withErrorCode(Constant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
         }
 
     }

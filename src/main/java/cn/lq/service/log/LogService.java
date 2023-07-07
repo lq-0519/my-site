@@ -1,7 +1,7 @@
 package cn.lq.service.log;
 
 import cn.lq.common.domain.po.LogPO;
-import com.github.pagehelper.PageInfo;
+import cn.lq.common.domain.vo.PageVO;
 
 /**
  * 用户请求日志
@@ -24,5 +24,5 @@ public interface LogService {
     /**
      * 获取日志
      */
-    PageInfo<LogPO> getLogs(int pageNum, int pageSize);
+    PageVO<LogPO> getLogs(int pageNum, int pageSize);
 }

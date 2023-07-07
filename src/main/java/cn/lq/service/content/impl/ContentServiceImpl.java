@@ -1,17 +1,17 @@
 package cn.lq.service.content.impl;
 
-import cn.lq.common.domain.bo.ContentBO;
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.enums.CommentStatusEnum;
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.po.ContentMetaBindPO;
-import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.CommentInnerQuery;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
 import cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery;
+import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.BeanConverter;
 import cn.lq.common.utils.CollectionUtils;
@@ -26,6 +26,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,29 +57,27 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     @Override
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void addArticle(ContentBO contentBO) {
-        if (null == contentBO) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+    public void addArticle(ContentEsPO contentEsPO) {
+        if (null == contentEsPO) {
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
-        if (StringUtils.isBlank(contentBO.getTitle())) {
-            throw BusinessException.withErrorCode(ErrorConstant.Article.TITLE_CAN_NOT_EMPTY);
+        if (StringUtils.isBlank(contentEsPO.getTitle())) {
+            throw BusinessException.withErrorCode(Constant.Article.TITLE_CAN_NOT_EMPTY);
         }
-        if (contentBO.getTitle().length() > WebConst.MAX_TITLE_COUNT) {
-            throw BusinessException.withErrorCode(ErrorConstant.Article.TITLE_IS_TOO_LONG);
+        if (contentEsPO.getTitle().length() > WebConst.MAX_TITLE_COUNT) {
+            throw BusinessException.withErrorCode(Constant.Article.TITLE_IS_TOO_LONG);
         }
-        if (StringUtils.isBlank(contentBO.getContent())) {
-            throw BusinessException.withErrorCode(ErrorConstant.Article.CONTENT_CAN_NOT_EMPTY);
+        if (StringUtils.isBlank(contentEsPO.getContent())) {
+            throw BusinessException.withErrorCode(Constant.Article.CONTENT_CAN_NOT_EMPTY);
         }
-        if (contentBO.getContent().length() > WebConst.MAX_TEXT_COUNT) {
-            throw BusinessException.withErrorCode(ErrorConstant.Article.CONTENT_IS_TOO_LONG);
+        if (contentEsPO.getContent().length() > WebConst.MAX_TEXT_COUNT) {
+            throw BusinessException.withErrorCode(Constant.Article.CONTENT_IS_TOO_LONG);
         }
 
         //标签和分类
-        String tags = contentBO.getTags();
-        String categories = contentBO.getCategories();
-        ContentPO contentPO = BeanConverter.convert(ContentPO.class, contentBO);
-        contentManager.insert(contentPO);
-        Long contentId = contentPO.getId();
+        String tags = contentEsPO.getTags();
+        String categories = contentEsPO.getCategories();
+        long contentId = contentManager.insert(contentEsPO);
         metaService.addMetas(contentId, tags, Types.TAG.getType());
         metaService.addMetas(contentId, categories, Types.CATEGORY.getType());
     }
@@ -88,7 +87,7 @@ public class ContentServiceImpl implements ContentService {
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void deleteArticleById(Long contentId) {
         if (null == contentId) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         contentManager.delete(contentId);
         //同时也要删除该文章下的所有评论
@@ -114,13 +113,12 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void updateArticleById(ContentBO contentBO) {
+    public void updateArticleById(ContentEsPO contentEsPO) {
         //标签和分类
-        String tags = contentBO.getTags();
-        String categories = contentBO.getCategories();
-        ContentPO contentPO = BeanConverter.convert(ContentPO.class, contentBO);
-        contentManager.update(contentPO);
-        Long cid = contentBO.getId();
+        String tags = contentEsPO.getTags();
+        String categories = contentEsPO.getCategories();
+        contentManager.update(contentEsPO);
+        Long cid = contentEsPO.getId();
         ContentMetaBindInnerQuery delQuery = new ContentMetaBindInnerQuery();
         delQuery.setContentId(cid);
         contentMetaBindManager.deleteByQuery(delQuery);
@@ -132,20 +130,26 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void updateCategory(String ordinal, String newCatefory) {
-        ContentInnerQuery cond = new ContentInnerQuery();
-        cond.setCategory(ordinal);
-        List<ContentPO> atricles = contentManager.queryForList(cond);
-        atricles.forEach(atricle -> {
-            atricle.setCategories(atricle.getCategories().replace(ordinal, newCatefory));
-            contentManager.update(atricle);
-        });
-    }
+    public void updateCategory(String ordinal, String newCategory) {
+        ContentEsInnerQuery query = new ContentEsInnerQuery();
+        query.setCategory(ordinal);
+        while (true) {
+            Page<ContentEsPO> contentEsPOS = contentManager.queryForPage(query, 1, 100);
+            List<ContentEsPO> content = contentEsPOS.getContent();
+            if (CollectionUtils.isEmpty(content)) {
+                break;
+            }
 
+            content.forEach(contentEsPO -> {
+                contentEsPO.setCategories(contentEsPO.getCategories().replace(ordinal, newCategory));
+                contentManager.update(contentEsPO);
+            });
+        }
+    }
 
     @Override
     @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
-    public void updateContentByCid(ContentPO content) {
+    public void updateContentByCid(ContentEsPO content) {
         if (null != content && null != content.getId()) {
             contentManager.update(content);
         }
@@ -153,31 +157,27 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Cacheable(value = "atricleCache", key = "'atricleById_' + #p0")
-    public ContentPO getArticleById(Long cid) {
-        if (null == cid) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+    public ContentEsPO getArticleById(Long id) {
+        if (null == id) {
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
-        return contentManager.queryForObject(cid);
+        return contentManager.queryForObject(id);
     }
 
     @Override
     @Cacheable(value = "atricleCaches", key = "'articlesByCond_' + #p1 + 'type_' + #p0.type")
-    public PageInfo<ContentVO> queryContentPage(ContentInnerQuery contentInnerQuery, int pageNum, int pageSize) {
-        if (null == contentInnerQuery) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+    public PageVO<ContentEsPO> queryContentPage(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize) {
+        if (contentEsInnerQuery == null) {
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
-        List<ContentPO> list = PageUtils.pack(pageNum, pageSize, () -> contentManager.queryForList(contentInnerQuery)).getList();
-        if (CollectionUtils.isEmpty(list)) {
-            return new PageInfo<>();
-        } else {
-            return new PageInfo<>(BeanConverter.convertToList(ContentVO.class, list));
-        }
+        Page<ContentEsPO> contentEsPOS = contentManager.queryForPage(contentEsInnerQuery, page, pageSize);
+        return PageUtils.convertPageVO(contentEsPOS);
     }
 
     @Override
-    public PageInfo<ContentPO> searchContent(String param, int pageNun, int pageSize) {
+    public PageInfo<ContentEsPO> searchContent(String param, int pageNun, int pageSize) {
         // TODO: liqian477 2023/7/4 分页待实现
         return null;
     }
@@ -185,11 +185,11 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ContentVO getArticleDetail(Long contentId) {
         if (contentId == null) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
-        ContentPO contentPO = contentManager.queryForObject(contentId);
-        ContentVO contentVO = BeanConverter.convert(ContentVO.class, contentPO);
+        ContentEsPO contentEsPO = contentManager.queryForObject(contentId);
+        ContentVO contentVO = BeanConverter.convert(ContentVO.class, contentEsPO);
         CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
         commentInnerQuery.setContentId(contentId);
         commentInnerQuery.setStatus(CommentStatusEnum.APPROVED.getStatus());
@@ -207,7 +207,7 @@ public class ContentServiceImpl implements ContentService {
 
         hits = null == hits ? 1 : hits + 1;
         if (hits >= WebConst.HIT_EXCEED) {
-            ContentPO temp = new ContentPO();
+            ContentEsPO temp = new ContentEsPO();
             temp.setId(contentId);
             temp.setHits(contentHits + hits);
             updateContentByCid(temp);

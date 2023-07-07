@@ -1,21 +1,20 @@
 package cn.lq.service.site.impl;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.constant.WebConst;
-import cn.lq.common.domain.dto.ArchiveDto;
 import cn.lq.common.domain.dto.StatisticsDto;
 import cn.lq.common.domain.po.CommentPO;
-import cn.lq.common.domain.po.ContentPO;
 import cn.lq.common.domain.po.MetaExtendPO;
+import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.AttachmentInnerQuery;
 import cn.lq.common.domain.query.inner.CommentInnerQuery;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
 import cn.lq.common.domain.query.inner.MetaInnerQuery;
+import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.BeanConverter;
-import cn.lq.common.utils.DateKit;
 import cn.lq.common.utils.PageUtils;
 import cn.lq.manager.AttachmentManager;
 import cn.lq.manager.CommentManager;
@@ -23,7 +22,6 @@ import cn.lq.manager.ContentManager;
 import cn.lq.manager.MetaManager;
 import cn.lq.service.site.SiteService;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +29,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +64,7 @@ public class SiteServiceImpl implements SiteService {
             limit = 10;
         }
         PageHelper.startPage(1, limit);
-        PageInfo<CommentPO> pageInfo = PageUtils.pack(1, limit, () -> commentManager.queryForList(new CommentInnerQuery()));
+        PageVO<CommentPO> pageInfo = PageUtils.pack(1, limit, () -> commentManager.queryForList(new CommentInnerQuery()));
         LOGGER.debug("Exit recentComments method");
         return pageInfo.getList();
     }
@@ -79,9 +76,8 @@ public class SiteServiceImpl implements SiteService {
             limit = 10;
         }
 
-        List<ContentPO> rs = PageUtils.pack(1, limit, () -> contentManager.queryForList(new ContentInnerQuery())).getList();
+        List<ContentEsPO> rs = contentManager.queryForPage(new ContentEsInnerQuery(), 1, limit).getContent();
         List<ContentVO> contentVOS = BeanConverter.convertToList(ContentVO.class, rs);
-        //noinspection ConstantConditions
         for (ContentVO contentVO : contentVOS) {
             int count = commentManager.queryForCount(new CommentInnerQuery(contentVO.getId()));
             contentVO.setCommentsNum(count);
@@ -94,7 +90,7 @@ public class SiteServiceImpl implements SiteService {
     public CommentPO getComment(Long id) {
         LOGGER.debug("Enter recentComment method");
         if (null == id) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         CommentPO comment = commentManager.queryForObject(id);
@@ -107,7 +103,7 @@ public class SiteServiceImpl implements SiteService {
     public StatisticsDto getStatistics() {
         LOGGER.debug("Enter recentStatistics method");
         //文章总数
-        int count = contentManager.queryForCount(new ContentInnerQuery());
+        long count = contentManager.queryForCount(new ContentEsInnerQuery());
 
         int comments = commentManager.queryForCount(new CommentInnerQuery());
         MetaInnerQuery metaInnerQuery = new MetaInnerQuery();
@@ -124,16 +120,6 @@ public class SiteServiceImpl implements SiteService {
 
         LOGGER.debug("Exit recentStatistics method");
         return rs;
-    }
-
-    @Override
-    @Cacheable(value = "siteCache", key = "'archives_' + #p0")
-    public List<ArchiveDto> getArchives(ContentInnerQuery contentInnerQuery) {
-        LOGGER.debug("Enter getArchives method");
-        List<ArchiveDto> archives = contentManager.getArchive(contentInnerQuery);
-        parseArchives(archives, contentInnerQuery);
-        LOGGER.debug("Exit getArchives method");
-        return archives;
     }
 
     @Override
@@ -158,18 +144,4 @@ public class SiteServiceImpl implements SiteService {
         return retList;
     }
 
-    private void parseArchives(List<ArchiveDto> archives, ContentInnerQuery contentInnerQuery) {
-        if (null != archives) {
-            archives.forEach(archive -> {
-                String date = archive.getDate();
-                Date sd = DateKit.dateFormat(date, "yyyy年MM月");
-                Date end = DateKit.dateAdd(DateKit.INTERVAL_SECOND, DateKit.dateAdd(DateKit.INTERVAL_MONTH, sd, 1), -1);
-                ContentInnerQuery cond = new ContentInnerQuery();
-                cond.setStartTime(sd);
-                cond.setEndTime(end);
-                cond.setType(contentInnerQuery.getType());
-                archive.setArticles(contentManager.queryForList(cond));
-            });
-        }
-    }
 }

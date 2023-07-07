@@ -1,18 +1,18 @@
 package cn.lq.web.controller.admin;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.AttachmentPO;
 import cn.lq.common.domain.po.AttachmentUserPO;
 import cn.lq.common.domain.po.UserPO;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.Commons;
 import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.service.api.QiniuCloudService;
 import cn.lq.service.attach.AttachmentService;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -54,7 +54,7 @@ public class AttachmentController {
             @ApiParam(name = "page", value = "页数") @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @ApiParam(name = "limit", value = "条数") @RequestParam(name = "limit", required = false, defaultValue = "12") int limit,
             HttpServletRequest request) {
-        PageInfo<AttachmentUserPO> atts = attachmentService.getAttachmentUserPage(page, limit);
+        PageVO<AttachmentUserPO> atts = attachmentService.getAttachmentUserPage(page, limit);
         request.setAttribute("attachs", atts);
         request.setAttribute(Types.ATTACH_URL.getType(), Commons.site_option(Types.ATTACH_URL.getType(), Commons.site_url()));
         request.setAttribute("max_file_size", WebConst.MAX_FILE_SIZE / 1024);
@@ -88,9 +88,9 @@ public class AttachmentController {
             try {
                 response.getWriter().write("{\"success\":0}");
             } catch (IOException e1) {
-                throw BusinessException.withErrorCode(ErrorConstant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
+                throw BusinessException.withErrorCode(Constant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
             }
-            throw BusinessException.withErrorCode(ErrorConstant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
+            throw BusinessException.withErrorCode(Constant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ public class AttachmentController {
             return Response.success();
         } catch (IOException e) {
             e.printStackTrace();
-            throw BusinessException.withErrorCode(ErrorConstant.Att.UPLOAD_FILE_FAIL)
+            throw BusinessException.withErrorCode(Constant.Att.UPLOAD_FILE_FAIL)
                     .withErrorMessageArguments(e.getMessage());
         }
     }
@@ -135,7 +135,7 @@ public class AttachmentController {
         try {
             AttachmentUserPO attAch = attachmentService.getAttachmentUserById(id);
             if (null == attAch) {
-                throw BusinessException.withErrorCode(ErrorConstant.Att.DELETE_ATT_FAIL + ": 文件不存在");
+                throw BusinessException.withErrorCode(Constant.Att.DELETE_ATT_FAIL + ": 文件不存在");
             }
 
             attachmentService.deleteAttAch(id);

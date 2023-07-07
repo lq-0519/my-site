@@ -2,7 +2,7 @@ package cn.lq.service.attach;
 
 import cn.lq.common.domain.po.AttachmentPO;
 import cn.lq.common.domain.po.AttachmentUserPO;
-import com.github.pagehelper.PageInfo;
+import cn.lq.common.domain.vo.PageVO;
 
 /**
  * 附件服务层
@@ -35,5 +35,5 @@ public interface AttachmentService {
     /**
      * 获取所有的附件信息
      */
-    PageInfo<AttachmentUserPO> getAttachmentUserPage(int pageNum, int pageSize);
+    PageVO<AttachmentUserPO> getAttachmentUserPage(int pageNum, int pageSize);
 }

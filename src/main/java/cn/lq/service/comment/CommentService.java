@@ -2,7 +2,7 @@ package cn.lq.service.comment;
 
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.query.inner.CommentInnerQuery;
-import com.github.pagehelper.PageInfo;
+import cn.lq.common.domain.vo.PageVO;
 
 import java.util.List;
 
@@ -55,5 +55,5 @@ public interface CommentService {
      * @param pageNum           分页参数 第几页
      * @param pageSize          分页参数 每页条数
      */
-    PageInfo<CommentPO> getCommentsByCond(CommentInnerQuery commentInnerQuery, int pageNum, int pageSize);
+    PageVO<CommentPO> getCommentsByCond(CommentInnerQuery commentInnerQuery, int pageNum, int pageSize);
 }

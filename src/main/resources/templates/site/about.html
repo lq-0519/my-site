@@ -52,8 +52,7 @@
                 <th:block th:if="${linkStat.index < 3}">
                     <section class="col-xs-12 col-sm-4 col-md-4 col-lg-4 ">
                         <figure>
-                            <img class="img-responsive"
-                                 th:onclick="'javascript:linkFirend(\''+${link.slug}+'\')'" th:src="@{'/site/images/about-images/about-image-' + ${linkStat.index+1} + '.jpg'}"/>
+                            <img class="img-responsive" th:onclick="'javascript:linkFirend([[${link.slug}]])'" th:src="@{'/site/images/about-images/about-image-' + ${linkStat.index+1} + '.jpg'}"/>
                             <figcaption>
                                 <h3>
                                     <th:block th:text="${link.name}"></th:block>

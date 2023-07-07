@@ -2,7 +2,7 @@ package cn.lq.manager.impl;
 
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.query.inner.CommentInnerQuery;
-import cn.lq.dao.CommentDao;
+import cn.lq.dao.mysql.CommentDao;
 import cn.lq.manager.CommentManager;
 import org.springframework.stereotype.Service;
 

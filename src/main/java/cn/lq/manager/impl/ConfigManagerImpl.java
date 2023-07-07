@@ -4,7 +4,7 @@ import cn.lq.common.domain.po.ConfigPO;
 import cn.lq.common.domain.query.inner.ConfigInnerQuery;
 import cn.lq.common.exception.ParamInvalidException;
 import cn.lq.common.utils.CollectionUtils;
-import cn.lq.dao.ConfigDao;
+import cn.lq.dao.mysql.ConfigDao;
 import cn.lq.manager.ConfigManager;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

@@ -1,17 +1,17 @@
 package cn.lq.service.comment.impl;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.enums.CommentStatusEnum;
 import cn.lq.common.domain.po.CommentPO;
-import cn.lq.common.domain.po.ContentPO;
+import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.CommentInnerQuery;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.PageUtils;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.manager.CommentManager;
 import cn.lq.service.comment.CommentService;
 import cn.lq.service.content.ContentService;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -80,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
             if (msg != null) {
                 throw BusinessException.withErrorCode(msg);
             }
-            ContentPO article = contentService.getArticleById(comments.getContentId());
+            ContentEsPO article = contentService.getArticleById(comments.getContentId());
             if (null == article) {
                 throw BusinessException.withErrorCode("该文章不存在");
             }
@@ -99,7 +99,7 @@ public class CommentServiceImpl implements CommentService {
     @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void deleteComment(Long coid) {
         if (null == coid) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         // 如果删除的评论存在子评论，一并删除
         //查找当前评论是否有子评论
@@ -125,7 +125,7 @@ public class CommentServiceImpl implements CommentService {
     @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void updateCommentStatus(Long commentId, String status) {
         if (null == commentId) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         CommentPO commentPO = new CommentPO();
         commentPO.setId(commentId);
@@ -137,7 +137,7 @@ public class CommentServiceImpl implements CommentService {
     @Cacheable(value = "commentCache", key = "'commentById_' + #p0")
     public CommentPO getCommentById(Long coid) {
         if (null == coid) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         return commentManager.queryForObject(coid);
@@ -147,7 +147,7 @@ public class CommentServiceImpl implements CommentService {
     @Cacheable(value = "commentCache", key = "'commentsByCId_' + #p0")
     public List<CommentPO> getCommentsByCId(Long contentId) {
         if (null == contentId) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
         commentInnerQuery.setContentId(contentId);
@@ -157,9 +157,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Cacheable(value = "commentCache", key = "'commentsByCond_' + #p1")
-    public PageInfo<CommentPO> getCommentsByCond(CommentInnerQuery commentInnerQuery, int pageNum, int pageSize) {
+    public PageVO<CommentPO> getCommentsByCond(CommentInnerQuery commentInnerQuery, int pageNum, int pageSize) {
         if (null == commentInnerQuery) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         return PageUtils.pack(pageNum, pageSize, () -> commentManager.queryForList(commentInnerQuery));

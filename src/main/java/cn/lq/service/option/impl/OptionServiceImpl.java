@@ -1,6 +1,6 @@
 package cn.lq.service.option.impl;
 
-import cn.lq.common.domain.constant.ErrorConstant;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.po.ConfigPO;
 import cn.lq.common.domain.query.inner.ConfigInnerQuery;
 import cn.lq.common.exception.BusinessException;
@@ -33,7 +33,7 @@ public class OptionServiceImpl implements OptionService {
     @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
     public void updateOptionByCode(String code, String value) {
         if (StringUtils.isBlank(code)) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
         ConfigPO option = new ConfigPO();
         option.setValue(value);
@@ -55,7 +55,7 @@ public class OptionServiceImpl implements OptionService {
     @Cacheable(value = "optionCache", key = "'optionByCode_' + #p0")
     public ConfigPO getOptionByCode(String code) {
         if (StringUtils.isBlank(code)) {
-            throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
         return configManager.getConfigByCode(code);

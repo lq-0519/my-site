@@ -2,7 +2,7 @@ package cn.lq.manager.impl;
 
 import cn.lq.common.domain.po.LogPO;
 import cn.lq.common.domain.query.inner.LogInnerQuery;
-import cn.lq.dao.LogDao;
+import cn.lq.dao.mysql.LogDao;
 import cn.lq.manager.LogManager;
 import org.springframework.stereotype.Service;
 

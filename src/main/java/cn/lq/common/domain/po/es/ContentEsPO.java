@@ -1,62 +1,81 @@
-package cn.lq.common.domain.po;
+package cn.lq.common.domain.po.es;
+
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 
 /**
- * 文章实体
- *
- * @author winterchen
- * @date 2018/4/29
+ * @author liqian477
+ * @date 2023/07/05 15:05
  */
-public class ContentPO extends BasePO implements Serializable {
-
+@Document(indexName = "content", type = "content", shards = 1, replicas = 0)
+public class ContentEsPO extends BaseEsPO implements Serializable {
     /**
      * 内容标题
      */
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
     private String title;
+    /**
+     * 内容
+     */
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
+    private String content;
     /**
      * 标题图片
      */
+    @Field(type = FieldType.Keyword)
     private String titlePic;
     /**
      * 内容缩略名
      */
+    @Field(type = FieldType.Keyword)
     private String slug;
     /**
      * 内容所属用户id
      */
+    @Field(type = FieldType.Long)
     private Long authorId;
     /**
      * 内容类别
      */
+    @Field(type = FieldType.Keyword)
     private String type;
     /**
      * 内容状态
      */
+    @Field(type = FieldType.Keyword)
     private String status;
     /**
      * 标签列表
      */
+    @Field(type = FieldType.Keyword)
     private String tags;
     /**
      * 分类列表
      */
+    @Field(type = FieldType.Keyword)
     private String categories;
     /**
      * 点击次数
      */
+    @Field(type = FieldType.Integer)
     private Integer hits;
     /**
      * 是否允许评论
      */
+    @Field(type = FieldType.Integer)
     private Integer allowComment;
     /**
      * 是否允许ping
      */
+    @Field(type = FieldType.Integer)
     private Integer allowPing;
     /**
      * 允许出现在聚合中
      */
+    @Field(type = FieldType.Integer)
     private Integer allowFeed;
 
     public String getTitle() {
@@ -65,6 +84,14 @@ public class ContentPO extends BasePO implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getTitlePic() {
@@ -157,8 +184,9 @@ public class ContentPO extends BasePO implements Serializable {
 
     @Override
     public String toString() {
-        return "ContentPO{" +
+        return "ContentEsPO{" +
                 "title='" + title + '\'' +
+                ", content='" + content + '\'' +
                 ", titlePic='" + titlePic + '\'' +
                 ", slug='" + slug + '\'' +
                 ", authorId=" + authorId +

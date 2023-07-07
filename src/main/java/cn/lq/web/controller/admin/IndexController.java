@@ -7,6 +7,7 @@ import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.po.LogPO;
 import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.domain.vo.ContentVO;
+import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.GsonUtils;
 import cn.lq.common.utils.Response;
@@ -15,7 +16,6 @@ import cn.lq.service.log.LogService;
 import cn.lq.service.site.SiteService;
 import cn.lq.service.user.UserService;
 import cn.lq.web.controller.BaseController;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +62,7 @@ public class IndexController extends BaseController {
         List<ContentVO> contents = siteService.getNewArticles(5);
         StatisticsDto statistics = siteService.getStatistics();
         // 取最新的20条日志
-        PageInfo<LogPO> logs = logService.getLogs(1, 5);
+        PageVO<LogPO> logs = logService.getLogs(1, 5);
         List<LogPO> list = logs.getList();
         request.setAttribute("comments", comments);
         request.setAttribute("articles", contents);

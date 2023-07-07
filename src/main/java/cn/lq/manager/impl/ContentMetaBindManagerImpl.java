@@ -2,7 +2,7 @@ package cn.lq.manager.impl;
 
 import cn.lq.common.domain.po.ContentMetaBindPO;
 import cn.lq.common.domain.query.inner.ContentMetaBindInnerQuery;
-import cn.lq.dao.ContentMetaBindDao;
+import cn.lq.dao.mysql.ContentMetaBindDao;
 import cn.lq.manager.ContentMetaBindManager;
 import org.springframework.stereotype.Service;
 

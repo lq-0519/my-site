@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.EnableCaching;
  * @author liqian477
  */
 @SpringBootApplication
-@MapperScan("cn.lq.dao")
+@MapperScan("cn.lq.dao.mysql")
 @EnableCaching
 public class MySiteApplication {
 

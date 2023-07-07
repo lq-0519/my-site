@@ -1,14 +1,34 @@
 package cn.lq.manager.impl;
 
-import cn.lq.common.domain.dto.ArchiveDto;
-import cn.lq.common.domain.po.ContentPO;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
-import cn.lq.dao.ContentDao;
+import cn.lq.common.domain.enums.DeletedEnum;
+import cn.lq.common.domain.po.es.ContentEsPO;
+import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
+import cn.lq.common.exception.ParamInvalidException;
+import cn.lq.common.utils.EsIdGenerator;
+import cn.lq.common.utils.EsUtils;
+import cn.lq.dao.es.ContentRepository;
+import cn.lq.dao.es.HighlightResultMapper;
 import cn.lq.manager.ContentManager;
+import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
+import org.springframework.data.elasticsearch.core.query.UpdateQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.Date;
 
 /**
  * @author liqian477
@@ -16,64 +36,108 @@ import java.util.List;
  */
 @Service("contentManager")
 public class ContentManagerImpl implements ContentManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContentManagerImpl.class);
     @Resource
-    private ContentDao contentDao;
+    private ElasticsearchTemplate elasticsearchTemplate;
 
-    /**
-     * 添加文章
-     */
+    @Resource
+    private ContentRepository contentRepository;
+
     @Override
-    public int insert(ContentPO contentPO) {
-        return contentDao.insert(contentPO);
+    public long insert(ContentEsPO contentEsPO) {
+        if (contentEsPO == null) {
+            throw new ParamInvalidException("insertEs 参数异常");
+        }
+
+        long id = EsIdGenerator.nextId();
+        contentEsPO.setId(id);
+        contentEsPO.setCreated(new Date());
+        contentEsPO.setModified(new Date());
+        contentEsPO.setDeleted(DeletedEnum.NOT_DELETE.getDelete());
+        contentRepository.save(contentEsPO);
+        return id;
     }
 
     /**
      * 根据编号删除文章
+     * 删除es
      */
     @Override
-    public int delete(Long id) {
-        return contentDao.delete(id);
+    public void delete(Long id) {
+        if (id == null) {
+            throw new ParamInvalidException("deleteEs 参数异常");
+        }
+
+        ContentEsPO contentEsPO = new ContentEsPO();
+        contentEsPO.setId(id);
+        contentEsPO.setDeleted(DeletedEnum.DELETE.getDelete());
+        update(contentEsPO);
     }
 
-    /**
-     * 更新文章
-     */
     @Override
-    public int update(ContentPO contentPO) {
-        return contentDao.update(contentPO);
+    public int update(ContentEsPO contentEsPO) {
+        if (contentEsPO == null || contentEsPO.getId() == null) {
+            throw new ParamInvalidException("updateEs 参数异常");
+        }
+
+        IndexRequest indexRequest = EsUtils.getIndexRequest(contentEsPO, ContentRepository.DOC_CLASS);
+        UpdateQuery updateQuery = new UpdateQueryBuilder()
+                .withIndexName(ContentRepository.INDEX_NAME)
+                .withType(ContentRepository.TYPE)
+                .withId(String.valueOf(contentEsPO.getId()))
+                .withClass(ContentRepository.DOC_CLASS)
+                .withIndexRequest(indexRequest)
+                .build();
+        UpdateResponse updateResponse = elasticsearchTemplate.update(updateQuery);
+        LOGGER.warn("update updateResponse:{}", JSON.toJSON(updateResponse));
+        return updateResponse.status().getStatus();
     }
 
-    /**
-     * 根据编号获取文章
-     */
     @Override
-    public ContentPO queryForObject(Long id) {
-        return contentDao.queryForObject(id);
+    public ContentEsPO queryForObject(Long id) {
+        if (id == null) {
+            return null;
+        }
+
+        return contentRepository.findById(id)
+                .orElse(null);
     }
 
-    /**
-     * 根据条件获取文章列表
-     */
     @Override
-    public List<ContentPO> queryForList(ContentInnerQuery contentInnerQuery) {
-        return contentDao.queryForList(contentInnerQuery);
+    public long queryForCount(ContentEsInnerQuery contentEsInnerQuery) {
+        BoolQueryBuilder boolQueryBuilder = EsUtils.getBoolQueryBuilder(contentEsInnerQuery, ContentRepository.QUERY_CLASS);
+        //内容查询特殊处理, 需要映射到两个字段上进行模糊查询
+        if (StringUtils.isNotBlank(contentEsInnerQuery.getContent())) {
+            boolQueryBuilder.must(QueryBuilders.multiMatchQuery(contentEsInnerQuery.getContent(), ContentRepository.FIELD_CONTENT, ContentRepository.FIELD_TITLE));
+        }
+
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withIndices(ContentRepository.INDEX_NAME)
+                .withTypes(ContentRepository.TYPE)
+                .withQuery(boolQueryBuilder)
+                .build();
+        return elasticsearchTemplate.count(searchQuery, ContentRepository.DOC_CLASS);
     }
 
-    /**
-     * 获取文章总数量
-     */
     @Override
-    public int queryForCount(ContentInnerQuery contentInnerQuery) {
-        return contentDao.queryForCount(contentInnerQuery);
-    }
-
-    /**
-     * 获取归档数据
-     *
-     * @param contentInnerQuery 查询条件（只包含开始时间和结束时间）
-     */
-    @Override
-    public List<ArchiveDto> getArchive(ContentInnerQuery contentInnerQuery) {
-        return contentDao.getArchive(contentInnerQuery);
+    public Page<ContentEsPO> queryForPage(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize) {
+        BoolQueryBuilder boolQueryBuilder = EsUtils.getBoolQueryBuilder(contentEsInnerQuery, ContentRepository.QUERY_CLASS);
+        //内容查询特殊处理, 需要映射到两个字段上进行模糊查询
+        if (StringUtils.isNotBlank(contentEsInnerQuery.getContent())) {
+            boolQueryBuilder.must(QueryBuilders.multiMatchQuery(contentEsInnerQuery.getContent(), ContentRepository.FIELD_CONTENT, ContentRepository.FIELD_TITLE));
+        }
+        HighlightBuilder.Field titleField = new HighlightBuilder.Field(ContentRepository.FIELD_TITLE).preTags("<span style='color:#FF4500' >").postTags("</span>");
+        HighlightBuilder.Field contentField = new HighlightBuilder.Field(ContentRepository.FIELD_CONTENT).preTags("<span style='color:#FF4500' >").postTags("</span>");
+        HighlightBuilder.Field[] fields = new HighlightBuilder.Field[2];
+        fields[0] = titleField;
+        fields[1] = contentField;
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withIndices(ContentRepository.INDEX_NAME)
+                .withTypes(ContentRepository.TYPE)
+                .withQuery(boolQueryBuilder)
+                .withHighlightFields(fields)
+                .withPageable(PageRequest.of(page - 1, pageSize))
+                .build();
+        return elasticsearchTemplate.queryForPage(searchQuery, ContentEsPO.class, new HighlightResultMapper());
     }
 }

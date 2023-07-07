@@ -3,7 +3,7 @@ package cn.lq.manager.impl;
 import cn.lq.common.domain.po.AttachmentPO;
 import cn.lq.common.domain.po.AttachmentUserPO;
 import cn.lq.common.domain.query.inner.AttachmentInnerQuery;
-import cn.lq.dao.AttachmentDao;
+import cn.lq.dao.mysql.AttachmentDao;
 import cn.lq.manager.AttachmentManager;
 import org.springframework.stereotype.Service;
 

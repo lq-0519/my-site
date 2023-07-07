@@ -1,9 +1,9 @@
 package cn.lq.service.content;
 
-import cn.lq.common.domain.bo.ContentBO;
-import cn.lq.common.domain.po.ContentPO;
-import cn.lq.common.domain.query.inner.ContentInnerQuery;
+import cn.lq.common.domain.po.es.ContentEsPO;
+import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
+import cn.lq.common.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -17,7 +17,7 @@ public interface ContentService {
     /**
      * 添加文章
      */
-    void addArticle(ContentBO contentBO);
+    void addArticle(ContentEsPO contentEsPO);
 
     /**
      * 根据编号删除文章
@@ -27,32 +27,32 @@ public interface ContentService {
     /**
      * 更新文章
      */
-    void updateArticleById(ContentBO contentBO);
+    void updateArticleById(ContentEsPO contentEsPO);
 
     /**
      * 更新分类
      */
-    void updateCategory(String ordinal, String newCatefory);
+    void updateCategory(String ordinal, String newCategory);
 
     /**
      * 添加文章点击量
      */
-    void updateContentByCid(ContentPO content);
+    void updateContentByCid(ContentEsPO content);
 
     /**
      * 根据编号获取文章
      */
-    ContentPO getArticleById(Long cid);
+    ContentEsPO getArticleById(Long id);
 
     /**
      * 根据条件获取文章列表
      */
-    PageInfo<ContentVO> queryContentPage(ContentInnerQuery contentInnerQuery, int pageNum, int pageSize);
+    PageVO<ContentEsPO> queryContentPage(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize);
 
     /**
      * 搜索文章
      */
-    PageInfo<ContentPO> searchContent(String param, int pageNun, int pageSize);
+    PageInfo<ContentEsPO> searchContent(String param, int pageNun, int pageSize);
 
     /**
      * 获取文章详细信息
