@@ -159,9 +159,9 @@ public class EsUtils {
         }
 
         if (DeletedEnum.DELETE.isEqual(baseQuery.getDeleted())) {
-            boolQueryBuilder.must(QueryBuilders.termQuery(Constant.Es.FIELD_DELETED, DeletedEnum.DELETE.getDelete()).queryName("deleteQuery"));
+            boolQueryBuilder.must(QueryBuilders.termQuery(Constant.Es.FIELD_DELETED, DeletedEnum.DELETE.getStatus()).queryName("deleteQuery"));
         } else {
-            boolQueryBuilder.mustNot(QueryBuilders.termQuery(Constant.Es.FIELD_DELETED, DeletedEnum.DELETE.getDelete()).queryName("noDeleteQuery"));
+            boolQueryBuilder.mustNot(QueryBuilders.termQuery(Constant.Es.FIELD_DELETED, DeletedEnum.DELETE.getStatus()).queryName("noDeleteQuery"));
         }
         return boolQueryBuilder;
     }

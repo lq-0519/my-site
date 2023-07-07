@@ -8,17 +8,17 @@ public enum DeletedEnum {
     DELETE(1),
     NOT_DELETE(0),
     ;
-    private final Integer delete;
+    private final Integer status;
 
-    DeletedEnum(Integer delete) {
-        this.delete = delete;
+    DeletedEnum(Integer status) {
+        this.status = status;
     }
 
-    public Integer getDelete() {
-        return delete;
+    public Integer getStatus() {
+        return status;
     }
 
     public boolean isEqual(Integer deleted) {
-        return this.delete.equals(deleted);
+        return this.status.equals(deleted);
     }
 }

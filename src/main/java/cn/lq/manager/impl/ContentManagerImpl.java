@@ -53,7 +53,7 @@ public class ContentManagerImpl implements ContentManager {
         contentEsPO.setId(id);
         contentEsPO.setCreated(new Date());
         contentEsPO.setModified(new Date());
-        contentEsPO.setDeleted(DeletedEnum.NOT_DELETE.getDelete());
+        contentEsPO.setDeleted(DeletedEnum.NOT_DELETE.getStatus());
         contentRepository.save(contentEsPO);
         return id;
     }
@@ -70,7 +70,7 @@ public class ContentManagerImpl implements ContentManager {
 
         ContentEsPO contentEsPO = new ContentEsPO();
         contentEsPO.setId(id);
-        contentEsPO.setDeleted(DeletedEnum.DELETE.getDelete());
+        contentEsPO.setDeleted(DeletedEnum.DELETE.getStatus());
         update(contentEsPO);
     }
 
