@@ -37,7 +37,7 @@ public class Response<T> {
         return new Response<>(CODE_SUCCESS);
     }
 
-    public static Response<Object> success(Object data) {
+    public static <R> Response<R> success(R data) {
         return new Response<>(CODE_SUCCESS, data);
     }
 

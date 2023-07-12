@@ -6,13 +6,9 @@ $(document).ready(function () {
 
     $.fn.menumaker = function (options) {
         const cssmenu = $(this), settings = $.extend({
-
             title: "Menu",
-
             format: "dropdown",
-
             sticky: false
-
         }, options);
         return this.each(function () {
             cssmenu.prepend('<div id="menu-button"><span></span><span></span><span></span>' + settings.title + '</div>');
@@ -39,7 +35,6 @@ $(document).ready(function () {
                         $(this).siblings('ul').addClass('open').slideDown();
                     }
                 });
-
             };
             if (settings.format === 'multitoggle') multiTg();
             else cssmenu.addClass('dropdown');
@@ -56,13 +51,11 @@ $(document).ready(function () {
         $(this).toggleClass('open');
     });
 
-
     new AnimOnScroll(document.getElementById('grid'), {
         minDuration: 0.4,
         maxDuration: 0.7,
         viewportFactor: 0.2
     });
-
 
 });
 

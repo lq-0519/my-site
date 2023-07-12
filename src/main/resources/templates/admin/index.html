@@ -71,12 +71,12 @@
                                     <h4 class="panel-title">最新留言</h4>
                                 </div>
                                 <div class="panel-body">
-                                    <div th:if="${comments}== null and ${#lists.size(comments)}==0">
+                                    <div th:if="${comments} == null or ${#lists.size(comments)}==0">
                                         <div class="alert alert-warning">
                                             还没有收到留言.
                                         </div>
                                     </div>
-                                    <ul class="list-group" th:unless="${comments}==null and ${#lists.size(comments)}==0">
+                                    <ul class="list-group" th:unless="${comments} == null or ${#lists.size(comments)}==0">
                                         <li class="list-group-item" th:each="comment : ${comments}">
                                             <div th:if="${comment.url}!=null and ${comment.url}!=''">
                                                 <a target="_blank" th:href="@{${comment.url}}" th:text="${comment.author}"></a>

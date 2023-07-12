@@ -9,8 +9,6 @@ import cn.lq.common.utils.Response;
 import cn.lq.service.log.LogService;
 import cn.lq.service.option.OptionService;
 import cn.lq.web.controller.BaseController;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -26,10 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 系统设置
+ *
  * @author winterchen
  * @date 2018/4/30
  */
-@Api("系统设置")
 @Controller
 @RequestMapping("/admin/setting")
 public class SettingController extends BaseController {
@@ -42,8 +41,9 @@ public class SettingController extends BaseController {
     @Resource
     private LogService logService;
 
-
-    @ApiOperation("进入设置页")
+    /**
+     * 进入设置页
+     */
     @GetMapping(value = "")
     public String setting(HttpServletRequest request) {
         List<ConfigPO> optionsList = optionService.getOptions();
@@ -53,8 +53,9 @@ public class SettingController extends BaseController {
         return "admin/setting";
     }
 
-
-    @ApiOperation("保存系统设置")
+    /**
+     * 保存系统设置
+     */
     @PostMapping(value = "")
     @ResponseBody
     public Response<?> saveSetting(HttpServletRequest request) {

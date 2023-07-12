@@ -27,8 +27,8 @@ var tale = new $.tale();
  * @param status
  */
 function subArticle(status) {
-    var title = $('#articleForm input[name=title]').val();
-    var content = $('#text').val();
+    const title = $('#articleForm input[name=title]').val();
+    const content = $('#text').val();
     if (title == '') {
         tale.alertWarn('请输入文章标题');
         return;
@@ -65,9 +65,9 @@ function subArticle(status) {
 
 
 function allow_comment(obj) {
-    var this_ = $(obj);
-    var on = this_.find('.toggle-on.active').length;
-    var off = this_.find('.toggle-off.active').length;
+    const this_ = $(obj);
+    const on = this_.find('.toggle-on.active').length;
+    const off = this_.find('.toggle-off.active').length;
     if (on == 1) {
         $('#allow_comment').val(false);
     }

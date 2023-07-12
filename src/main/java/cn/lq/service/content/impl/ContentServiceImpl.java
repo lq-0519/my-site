@@ -22,7 +22,6 @@ import cn.lq.manager.ContentManager;
 import cn.lq.manager.ContentMetaBindManager;
 import cn.lq.service.content.ContentService;
 import cn.lq.service.meta.MetaService;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -166,7 +165,6 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    @Cacheable(value = "atricleCaches", key = "'articlesByCond_' + #p1 + 'type_' + #p0.type")
     public PageVO<ContentEsPO> queryContentPage(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize) {
         if (contentEsInnerQuery == null) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -174,12 +172,6 @@ public class ContentServiceImpl implements ContentService {
 
         Page<ContentEsPO> contentEsPOS = contentManager.queryForPage(contentEsInnerQuery, page, pageSize);
         return PageUtils.convertPageVO(contentEsPOS);
-    }
-
-    @Override
-    public PageInfo<ContentEsPO> searchContent(String param, int pageNun, int pageSize) {
-        // TODO: liqian477 2023/7/4 分页待实现
-        return null;
     }
 
     @Override

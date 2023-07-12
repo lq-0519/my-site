@@ -43,7 +43,9 @@ public class EsUtils {
      * key:类全名 value:属性名称集合
      */
     private static final ConcurrentHashMap<String, Set<String>> CACHE_CLASS_FILED_NAME = new ConcurrentHashMap<>();
-
+    /**
+     * 不更新字段
+     */
     private static final List<String> CANNOT_UPDATE_FIELD_LIST = Lists.newArrayList(Constant.Es.FIELD_ID, Constant.Es.FIELD_MODIFIED, Constant.Es.FIELD_CREATED);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EsUtils.class);

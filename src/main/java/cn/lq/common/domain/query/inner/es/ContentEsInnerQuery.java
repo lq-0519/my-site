@@ -20,6 +20,7 @@ public class ContentEsInnerQuery extends BaseEsInnerQuery implements Serializabl
     private String title;
     /**
      * 内容
+     * 不使用注解:EsQueryField, 因为后面需要特殊处理
      */
     private String content;
     /**

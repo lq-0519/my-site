@@ -14,7 +14,7 @@ import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.service.comment.CommentService;
 import cn.lq.service.content.ContentService;
-import com.github.pagehelper.PageInfo;
+import com.alibaba.fastjson.JSON;
 import com.vdurmont.emoji.EmojiParser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -49,26 +48,32 @@ import java.util.List;
 @Controller
 public class HomeController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
     @Resource
     private ContentService contentService;
     @Resource
     private CommentService commentService;
 
-    @ApiOperation("blog首页")
+    /**
+     * blog首页
+     */
     @GetMapping(value = {"", "/index"})
     public String index(HttpServletRequest request, @RequestParam(value = "limit", defaultValue = "11") int limit) {
         return this.blogIndex(request, 1, limit);
     }
 
-    @ApiOperation("work首页")
+    /**
+     * work首页
+     */
     @GetMapping(value = {"/work/", "/work/index"})
     public String workIndex(HttpServletRequest request,
                             @ApiParam(name = "limit", value = "页数") @RequestParam(name = "limit", required = false, defaultValue = "12") int limit) {
         return this.workIndex(1, limit, request);
     }
 
-    @ApiOperation("blog首页-分页")
+    /**
+     * blog首页-分页
+     */
     @GetMapping(value = "/blog/page/{p}")
     public String blogIndex(
             HttpServletRequest request,
@@ -85,7 +90,6 @@ public class HomeController extends BaseController {
         return "site/blog";
     }
 
-    @ApiIgnore
     @GetMapping(value = {"/about", "/about/index"})
     public String getAbout(HttpServletRequest request) {
         //获取友链
@@ -95,7 +99,9 @@ public class HomeController extends BaseController {
     }
 
 
-    @ApiOperation("文章内容页")
+    /**
+     * 文章内容页
+     */
     @GetMapping(value = "/blog/article/{cid}")
     public String getArticleDetail(@ApiParam(name = "cid", value = "文章主键", required = true) @PathVariable("cid") Long cid, HttpServletRequest request) {
         ContentVO article = contentService.getArticleDetail(cid);
@@ -163,28 +169,11 @@ public class HomeController extends BaseController {
     }
 
     @ApiOperation("搜索文章")
-    @GetMapping("/blog/search")
-    public String search(
-            @ApiParam(name = "param", value = "搜索的文字", required = true) @RequestParam(name = "param", required = true) String param,
-            HttpServletRequest request) {
-        return this.search(param, 1, 10, request);
-    }
-
-    @ApiOperation("搜索文章-分页")
-    @GetMapping(value = "/blog/search/{param}/page/{page}")
-    public String search(
-            @ApiParam(name = "param", value = "搜索的文字", required = true) @PathVariable("param") String param,
-            @ApiParam(name = "page", value = "页数", required = true) @PathVariable("page") int page,
-            @ApiParam(name = "limit", value = "条数") @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
-            HttpServletRequest request) {
-        PageInfo<ContentEsPO> pageInfo = contentService.searchContent(param, page, limit);
-        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
-        contentEsInnerQuery.setType(Types.ARTICLE.getType());
-//        this.blogBaseData(request,contentEsInnerQuery);//获取公共分类标签等数据
-        request.setAttribute("articles", pageInfo);
-        request.setAttribute("type", "search");
-        request.setAttribute("param_name", param);
-        return "blog/index";
+    @PostMapping(value = "/blog/search")
+    public String search(ContentEsInnerQuery query, int page, int pageSize) {
+        PageVO<ContentEsPO> contentEsPOPageVO = contentService.queryContentPage(query, page, pageSize);
+        LOGGER.warn("search contentEsPOPageVO:{}", JSON.toJSON(contentEsPOPageVO));
+        return "site/blog";
     }
 
     /**
@@ -254,7 +243,7 @@ public class HomeController extends BaseController {
 
             return Response.success();
         } catch (Exception e) {
-            logger.error("comment 评论出现异常", e);
+            LOGGER.error("comment 评论出现异常", e);
             throw BusinessException.withErrorCode(Constant.Comment.ADD_NEW_COMMENT_FAIL);
         }
     }

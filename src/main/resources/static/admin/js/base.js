@@ -114,7 +114,7 @@ $.tale.prototype.alertBox = function (options) {
         showCancelButton: options.showCancelButton,
         showLoaderOnConfirm: options.showLoaderOnConfirm || false,
         confirmButtonColor: options.confirmButtonColor || '#3085d6',
-        cancelButtonColor: options.cancelButtonColor || '#d33',
+        cancelButtonColor: options.cancelButtonColor || '#dd3333',
         confirmButtonText: options.confirmButtonText || '确定',
         cancelButtonText: options.cancelButtonText || '取消'
     }).then(function (e) {

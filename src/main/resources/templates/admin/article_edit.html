@@ -43,66 +43,47 @@
                     </div>
                     <div class="col-md-12">
                         <form id="articleForm" novalidate="novalidate" role="form">
-                            <input id="categories" name="categories" type="hidden"/>
-                            <input id="type" name="type" type="hidden"/>
+                            <input id="categories" name="categories" type="hidden"/> <input id="type" name="type" type="hidden"/>
                             <input id="cid" name="cid" th:value="${contents!=null and contents.id!=null}?${contents.id}: ''" type="hidden"/>
-                            <input id="status" name="status"
-                                   th:value="${contents!=null and contents.status !=null}?${contents.status}: 'publish'"
-                                   type="hidden"/>
-                            <input id="allow_comment" name="allowComment"
-                                   th:value="${contents!=null and contents.allowComment !=null}?${contents.allowComment}: true"
-                                   type="hidden"/>
-                            <input id="allow_ping" name="allowPing"
-                                   th:value="${contents!=null and contents.allowPing !=null}?${contents.allowPing}: true"
-                                   type="hidden"/>
-                            <input id="allow_feed" name="allowFeed"
-                                   th:value="${contents!=null and contents.allowFeed !=null}?${contents.allowFeed}: true"
-                                   type="hidden"/>
+                            <input id="status" name="status" th:value="${contents!=null and contents.status !=null}?${contents.status}: 'publish'" type="hidden"/>
+                            <input id="allow_comment" name="allowComment" th:value="${contents!=null and contents.allowComment !=null}?${contents.allowComment}: true" type="hidden"/>
+                            <input id="allow_ping" name="allowPing" th:value="${contents!=null and contents.allowPing !=null}?${contents.allowPing}: true" type="hidden"/>
+                            <input id="allow_feed" name="allowFeed" th:value="${contents!=null and contents.allowFeed !=null}?${contents.allowFeed}: true" type="hidden"/>
                             <input id="content-editor" name="content" type="hidden"/>
 
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
-                                <input aria-required="true" class="form-control" name="title" placeholder="请输入文章标题（必须）"
-                                       required="required"
-                                       th:value="${contents!=null and contents.title!=null }?${contents.title}: ''"
-                                       type="text"/>
+                                <input aria-required="true" class="form-control" name="title" placeholder="请输入文章标题（必须）" required="required" th:value="${contents!=null and contents.title!=null }?${contents.title}: ''" type="text"/>
                             </div>
 
                             <div class="form-group col-md-6" style="padding: 0 0 0 10px;">
-                                <select class="select2 form-control" data-placeholder="请选择文章类型.."
-                                        id="multiple-type">
+                                <select class="select2 form-control" data-placeholder="请选择文章类型.." id="multiple-type">
                                     <th:block th:if="${null == contents}">
                                         <option selected="selected" value="post">默认博文</option>
                                         <option value="photo">作品</option>
                                     </th:block>
                                     <th:block th:unless="${null == contents}">
-                                        <option th:selected="${null != contents and contents.type=='post'} ? true : false"
-                                                value="post">
+                                        <option th:selected="${null != contents and contents.type=='post'} ? true : false" value="post">
                                             默认博文
                                         </option>
-                                        <option th:selected="${null != contents and contents.type=='photo'} ? true : false"
-                                                value="photo">
+                                        <option th:selected="${null != contents and contents.type=='photo'} ? true : false" value="photo">
                                             作品
                                         </option>
                                     </th:block>
                                 </select>
                             </div>
 
-
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <!-- 如果是作品类，那么暂时不允许使用标签 -->
-                                <input class="form-control" id="tags" name="tags" placeholder="请填写文章标签" th:value="${contents!=null and contents.tags !=null}?${contents.tags}: ''"
-                                       type="text"/>
+                                <input class="form-control" id="tags" name="tags" placeholder="请填写文章标签" th:value="${contents!=null and contents.tags !=null}?${contents.tags}: ''" type="text"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <select class="select2 form-control" data-placeholder="请选择分类..." id="multiple-sel"
-                                        multiple="multiple">
+                                <select class="select2 form-control" data-placeholder="请选择分类..." id="multiple-sel" multiple="multiple">
                                     <th:block th:if="${null == categories}">
                                         <option selected="selected" value="默认分类">默认分类</option>
                                     </th:block>
                                     <th:block th:unless="${null == categories}">
                                         <th:block th:each="c : ${categories}">
-                                            <option th:selected="${null !=contents and adminCommons.exist_cat(c, contents.categories)}?true:false" th:text="${c.name}"
-                                                    th:value="${c.name}"></option>
+                                            <option th:selected="${null !=contents and adminCommons.exist_cat(c, contents.categories)}?true:false" th:text="${c.name}" th:value="${c.name}"></option>
                                         </th:block>
                                     </th:block>
                                 </select>
@@ -110,8 +91,7 @@
 
                             <div class="clearfix"></div>
                             <div id="my-editormd">
-                                <textarea class="markdown-textarea" id="my-text" name="my-text" style="display:none;"
-                                          th:utext="${contents!=null and contents.content !=null}?${contents.content}: ''"></textarea>
+                                <textarea class="markdown-textarea" id="my-text" name="my-text" style="display:none;" th:utext="${contents!=null and contents.content !=null}?${contents.content}: ''"></textarea>
                                 <!-- 注意：name属性的值-->
                                 <textarea id="text" name="text" style="display:none;"></textarea>
                             </div>
@@ -124,8 +104,7 @@
                             <div class="form-group col-md-3 col-sm-4" id="comment-div">
                                 <label class="col-sm-4">开启评论</label>
                                 <div class="col-sm-8">
-                                    <div onclick="allow_comment(this);"
-                                         th:class="${contents!=null and contents.allowComment!=null }?'toggle toggle-success allow-'+${contents.allowComment}:'toggle toggle-success allow-true'"></div>
+                                    <div onclick="allow_comment(this);" th:class="${contents!=null and contents.allowComment!=null }?'toggle toggle-success allow-'+${contents.allowComment}:'toggle toggle-success allow-true'"></div>
                                 </div>
                             </div>
 
@@ -149,12 +128,10 @@
 
                             <div class="text-right">
                                 <a class="btn btn-default waves-effect waves-light" th:href="@{/admin/article}">返回列表</a>
-                                <button class="btn btn-primary waves-effect waves-light" onclick="subArticle('publish');"
-                                        type="button">
+                                <button class="btn btn-primary waves-effect waves-light" onclick="subArticle('publish');" type="button">
                                     发布文章
                                 </button>
-                                <button class="btn btn-warning waves-effect waves-light" onclick="subArticle('draft');"
-                                        type="button">
+                                <button class="btn btn-warning waves-effect waves-light" onclick="subArticle('draft');" type="button">
                                     存为草稿
                                 </button>
                             </div>

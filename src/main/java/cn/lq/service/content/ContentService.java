@@ -4,7 +4,6 @@ import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
 import cn.lq.common.domain.vo.PageVO;
-import com.github.pagehelper.PageInfo;
 
 /**
  * 文章服务层
@@ -48,11 +47,6 @@ public interface ContentService {
      * 根据条件获取文章列表
      */
     PageVO<ContentEsPO> queryContentPage(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize);
-
-    /**
-     * 搜索文章
-     */
-    PageInfo<ContentEsPO> searchContent(String param, int pageNun, int pageSize);
 
     /**
      * 获取文章详细信息

@@ -2,7 +2,7 @@ package cn.lq.common.utils;
 
 import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.es.ContentEsPO;
-import com.github.pagehelper.PageInfo;
+import cn.lq.common.domain.vo.PageVO;
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -305,8 +305,8 @@ public class Commons {
     /**
      * 判断分页中是否有数据
      */
-    public static boolean is_empty(PageInfo<?> paginator) {
-        return paginator == null || (paginator.getList() == null) || (paginator.getList().size() == 0);
+    public static boolean is_empty(PageVO<?> pageVO) {
+        return pageVO == null || CollectionUtils.isEmpty(pageVO.getList());
     }
 
     /**

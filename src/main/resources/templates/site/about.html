@@ -3,50 +3,31 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="site/head::head(${commons.site_title()},${commons.google_site_verification()}, ${commons.baidu_site_verification()})"></div>
 
-
 <body>
 
-
 <!-- header -->
-
 <div th:replace="site/header::header"></div>
 
-
 <!-- header -->
-
 <!-- main -->
-
 <main class="container" role="main-inner-wrapper">
-
-
     <div class="row">
-
-
         <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
-
             <article role="pge-title-content">
                 <header>
                     <h2><span>Hi! </span> 我是壹仟</h2>
                 </header>
                 <p>一名Java开发者, 喜欢coding, 写写blog~</p>
             </article>
-
         </section>
-
-
         <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
             <article class="about-content">
                 <p>In my free time I enjoy coding, cycling, photography and meeting new people.</p>
                 <p>Want to work together on something? Just Email me . And scan the QR code to add me on WeChat.</p>
             </article>
         </section>
-
-
         <div class="clearfix"></div>
-
-
         <!-- thumbnails -->
-
         <div class="thumbnails-pan">
             <th:block th:each="link,linkStat : ${links}">
                 <th:block th:if="${linkStat.index < 3}">
@@ -61,24 +42,16 @@
                                     <th:block th:text="${link.description}"></th:block>
                                 </h5>
                             </figcaption>
-
                         </figure>
-
                     </section>
                 </th:block>
             </th:block>
         </div>
-
         <!-- thumbnails -->
-
     </div>
-
 </main>
-
 <!-- main -->
-
 <!-- footer -->
-
 <div th:replace="site/footer::footer(${commons.site_title()},${commons.site_record()},${commons.site_url()})"></div>
 
 </body>

@@ -3,12 +3,12 @@
  */
 !function ($) {
     "use strict";
-    var tale = new $.tale();
-    var FormWizard = function () {
+    const tale = new $.tale();
+    const FormWizard = function () {
     };
     //creates form with validation
     FormWizard.prototype.init = function () {
-        var $form_container = $("#wizard-validation-form");
+        const $form_container = $("#wizard-validation-form");
         $form_container.validate({
             errorPlacement: function errorPlacement(error, element) {
                 element.after(error);
@@ -73,7 +73,7 @@
             },
             onFinishing: function (event, currentIndex) {
                 $form_container.validate().settings.ignore = ":disabled";
-                var isValid = $form_container.valid();
+                const isValid = $form_container.valid();
                 window.location.href = "/admin/login";
                 return isValid;
             },
