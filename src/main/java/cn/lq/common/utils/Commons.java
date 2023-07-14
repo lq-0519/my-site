@@ -164,7 +164,7 @@ public class Commons {
      * 英文格式的日期
      */
     public static String fmtdate_en(Date unixTime) {
-        String fmtdate = fmtdate(unixTime, "yyyy,MMM,d");
+        String fmtdate = fmtdate(unixTime, "d,MMM,yyyy");
         String[] dateArr = fmtdate.split(",");
         return "<span>" + dateArr[0] + "</span> " + dateArr[1] + "  " + dateArr[2];
     }

@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<!--suppress HtmlFormInputWithoutLabel -->
+<!DOCTYPE html><!--suppress HtmlFormInputWithoutLabel -->
 <html lang="en" th:fragment="header" xmlns:th="http://www.thymeleaf.org">
 <header role="header">
     <div class="container">
@@ -11,15 +10,15 @@
                 <img alt="壹仟的博客网站" style="width: 66px;" th:src="@{/site/images/logo.png}" title="壹仟的博客网站"/> </a>
         </h1>
         <!-- logo -->
-
         <form class="col-md-3 navbar-right" id="searchArticleForm" method="post" th:action="@{/blog/search}">
             <div class="input-group">
-                <input class="form-control" maxlength="100" name="content" placeholder="Search..." type="text"> <span class="input-group-btn">
+                <input class="form-control" maxlength="100" name="content" placeholder="Search blog..." type="text"> <span class="input-group-btn">
                     <button class="btn btn-default" type="submit">
                         <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
                     </button>
-                </span> <input name="pageSize" type="hidden" value="11">
+                </span>
             </div>
+            <input name="pageSize" type="hidden" value="11">
         </form>
 
         <!-- nav -->
