@@ -1,8 +1,10 @@
 package cn.lq.common.domain.query.inner.es;
 
 import cn.lq.common.domain.anno.EsQueryField;
+import cn.lq.common.domain.other.OrderBy;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * BaseInnerQuery
@@ -20,6 +22,10 @@ public class BaseEsInnerQuery implements Serializable {
      * 是否删除
      */
     private Integer deleted;
+    /**
+     * 排序字段
+     */
+    private List<OrderBy> orderByList;
 
     public Integer getDeleted() {
         return deleted;
@@ -37,11 +43,21 @@ public class BaseEsInnerQuery implements Serializable {
         this.id = id;
     }
 
+
+    public List<OrderBy> getOrderByList() {
+        return orderByList;
+    }
+
+    public void setOrderByList(List<OrderBy> orderByList) {
+        this.orderByList = orderByList;
+    }
+
     @Override
     public String toString() {
-        return "BaseInnerQuery{" +
+        return "BaseEsInnerQuery{" +
                 "id=" + id +
                 ", deleted=" + deleted +
+                ", orderByList=" + orderByList +
                 '}';
     }
 }

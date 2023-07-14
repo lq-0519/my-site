@@ -4,6 +4,7 @@ import cn.lq.common.domain.anno.EsQueryField;
 import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.enums.DeletedEnum;
 import cn.lq.common.domain.enums.EsQueryWayEnum;
+import cn.lq.common.domain.other.OrderBy;
 import cn.lq.common.domain.po.es.BaseEsPO;
 import cn.lq.common.domain.query.inner.es.BaseEsInnerQuery;
 import cn.lq.common.exception.BusinessException;
@@ -16,6 +17,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -49,6 +51,38 @@ public class EsUtils {
     private static final List<String> CANNOT_UPDATE_FIELD_LIST = Lists.newArrayList(Constant.Es.FIELD_ID, Constant.Es.FIELD_MODIFIED, Constant.Es.FIELD_CREATED);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EsUtils.class);
+
+    /**
+     * 获取排序字段
+     */
+    public static Sort getSort(List<OrderBy> orderByList, Class<?> clazz) {
+        if (CollectionUtils.isEmpty(orderByList) || clazz == null) {
+            return Sort.by(Sort.Order.desc(Constant.Es.FIELD_CREATED));
+        }
+
+        ArrayList<Sort.Order> orders = new ArrayList<>();
+        for (OrderBy orderBy : orderByList) {
+            if (orderBy == null) {
+                continue;
+            }
+
+            if (isNotEsPoClassField(clazz, orderBy.getField())) {
+                continue;
+            }
+
+            if (Boolean.TRUE.equals(orderBy.isAsc())) {
+                orders.add(Sort.Order.asc(orderBy.getField()));
+            } else {
+                orders.add(Sort.Order.desc(orderBy.getField()));
+            }
+        }
+
+        if (CollectionUtils.isEmpty(orders)) {
+            return Sort.by(Sort.Order.desc(Constant.Es.FIELD_CREATED));
+        } else {
+            return Sort.by(orders);
+        }
+    }
 
     /**
      * 通用更新IndexRequest构建

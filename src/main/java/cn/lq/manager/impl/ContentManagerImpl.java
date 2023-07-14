@@ -126,6 +126,7 @@ public class ContentManagerImpl implements ContentManager {
         if (StringUtils.isNotBlank(contentEsInnerQuery.getContent())) {
             boolQueryBuilder.must(QueryBuilders.multiMatchQuery(contentEsInnerQuery.getContent(), ContentRepository.FIELD_CONTENT, ContentRepository.FIELD_TITLE));
         }
+
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withIndices(ContentRepository.INDEX_NAME)
                 .withTypes(ContentRepository.TYPE)
@@ -140,7 +141,11 @@ public class ContentManagerImpl implements ContentManager {
                         .numOfFragments(0)
                         .requireFieldMatch(false)
                 )
-                .withPageable(PageRequest.of(page - 1, pageSize))
+                .withPageable(PageRequest.of(
+                        page - 1,
+                        pageSize,
+                        EsUtils.getSort(contentEsInnerQuery.getOrderByList(), ContentEsPO.class))
+                )
                 .build();
         return elasticsearchTemplate.queryForPage(searchQuery, ContentEsPO.class, new HighlightResultMapper());
     }
