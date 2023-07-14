@@ -4,13 +4,16 @@ import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.web.controller.admin.AttachmentController;
+import com.vladsch.flexmark.ext.jekyll.tag.JekyllTagExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.ext.toc.SimTocExtension;
+import com.vladsch.flexmark.ext.toc.TocExtension;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.options.MutableDataSet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.commonmark.Extension;
-import org.commonmark.ext.gfm.tables.TablesExtension;
-import org.commonmark.node.Node;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -30,34 +33,34 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by winterchen on 2018/4/30.
+ * @author winterchen
+ * @date 2018/4/30
  */
 public class TaleUtils {
-
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaleUtils.class);
     /**
      * 匹配邮箱正则
      */
-    private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
-            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
     private static final Pattern SLUG_REGEX = Pattern.compile("^[A-Za-z0-9_-]{5,100}$", Pattern.CASE_INSENSITIVE);
-    /**
-     * markdown解析器
-     */
-    private static final Parser PARSER = Parser.builder().build();
-    /**
-     * 获取文件所在目录
-     */
-    private static final String LOCATION = Objects.requireNonNull(TaleUtils.class.getClassLoader().getResource("")).getPath();
+
+    private static final MutableDataSet MD_OPTIONS = new MutableDataSet()
+            .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), JekyllTagExtension.create(), TocExtension.create(), SimTocExtension.create()))
+            .set(TocExtension.LEVELS, 255)
+            .set(TocExtension.DIV_CLASS, "toc");
+
+    private static final Parser MD_PARSER = Parser.builder(MD_OPTIONS).build();
+
+    private static final HtmlRenderer MD_RENDERER = HtmlRenderer.builder(MD_OPTIONS).build();
     /**
      * 使用双重检查锁的单例方式需要添加 volatile 关键字
      */
@@ -218,17 +221,19 @@ public class TaleUtils {
      * markdown转换为html
      */
     public static String mdToHtml(String markdown) {
-        if (StringUtils.isBlank(markdown)) {
-            return "";
-        }
+        Node document = MD_PARSER.parse(markdown);
+        String content = MD_RENDERER.render(document);
+        return Commons.emoji(content);
+    }
 
-        java.util.List<Extension> extensions = Collections.singletonList(TablesExtension.create());
-        Parser parser = Parser.builder().extensions(extensions).build();
-        Node document = parser.parse(markdown);
-        HtmlRenderer renderer = HtmlRenderer.builder().extensions(extensions).build();
-        String content = renderer.render(document);
-        content = Commons.emoji(content);
-        return content;
+    /**
+     * markdown转换为html
+     * 带目录版本
+     */
+    public static String mdToHtmlWithCategory(String markdown) {
+        Node document = MD_PARSER.parse("[TOC]\n" + markdown);
+        String content = MD_RENDERER.render(document);
+        return Commons.emoji(content);
     }
 
     /**

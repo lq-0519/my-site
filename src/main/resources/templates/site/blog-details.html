@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 
+<!--suppress HtmlUnknownTag -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="site/head::head(${article.title},${commons.google_site_verification()}, ${commons.baidu_site_verification()})"></div>
 
@@ -14,16 +15,16 @@
             <header class="bog-header text-center" role="bog-header">
                 <h2>
                     <b>
-                        <th:block th:utext="${article.title}"></th:block>
+                        <th:block th:utext="${article.title}"/>
                     </b>
                 </h2>
                 <br>
                 <h3>
-                    <th:block th:utext="${commons.fmtdate_en(article.created)}"></th:block>
+                    <th:block th:utext="${commons.fmtdate_en(article.created)}"/>
                 </h3>
             </header>
             <div class="post-content" id="post-content" itemprop="articleBody">
-                <th:block th:utext="${commons.article(article.content)}"></th:block>
+                <th:block th:utext="${commons.article(article.content)}"/>
             </div>
         </article>
         <!-- Comments -->

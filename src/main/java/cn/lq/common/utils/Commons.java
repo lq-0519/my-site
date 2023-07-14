@@ -282,7 +282,7 @@ public class Commons {
         if (StringUtils.isNotBlank(value)) {
             value = value.replace("<!--more-->", "\r\n");
             value = value.replace("<!-- more -->", "\r\n");
-            return TaleUtils.mdToHtml(value);
+            return TaleUtils.mdToHtmlWithCategory(value);
         }
         return "";
     }
@@ -446,7 +446,7 @@ public class Commons {
      * 获取文章中所有的文字
      */
     public static List<String> show_all_p(String content) {
-        List<String> rs = new LinkedList();
+        List<String> rs = new LinkedList<>();
         content = TaleUtils.mdToHtml(content);
         String reg = "<[a-zA-Z]+.*?>([\\s\\S]*?)</[a-zA-Z]*>";
 
