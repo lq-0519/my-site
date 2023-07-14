@@ -198,20 +198,13 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public void updateArticleHit(Long contentId, Integer contentHits) {
-        Integer hits = cache.hget("article", "hits");
         if (contentHits == null) {
             contentHits = 0;
         }
 
-        hits = null == hits ? 1 : hits + 1;
-        if (hits >= WebConst.HIT_EXCEED) {
-            ContentEsPO temp = new ContentEsPO();
-            temp.setId(contentId);
-            temp.setHits(contentHits + hits);
-            updateContentByCid(temp);
-            cache.hset("article", "hits", 1);
-        } else {
-            cache.hset("article", "hits", hits);
-        }
+        ContentEsPO temp = new ContentEsPO();
+        temp.setId(contentId);
+        temp.setHits(contentHits + 1);
+        updateContentByCid(temp);
     }
 }

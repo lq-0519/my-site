@@ -30,10 +30,6 @@ public class WebConst {
      */
     public static final int MAX_TITLE_COUNT = 200;
     /**
-     * 点击次数超过多少更新到数据库
-     */
-    public static final int HIT_EXCEED = 1;
-    /**
      * 一些网站配置
      */
     public static Map<String, String> initConfig = new HashMap<>();
