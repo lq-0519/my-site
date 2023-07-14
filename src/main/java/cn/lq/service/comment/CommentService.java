@@ -46,7 +46,7 @@ public interface CommentService {
      *
      * @param cid 文章主键编号
      */
-    List<CommentPO> getCommentsByCId(Long cid);
+    List<CommentPO> getCommentsByContentId(Long cid);
 
     /**
      * 根据条件获取评论列表

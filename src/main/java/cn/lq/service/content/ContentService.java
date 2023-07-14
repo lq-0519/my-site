@@ -49,9 +49,10 @@ public interface ContentService {
     PageVO<ContentEsPO> queryContentPage(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize);
 
     /**
-     * 获取文章详细信息
+     * 根据条件获取文章列表
+     * 带评论信息
      */
-    ContentVO getArticleDetail(Long contentId);
+    PageVO<ContentVO> queryContentPageWithComment(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize);
 
     /**
      * 更新文章的点击量

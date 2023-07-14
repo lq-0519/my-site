@@ -27,6 +27,11 @@ public class PageVO<T> implements Serializable {
     private int navigateFirstPage;
     private int navigateLastPage;
 
+    public PageVO() {
+        this.hasPreviousPage = false;
+        this.hasNextPage = false;
+    }
+
     public long getTotal() {
         return total;
     }

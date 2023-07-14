@@ -30,7 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Properties;
@@ -53,11 +53,11 @@ public class TaleUtils {
     /**
      * markdown解析器
      */
-    private static final Parser parser = Parser.builder().build();
+    private static final Parser PARSER = Parser.builder().build();
     /**
      * 获取文件所在目录
      */
-    private static final String location = Objects.requireNonNull(TaleUtils.class.getClassLoader().getResource("")).getPath();
+    private static final String LOCATION = Objects.requireNonNull(TaleUtils.class.getClassLoader().getResource("")).getPath();
     /**
      * 使用双重检查锁的单例方式需要添加 volatile 关键字
      */
@@ -221,7 +221,8 @@ public class TaleUtils {
         if (StringUtils.isBlank(markdown)) {
             return "";
         }
-        java.util.List<Extension> extensions = Arrays.asList(TablesExtension.create());
+
+        java.util.List<Extension> extensions = Collections.singletonList(TablesExtension.create());
         Parser parser = Parser.builder().extensions(extensions).build();
         Node document = parser.parse(markdown);
         HtmlRenderer renderer = HtmlRenderer.builder().extensions(extensions).build();

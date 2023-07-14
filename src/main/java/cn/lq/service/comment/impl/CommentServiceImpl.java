@@ -145,7 +145,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Cacheable(value = "commentCache", key = "'commentsByCId_' + #p0")
-    public List<CommentPO> getCommentsByCId(Long contentId) {
+    public List<CommentPO> getCommentsByContentId(Long contentId) {
         if (null == contentId) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }

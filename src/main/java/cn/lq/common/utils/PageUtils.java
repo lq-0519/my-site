@@ -36,6 +36,14 @@ public class PageUtils {
         return result;
     }
 
+    public static <R> boolean isEmpty(PageVO<R> pageVO) {
+        return pageVO == null || CollectionUtils.isEmpty(pageVO.getList());
+    }
+
+    public static <R> boolean isNotEmpty(PageVO<R> pageVO) {
+        return !isEmpty(pageVO);
+    }
+
     public interface DaoRunner<T> {
         List<T> run();
     }

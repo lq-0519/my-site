@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="head(title,google_site_verification,baidu_site_verification)">
+<head th:fragment="head(title, google_site_verification, baidu_site_verification)">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"/>
     <meta charset="utf-8">
 
     <!-- Description, Keywords and Author -->
     <meta content="" name="description">
     <meta content="" name="author">
-    <title><th:block th:text="${title!=null?title:'blog'}"></th:block></title>
+    <title><th:block th:utext = "${title != null ? title : 'Blog'}"></th:block></title>
     <link rel="shortcut icon" th:href="@{https://cdn.jsdelivr.net/gh/WinterChenS/imgrpo/blog/20210816111845.ico}" type="image/x-icon">
 
     <meta name="google-site-verification" th:content="${google_site_verification}"/>

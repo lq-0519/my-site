@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 
+<!--suppress HtmlUnknownTag -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="site/head::head(${commons.site_title()},${commons.google_site_verification()}, ${commons.baidu_site_verification()})"></div>
 
@@ -20,25 +21,23 @@
                 <p>Some technical blogs and life logs about Java.</p>
             </article>
 
+            <!--suppress XmlDuplicatedId -->
             <ul class="grid-lod effect-2" id="grid">
-                <th:block th:each="article,articleStat : ${articles.list}">
+                <th:block th:each="article, articleStat : ${articles.list}">
                     <th:block th:if="${articleStat.index % 2 != 0}">
                         <li>
                             <section class="blog-content">
-
-                                <a th:href="${commons.blogPermalink(article.id)}">
+                                <a th:href="${commons.blogPermalink(article.id, query.content)}">
                                     <figure>
                                         <div class="post-date">
-                                            <th:block th:utext="${commons.fmtdate_en(article.created)}"></th:block>
+                                            <th:block th:utext="${commons.fmtdate_en(article.created)}"/>
                                         </div>
-                                        <img alt=""
-                                             class="img-responsive"
-                                             th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1322)}"/>
+                                        <img alt="" class="img-responsive" th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1322)}"/>
                                     </figure>
                                 </a>
 
                                 <article>
-                                    <th:block th:text="${article.title}"></th:block>
+                                    <th:block th:utext="${article.title}"/>
                                 </article>
                             </section>
                         </li>
@@ -49,23 +48,22 @@
 
         <!-- right -->
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <!--suppress XmlDuplicatedId -->
             <ul class="grid-lod effect-2" id="grid">
-                <th:block th:each="article,articleStat : ${articles.list}">
+                <th:block th:each="article, articleStat : ${articles.list}">
                     <th:block th:if="${articleStat.index % 2 == 0}">
                         <li>
                             <section class="blog-content">
-                                <a th:href="${commons.blogPermalink(article.id)}">
+                                <a th:href="${commons.blogPermalink(article.id, query.content)}">
                                     <figure>
                                         <div class="post-date">
-                                            <th:block th:utext="${commons.fmtdate_en(article.created)}"></th:block>
+                                            <th:block th:utext="${commons.fmtdate_en(article.created)}"/>
                                         </div>
-                                        <img alt=""
-                                             class="img-responsive"
-                                             th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1221)}"/>
+                                        <img alt="" class="img-responsive" th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1221)}"/>
                                     </figure>
                                 </a>
                                 <article>
-                                    <th:block th:text="${article.title}"></th:block>
+                                    <th:block th:utext="${article.title}"/>
                                 </article>
                             </section>
                         </li>
@@ -75,7 +73,7 @@
         </div>
     </div>
     <div class="lists-navigator clearfix">
-        <div th:replace="comm/macros::pageNav(${articles},'←','→','blog/page')"></div>
+        <div th:replace="comm/macros::pageNav(${articles}, '←', '→', '/blog/page', ${query.content == null} ? '' : ${query.content})"></div>
     </div>
 </main>
 <!-- main -->

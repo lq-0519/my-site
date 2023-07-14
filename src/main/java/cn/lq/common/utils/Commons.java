@@ -164,7 +164,7 @@ public class Commons {
      * 英文格式的日期
      */
     public static String fmtdate_en(Date unixTime) {
-        String fmtdate = fmtdate(unixTime, "d,MMM,yyyy");
+        String fmtdate = fmtdate(unixTime, "yyyy,MMM,d");
         String[] dateArr = fmtdate.split(",");
         return "<span>" + dateArr[0] + "</span> " + dateArr[1] + "  " + dateArr[2];
     }
@@ -306,7 +306,7 @@ public class Commons {
      * 判断分页中是否有数据
      */
     public static boolean is_empty(PageVO<?> pageVO) {
-        return pageVO == null || CollectionUtils.isEmpty(pageVO.getList());
+        return PageUtils.isEmpty(pageVO);
     }
 
     /**
@@ -329,8 +329,15 @@ public class Commons {
     /**
      * 返回blog文章地址
      */
-    public static String blogPermalink(Long cid) {
-        return site_url("/blog/article/" + cid.toString());
+    public static String blogPermalink(Long contentId) {
+        return site_url(String.format("/blog/article?id=%s", contentId));
+    }
+
+    /**
+     * 返回blog文章地址
+     */
+    public static String blogPermalink(Long contentId, String content) {
+        return site_url(String.format("/blog/article?id=%s&content=%s", contentId, StringUtils.isEmpty(content) ? "" : content));
     }
 
     /**

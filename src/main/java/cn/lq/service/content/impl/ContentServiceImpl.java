@@ -175,19 +175,25 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public ContentVO getArticleDetail(Long contentId) {
-        if (contentId == null) {
-            throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
+    public PageVO<ContentVO> queryContentPageWithComment(ContentEsInnerQuery contentEsInnerQuery, int page, int pageSize) {
+        PageVO<ContentEsPO> pageVO = queryContentPage(contentEsInnerQuery, page, pageSize);
+        if (PageUtils.isEmpty(pageVO)) {
+            return new PageVO<>();
         }
 
-        ContentEsPO contentEsPO = contentManager.queryForObject(contentId);
-        ContentVO contentVO = BeanConverter.convert(ContentVO.class, contentEsPO);
-        CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
-        commentInnerQuery.setContentId(contentId);
-        commentInnerQuery.setStatus(CommentStatusEnum.APPROVED.getStatus());
-        int commentsCount = commentManager.queryForCount(commentInnerQuery);
-        contentVO.setCommentsNum(commentsCount);
-        return contentVO;
+        //补充评论数
+        List<ContentVO> contentList = BeanConverter.convertToList(ContentVO.class, pageVO.getList());
+        for (ContentVO contentVO : contentList) {
+            CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
+            commentInnerQuery.setContentId(contentVO.getId());
+            commentInnerQuery.setStatus(CommentStatusEnum.APPROVED.getStatus());
+            int commentsCount = commentManager.queryForCount(commentInnerQuery);
+            contentVO.setCommentsNum(commentsCount);
+        }
+
+        @SuppressWarnings("unchecked") PageVO<ContentVO> convert = BeanConverter.convert(PageVO.class, pageVO);
+        convert.setList(contentList);
+        return convert;
     }
 
     @Override

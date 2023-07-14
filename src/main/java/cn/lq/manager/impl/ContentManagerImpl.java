@@ -126,16 +126,20 @@ public class ContentManagerImpl implements ContentManager {
         if (StringUtils.isNotBlank(contentEsInnerQuery.getContent())) {
             boolQueryBuilder.must(QueryBuilders.multiMatchQuery(contentEsInnerQuery.getContent(), ContentRepository.FIELD_CONTENT, ContentRepository.FIELD_TITLE));
         }
-        HighlightBuilder.Field titleField = new HighlightBuilder.Field(ContentRepository.FIELD_TITLE).preTags("<span style='color:#FF4500' >").postTags("</span>");
-        HighlightBuilder.Field contentField = new HighlightBuilder.Field(ContentRepository.FIELD_CONTENT).preTags("<span style='color:#FF4500' >").postTags("</span>");
-        HighlightBuilder.Field[] fields = new HighlightBuilder.Field[2];
-        fields[0] = titleField;
-        fields[1] = contentField;
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withIndices(ContentRepository.INDEX_NAME)
                 .withTypes(ContentRepository.TYPE)
                 .withQuery(boolQueryBuilder)
-                .withHighlightFields(fields)
+                .withHighlightBuilder(new HighlightBuilder()
+                        .field(ContentRepository.FIELD_TITLE)
+                        .field(ContentRepository.FIELD_CONTENT)
+                        .preTags("<mark>")
+                        .postTags("</mark>")
+                        //注意加上高亮片数即可
+                        .fragmentSize(800000)
+                        .numOfFragments(0)
+                        .requireFieldMatch(false)
+                )
                 .withPageable(PageRequest.of(page - 1, pageSize))
                 .build();
         return elasticsearchTemplate.queryForPage(searchQuery, ContentEsPO.class, new HighlightResultMapper());

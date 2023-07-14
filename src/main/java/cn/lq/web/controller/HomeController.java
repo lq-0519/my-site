@@ -10,13 +10,13 @@ import cn.lq.common.domain.vo.ContentVO;
 import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.IPKit;
+import cn.lq.common.utils.PageUtils;
 import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.service.comment.CommentService;
 import cn.lq.service.content.ContentService;
 import com.alibaba.fastjson.JSON;
 import com.vdurmont.emoji.EmojiParser;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 首页和关于我的页面控制器
@@ -44,7 +45,6 @@ import java.util.List;
  * @author winterchen
  * @date 2018/4/28
  */
-@Api("网站首页和关于页面")
 @Controller
 public class HomeController extends BaseController {
 
@@ -59,7 +59,64 @@ public class HomeController extends BaseController {
      */
     @GetMapping(value = {"", "/index"})
     public String index(HttpServletRequest request, @RequestParam(value = "limit", defaultValue = "11") int limit) {
-        return this.blogIndex(request, 1, limit);
+        return this.blogIndex(request, 1, limit, null);
+    }
+
+    /**
+     * blog首页-分页
+     */
+    @GetMapping(value = "/blog/page")
+    public String blogIndex(
+            HttpServletRequest request,
+            int page,
+            @RequestParam(value = "limit", required = false, defaultValue = "11") int limit,
+            String content) {
+        page = page < 0 || page > WebConst.MAX_PAGE ? 1 : page;
+        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
+        contentEsInnerQuery.setType(Types.ARTICLE.getType());
+        contentEsInnerQuery.setContent("null".equals(content) || StringUtils.isBlank(content) ? null : content);
+        PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, page, limit);
+        //文章列表
+        request.setAttribute("articles", articles);
+        request.setAttribute("type", "articles");
+        request.setAttribute("active", "blog");
+        request.setAttribute("query", contentEsInnerQuery);
+        return "site/blog";
+    }
+
+    /**
+     * 文章内容页
+     */
+    @GetMapping(value = "/blog/article")
+    public String getArticleDetail(ContentEsInnerQuery query, HttpServletRequest request) {
+        ContentVO article = Optional.ofNullable(contentService.queryContentPageWithComment(query, 1, 1))
+                .filter(PageUtils::isNotEmpty)
+                .map(v -> v.getList().get(0))
+                .orElse(new ContentVO());
+        contentService.updateArticleHit(article.getId(), article.getHits());
+        List<CommentPO> comments = commentService.getCommentsByContentId(query.getId());
+        request.setAttribute("article", article);
+        request.setAttribute("comments", comments);
+        request.setAttribute("active", "blog");
+        return "site/blog-details";
+    }
+
+    /**
+     * 搜索文章
+     */
+    @RequestMapping(value = "/blog/search")
+    public String search(ContentEsInnerQuery query,
+                         @RequestParam(defaultValue = "1") int page,
+                         @RequestParam(defaultValue = "10") int pageSize,
+                         HttpServletRequest request) {
+        PageVO<ContentEsPO> contentEsPOPageVO = contentService.queryContentPage(query, page, pageSize);
+        LOGGER.info("search contentEsPOPageVO:{}", JSON.toJSON(contentEsPOPageVO));
+        //文章列表
+        request.setAttribute("articles", contentEsPOPageVO);
+        request.setAttribute("type", "articles");
+        request.setAttribute("active", "blog");
+        request.setAttribute("query", query);
+        return "site/blog";
     }
 
     /**
@@ -71,25 +128,6 @@ public class HomeController extends BaseController {
         return this.workIndex(1, limit, request);
     }
 
-    /**
-     * blog首页-分页
-     */
-    @GetMapping(value = "/blog/page/{p}")
-    public String blogIndex(
-            HttpServletRequest request,
-            @PathVariable("p") int p, @RequestParam(value = "limit", required = false, defaultValue = "11") int limit) {
-        p = p < 0 || p > WebConst.MAX_PAGE ? 1 : p;
-        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
-        contentEsInnerQuery.setType(Types.ARTICLE.getType());
-        PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, p, limit);
-        //文章列表
-        request.setAttribute("articles", articles);
-        request.setAttribute("type", "articles");
-        request.setAttribute("active", "blog");
-//        this.blogBaseData(request, contentEsInnerQuery);//获取公共分类标签等数据
-        return "site/blog";
-    }
-
     @GetMapping(value = {"/about", "/about/index"})
     public String getAbout(HttpServletRequest request) {
         //获取友链
@@ -98,25 +136,9 @@ public class HomeController extends BaseController {
         return "site/about";
     }
 
-
     /**
-     * 文章内容页
+     * 分类
      */
-    @GetMapping(value = "/blog/article/{cid}")
-    public String getArticleDetail(@ApiParam(name = "cid", value = "文章主键", required = true) @PathVariable("cid") Long cid, HttpServletRequest request) {
-        ContentVO article = contentService.getArticleDetail(cid);
-        request.setAttribute("article", article);
-        ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
-        contentEsInnerQuery.setType(Types.ARTICLE.getType());
-//        this.blogBaseData(request, contentEsInnerQuery);//获取公共分类标签等数据
-        contentService.updateArticleHit(article.getId(), article.getHits());
-        List<CommentPO> commentsPaginator = commentService.getCommentsByCId(cid);
-        request.setAttribute("comments", commentsPaginator);
-        request.setAttribute("active", "blog");
-        return "site/blog-details";
-    }
-
-    @ApiOperation("分类")
     @GetMapping(value = "/blog/categories/{category}")
     public String categories(
             @ApiParam(name = "category", value = "分类名", required = true) @PathVariable("category") String category,
@@ -124,7 +146,9 @@ public class HomeController extends BaseController {
         return this.categories(category, 1, 10, request);
     }
 
-    @ApiOperation("分类-分页")
+    /**
+     * 分类-分页
+     */
     @GetMapping(value = "/blog/categories/{category}/page/{page}")
     public String categories(
             @ApiParam(name = "category", value = "分类名", required = true) @PathVariable("category") String category,
@@ -142,7 +166,9 @@ public class HomeController extends BaseController {
         return "blog/categories";
     }
 
-    @ApiOperation("标签页")
+    /**
+     * 标签页
+     */
     @GetMapping(value = "/blog/tag/{tag}")
     public String tags(
             @ApiParam(name = "tag", value = "标签名", required = true) @PathVariable("tag") String tag,
@@ -166,14 +192,6 @@ public class HomeController extends BaseController {
         request.setAttribute("type", "tag");
         request.setAttribute("param_name", tag);
         return "blog/categories";
-    }
-
-    @ApiOperation("搜索文章")
-    @PostMapping(value = "/blog/search")
-    public String search(ContentEsInnerQuery query, int page, int pageSize) {
-        PageVO<ContentEsPO> contentEsPOPageVO = contentService.queryContentPage(query, page, pageSize);
-        LOGGER.warn("search contentEsPOPageVO:{}", JSON.toJSON(contentEsPOPageVO));
-        return "site/blog";
     }
 
     /**
@@ -255,7 +273,6 @@ public class HomeController extends BaseController {
     public void logout(HttpSession session, HttpServletResponse response) {
         TaleUtils.logout(session, response);
     }
-
 
     @ApiOperation("作品主页-分页")
     @GetMapping(value = "/photo/page/{p}")
