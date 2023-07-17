@@ -57,29 +57,33 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void addComment(CommentPO comments) {
-        String msg = null;
-        if (null == comments) {
-            msg = "评论对象为空";
+        //字符串不为空代表有错误
+        String errorMsg = null;
+        if (comments == null) {
+            errorMsg = "评论对象为空";
         }
+
         if (comments != null) {
             if (StringUtils.isBlank(comments.getAuthor())) {
                 comments.setAuthor("热心网友");
             }
             if (StringUtils.isNotBlank(comments.getMail()) && !TaleUtils.isEmail(comments.getMail())) {
-                msg = "请输入正确的邮箱格式";
+                errorMsg = "请输入正确的邮箱格式";
             }
             if (StringUtils.isBlank(comments.getContent())) {
-                msg = "评论内容不能为空";
+                errorMsg = "评论内容不能为空";
             }
-            if (comments.getContent().length() < 5 || comments.getContent().length() > 2000) {
-                msg = "评论字数在5-2000个字符";
+            if (comments.getContent().length() < 1 || comments.getContent().length() > 2000) {
+                errorMsg = "评论字数在1-2000个字符";
             }
-            if (null == comments.getContentId()) {
-                msg = "评论文章不能为空";
+            if (comments.getContentId() == null) {
+                errorMsg = "评论文章不能为空";
             }
-            if (msg != null) {
-                throw BusinessException.withErrorCode(msg);
+
+            if (StringUtils.isNotBlank(errorMsg)) {
+                throw BusinessException.withErrorCode(errorMsg);
             }
+
             ContentEsPO article = contentService.getArticleById(comments.getContentId());
             if (null == article) {
                 throw BusinessException.withErrorCode("该文章不存在");
@@ -88,10 +92,7 @@ public class CommentServiceImpl implements CommentService {
             comments.setOwnerId(article.getAuthorId());
             comments.setStatus(STATUS_MAP.get(STATUS_BLANK));
             commentManager.insert(comments);
-
-            // TODO: liqian477 2023/6/27 更新评论数
         }
-
     }
 
     @Transactional
@@ -101,24 +102,22 @@ public class CommentServiceImpl implements CommentService {
         if (null == coid) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
+
         // 如果删除的评论存在子评论，一并删除
         //查找当前评论是否有子评论
         CommentInnerQuery commentInnerQuery = new CommentInnerQuery();
         commentInnerQuery.setParent(coid);
         List<CommentPO> childComments = commentManager.queryForList(commentInnerQuery);
-        Integer count = 0;
+
         //删除子评论
         if (null != childComments && childComments.size() > 0) {
             for (CommentPO childComment : childComments) {
                 commentManager.delete(childComment.getId());
-                count++;
             }
         }
+
         //删除当前评论
         commentManager.delete(coid);
-        count++;
-
-        // TODO: liqian477 2023/6/27 更新评论数
     }
 
     @Override

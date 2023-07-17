@@ -205,14 +205,14 @@ public class HomeController extends BaseController {
                                @RequestParam(name = "author", required = false) String author,
                                @RequestParam(name = "mail", required = false) String mail,
                                @RequestParam(name = "text") String text,
-                               @RequestParam(name = "_csrf_token") String _csrf_token) {
+                               @RequestParam(name = "_csrf_token") String csrfToken) {
 
         String ref = request.getHeader("Referer");
-        if (StringUtils.isBlank(ref) || StringUtils.isBlank(_csrf_token)) {
+        if (StringUtils.isBlank(ref) || StringUtils.isBlank(csrfToken)) {
             return Response.fail("访问失败");
         }
 
-        String token = cache.hget(Types.CSRF_TOKEN.getType(), _csrf_token);
+        String token = cache.hget(Types.CSRF_TOKEN.getType(), csrfToken);
         if (StringUtils.isBlank(token)) {
             return Response.fail("访问失败");
         }
@@ -227,10 +227,6 @@ public class HomeController extends BaseController {
 
         if (StringUtils.isNotBlank(mail) && !TaleUtils.isEmail(mail)) {
             return Response.fail("请输入正确的邮箱格式");
-        }
-
-        if (text.length() > 200) {
-            return Response.fail("请输入200个字符以内的评论");
         }
 
         String val = IPKit.getIpAddrByRequest(request) + ":" + cid;

@@ -54,6 +54,7 @@ public class EsUtils {
 
     /**
      * 获取排序字段
+     * 默认按照创建时间降序排列
      */
     public static Sort getSort(List<OrderBy> orderByList, Class<?> clazz) {
         if (CollectionUtils.isEmpty(orderByList) || clazz == null) {

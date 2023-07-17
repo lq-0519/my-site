@@ -45,6 +45,7 @@ public class MapCache {
             long cur = System.currentTimeMillis() / 1000;
             if (cacheObject.getExpired() <= 0 || cacheObject.getExpired() > cur) {
                 Object result = cacheObject.getValue();
+                //noinspection unchecked
                 return (T) result;
             }
         }
@@ -138,6 +139,7 @@ public class MapCache {
         cachePool.clear();
     }
 
+    @SuppressWarnings("FieldMayBeFinal")
     static class CacheObject {
         private String key;
         private Object value;
