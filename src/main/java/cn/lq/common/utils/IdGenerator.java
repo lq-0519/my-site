@@ -9,7 +9,7 @@ package cn.lq.common.utils;
  * @author liqian477
  * @date 2023-07-17 16:36:14
  */
-public class EsIdGenerator {
+public class IdGenerator {
 
     /**
      * 时间起始标记点，作为基准，2023-07-01 00:00:00

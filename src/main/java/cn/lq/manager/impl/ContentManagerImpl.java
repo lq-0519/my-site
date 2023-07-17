@@ -4,8 +4,8 @@ import cn.lq.common.domain.enums.DeletedEnum;
 import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.exception.ParamInvalidException;
-import cn.lq.common.utils.EsIdGenerator;
 import cn.lq.common.utils.EsUtils;
+import cn.lq.common.utils.IdGenerator;
 import cn.lq.dao.es.ContentRepository;
 import cn.lq.dao.es.HighlightResultMapper;
 import cn.lq.manager.ContentManager;
@@ -49,7 +49,7 @@ public class ContentManagerImpl implements ContentManager {
             throw new ParamInvalidException("insertEs 参数异常");
         }
 
-        long id = EsIdGenerator.nextId();
+        long id = IdGenerator.nextId();
         contentEsPO.setId(id);
         contentEsPO.setCreated(new Date());
         contentEsPO.setModified(new Date());
