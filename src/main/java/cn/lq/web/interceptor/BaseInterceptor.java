@@ -6,8 +6,8 @@ import cn.lq.common.domain.po.ConfigPO;
 import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.utils.AdminCommons;
 import cn.lq.common.utils.Commons;
-import cn.lq.common.utils.IPKit;
 import cn.lq.common.utils.MapCache;
+import cn.lq.common.utils.NetKit;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.common.utils.UUID;
 import cn.lq.service.option.OptionService;
@@ -56,7 +56,7 @@ public class BaseInterceptor implements HandlerInterceptor {
         String uri = request.getRequestURI();
 
         LOGGER.info("UserAgent: {}", request.getHeader(USER_AGENT));
-        LOGGER.info("用户访问地址: {}, 来路地址: {}", uri, IPKit.getIpAddrByRequest(request));
+        LOGGER.info("用户访问地址: {}, 来路地址: {}", uri, NetKit.getIpAddrByRequest(request));
 
 
         //请求拦截处理

@@ -15,8 +15,6 @@ import cn.lq.manager.MetaManager;
 import cn.lq.service.content.ContentService;
 import cn.lq.service.meta.MetaService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +44,6 @@ public class MetaServiceImpl implements MetaService {
     private ContentService contentService;
 
     @Override
-    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void addMeta(MetaPO meta) {
         if (null == meta) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -56,7 +53,6 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void saveMeta(String type, String name, Long metaId) {
         if (StringUtils.isNotBlank(type) && StringUtils.isNotBlank(name)) {
             MetaInnerQuery metaInnerQuery = new MetaInnerQuery();
@@ -90,7 +86,6 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void addMetas(Long cid, String names, String type) {
         if (null == cid) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -105,7 +100,6 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void saveOrUpdate(Long cid, String name, String type) {
         MetaInnerQuery metaInnerQuery = new MetaInnerQuery();
         metaInnerQuery.setName(name);
@@ -142,7 +136,6 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void deleteMetaById(Long mid) {
         if (null == mid) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -183,7 +176,6 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @CacheEvict(value = {"metaCaches", "metaCache"}, allEntries = true, beforeInvocation = true)
     public void updateMeta(MetaPO meta) {
         if (null == meta || null == meta.getId()) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -193,14 +185,12 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    @Cacheable(value = "metaCaches", key = "'metas_' + #p0")
     public List<MetaPO> getMetas(MetaInnerQuery metaInnerQuery) {
         return metaManager.queryForList(metaInnerQuery);
     }
 
 
     @Override
-    @Cacheable(value = "metaCaches", key = "'metaList_' + #p0")
     public List<MetaExtendPO> getMetaList(String type, String orderby, int limit) {
         if (StringUtils.isNotBlank(type)) {
             if (StringUtils.isBlank(orderby)) {

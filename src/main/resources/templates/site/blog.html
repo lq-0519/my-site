@@ -32,7 +32,7 @@
                                         <div class="post-date">
                                             <th:block th:utext="${commons.fmtdate_en(article.created)}"/>
                                         </div>
-                                        <img alt="" class="img-responsive" th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1322)}"/>
+                                        <img alt="" class="img-responsive" th:src="${commons.showThumb(article.content) ?: commons.randomBlogPic(1322)}"/>
                                     </figure>
                                 </a>
 
@@ -59,7 +59,7 @@
                                         <div class="post-date">
                                             <th:block th:utext="${commons.fmtdate_en(article.created)}"/>
                                         </div>
-                                        <img alt="" class="img-responsive" th:src="${commons.show_thumb(article.content) ?:commons.randomBlogPic(1221)}"/>
+                                        <img alt="" class="img-responsive" th:src="${commons.showThumb(article.content) ?: commons.randomBlogPic(1221)}"/>
                                     </figure>
                                 </a>
                                 <article>

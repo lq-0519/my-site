@@ -9,8 +9,6 @@ import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.PageUtils;
 import cn.lq.manager.AttachmentManager;
 import cn.lq.service.attach.AttachmentService;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,7 +26,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     private AttachmentManager attachmentManager;
 
     @Override
-    @CacheEvict(value = {"attCaches", "attCache"}, allEntries = true, beforeInvocation = true)
     public void addAttAch(AttachmentPO attachmentPO) {
         if (null == attachmentPO) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -39,7 +36,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    @CacheEvict(value = {"attCaches", "attCache"}, allEntries = true, beforeInvocation = true)
     public void deleteAttAch(Long id) {
         if (null == id) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -48,7 +44,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    @CacheEvict(value = {"attCaches", "attCache"}, allEntries = true, beforeInvocation = true)
     public void updateAttAch(AttachmentPO attachmentPO) {
         if (null == attachmentPO || null == attachmentPO.getId()) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -58,7 +53,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    @Cacheable(value = "attCache", key = "'attAchById' + #p0")
     public AttachmentUserPO getAttachmentUserById(Long id) {
         if (null == id) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -68,7 +62,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    @Cacheable(value = "attCaches", key = "'atts' + #p0")
     public PageVO<AttachmentUserPO> getAttachmentUserPage(int pageNum, int pageSize) {
         return PageUtils.pack(pageNum, pageSize, () -> attachmentManager.queryAttachmentUserList(new AttachmentInnerQuery()));
     }

@@ -25,7 +25,6 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -57,7 +56,6 @@ public class SiteServiceImpl implements SiteService {
     private AttachmentManager attachmentManager;
 
     @Override
-    @Cacheable(value = "siteCache", key = "'comments_' + #p0")
     public List<CommentPO> getComments(int limit) {
         LOGGER.debug("Enter recentComments method:limit={}", limit);
         if (limit < 0 || limit > 10) {
@@ -70,7 +68,6 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
-    @Cacheable(value = "siteCache", key = "'newArticles_' + #p0")
     public List<ContentVO> getNewArticles(int limit) {
         if (limit < 0 || limit > 10) {
             limit = 10;
@@ -86,7 +83,6 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
-    @Cacheable(value = "siteCache", key = "'comment_' + #p0")
     public CommentPO getComment(Long id) {
         LOGGER.debug("Enter recentComment method");
         if (null == id) {
@@ -99,7 +95,6 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
-    @Cacheable(value = "siteCache", key = "'statistics_'")
     public StatisticsDto getStatistics() {
         LOGGER.debug("Enter recentStatistics method");
         //文章总数
@@ -123,7 +118,6 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
-    @Cacheable(value = "siteCache", key = "'metas_' + #p0")
     public List<MetaExtendPO> getMetas(String type, String orderBy, int limit) {
         LOGGER.debug("Enter metas method:type={},order={},limit={}", type, orderBy, limit);
         List<MetaExtendPO> retList = null;

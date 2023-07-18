@@ -9,7 +9,7 @@ import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
 import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.utils.IPKit;
+import cn.lq.common.utils.NetKit;
 import cn.lq.common.utils.PageUtils;
 import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
@@ -229,7 +229,7 @@ public class HomeController extends BaseController {
             return Response.fail("请输入正确的邮箱格式");
         }
 
-        String val = IPKit.getIpAddrByRequest(request) + ":" + cid;
+        String val = NetKit.getIpAddrByRequest(request) + ":" + cid;
         Integer count = cache.hget(Types.COMMENTS_FREQUENCY.getType(), val);
         if (null != count && count > 0) {
             return Response.fail("您发表评论太快了，请过会再试");

@@ -21,7 +21,7 @@
             <th:block th:if="${archiveStat.index == 1}">
                 <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 grid">
                     <figure class="effect-oscar">
-                        <img alt="" class="img-responsive" th:src="${commons.show_thumb(archive.content)}"/>
+                        <img alt="" class="img-responsive" th:src="${commons.showThumb(archive.content)}"/>
                         <figcaption>
                             <h2>
                                 <th:block th:text="${archive.title}"></th:block>
@@ -43,7 +43,7 @@
                     <th:block th:if="${archiveStat.index != 1 && archiveStat.index % 2 == 0}">
                         <li>
                             <figure class="effect-oscar">
-                                <img alt="" class="img-responsive" th:src="${commons.show_thumb(archive.content)}"/>
+                                <img alt="" class="img-responsive" th:src="${commons.showThumb(archive.content)}"/>
                                 <figcaption>
                                     <h2>
                                         <th:block th:text="${archive.title}"></th:block>
@@ -66,7 +66,7 @@
                     <th:block th:if="${archiveStat.index != 1 && archiveStat.index % 2 != 0}">
                         <li>
                             <figure class="effect-oscar">
-                                <img alt="" class="img-responsive" th:src="${commons.show_thumb(archive.content)}"/>
+                                <img alt="" class="img-responsive" th:src="${commons.showThumb(archive.content)}"/>
                                 <figcaption>
                                     <h2>
                                         <th:block th:text="${archive.title}"></th:block>

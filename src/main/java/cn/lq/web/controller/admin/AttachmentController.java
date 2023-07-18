@@ -66,7 +66,7 @@ public class AttachmentController {
     @PostMapping("/uploadfile")
     public void fileUpLoadToTencentCloud(HttpServletRequest request,
                                          HttpServletResponse response,
-                                         @ApiParam(name = "editormd-image-file", value = "文件数组", required = true) @RequestParam(name = "editormd-image-file", required = true) MultipartFile file) {
+                                         @ApiParam(name = "editormd-image-file", value = "文件数组", required = true) @RequestParam(name = "editormd-image-file") MultipartFile file) {
         //文件上传
         try {
             request.setCharacterEncoding("utf-8");

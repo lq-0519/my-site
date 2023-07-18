@@ -4,7 +4,7 @@ import cn.lq.common.domain.constant.LogActions;
 import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.exception.BusinessException;
-import cn.lq.common.utils.IPKit;
+import cn.lq.common.utils.NetKit;
 import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.service.log.LogService;
@@ -63,7 +63,7 @@ public class AuthController extends BaseController {
                                @ApiParam(name = "remeber_me", value = "记住我") @RequestParam(name = "remeber_me", required = false) String remeber_me) {
 
         // 获取ip并过滤登录时缓存的bug
-        String ip = IPKit.getIpAddrByRequest(request);
+        String ip = NetKit.getIpAddrByRequest(request);
         Integer error_count = cache.hget("login_error_count", ip);
         try {
             UserPO userInfo = userService.login(username, password);

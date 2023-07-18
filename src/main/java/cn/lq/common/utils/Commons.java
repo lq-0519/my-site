@@ -369,7 +369,7 @@ public class Commons {
     /**
      * 获取文章第一张图片
      */
-    public static String show_thumb(String content) {
+    public static String showThumb(String content) {
         content = TaleUtils.mdToHtml(content);
         if (content.contains("<img")) {
             String img = "";
@@ -379,12 +379,13 @@ public class Commons {
             if (m_image.find()) {
                 img = img + "," + m_image.group();
                 // //匹配src
-                Matcher m = Pattern.compile("src\\s*=\\s*\'?\"?(.*?)(\'|\"|>|\\s+)").matcher(img);
+                Matcher m = Pattern.compile("src\\s*=\\s*'?\"?(.*?)('|\"|>|\\s+)").matcher(img);
                 if (m.find()) {
                     return m.group(1);
                 }
             }
         }
+
         return "";
     }
 

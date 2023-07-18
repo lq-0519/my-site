@@ -7,12 +7,13 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 /**
- * ip工具类
+ * 网络工具类
  *
  * @author BlueT
  * @date 2017/3/9
  */
-public class IPKit {
+public class NetKit {
+
     /**
      * @param request 请求
      * @return IP Address

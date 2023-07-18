@@ -20,12 +20,12 @@
 
     <!-- 所有字段 -->
     <sql id="allColumns">
-        id, file_name, file_type, file_key, user_id, created, modified, is_deleted
+        a.id, a.file_name, a.file_type, a.file_key, a.user_id, a.created, a.modified, a.is_deleted
     </sql>
 
     <!-- 除ID的字段 -->
     <sql id="columnsNoId">
-        file_name, file_type, file_key, user_id, created, modified, is_deleted
+        a.file_name, a.file_type, a.file_key, a.user_id, a.created, a.modified, a.is_deleted
     </sql>
 
     <!-- 查询条件 -->
@@ -85,13 +85,13 @@
     <!-- 根据主键获取附件信息 -->
     <select id="queryAttachmentUserById" resultMap="attachmentUserResultMap">
         SELECT
-        <include refid="allColumns"/>, username FROM attachment AS a LEFT JOIN `user` AS u ON a.user_id = u.id WHERE a.id = #{id}
+        <include refid="allColumns"/>, u.username FROM attachment AS a LEFT JOIN `user` AS u ON a.user_id = u.id WHERE a.id = #{id}
     </select>
 
     <!-- 查找所有的附件 -->
     <select id="queryAttachmentUserList" resultMap="attachmentUserResultMap" parameterType="cn.lq.common.domain.query.inner.AttachmentInnerQuery">
         SELECT
-        <include refid="allColumns"/>, username FROM attachment AS a LEFT JOIN `user` AS u ON a.user_id = u.id
+        <include refid="allColumns"/>, u.username FROM attachment AS a LEFT JOIN `user` AS u ON a.user_id = u.id
         <include refid="dynamicWhere"/>
         ORDER BY a.created DESC
     </select>

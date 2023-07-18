@@ -7,8 +7,6 @@ import cn.lq.common.exception.BusinessException;
 import cn.lq.manager.ConfigManager;
 import cn.lq.service.option.OptionService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +28,6 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
     public void updateOptionByCode(String code, String value) {
         if (StringUtils.isBlank(code)) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -44,7 +41,6 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"optionsCache", "optionCache"}, allEntries = true, beforeInvocation = true)
     public void saveOptions(Map<String, String> options) {
         if (null != options && !options.isEmpty()) {
             options.forEach(this::updateOptionByCode);
@@ -52,7 +48,6 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    @Cacheable(value = "optionCache", key = "'optionByCode_' + #p0")
     public ConfigPO getOptionByCode(String code) {
         if (StringUtils.isBlank(code)) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -62,7 +57,6 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    @Cacheable(value = "optionsCache", key = "'options_'")
     public List<ConfigPO> getOptions() {
         return configManager.queryForList(new ConfigInnerQuery());
     }

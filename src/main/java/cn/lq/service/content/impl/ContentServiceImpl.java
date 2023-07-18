@@ -23,8 +23,6 @@ import cn.lq.manager.ContentMetaBindManager;
 import cn.lq.service.content.ContentService;
 import cn.lq.service.meta.MetaService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +53,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void addArticle(ContentEsPO contentEsPO) {
         if (null == contentEsPO) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -83,7 +80,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void deleteArticleById(Long contentId) {
         if (null == contentId) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -111,7 +107,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void updateArticleById(ContentEsPO contentEsPO) {
         //标签和分类
         String tags = contentEsPO.getTags();
@@ -128,7 +123,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void updateCategory(String ordinal, String newCategory) {
         ContentEsInnerQuery query = new ContentEsInnerQuery();
         query.setCategory(ordinal);
@@ -147,7 +141,6 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    @CacheEvict(value = {"atricleCache", "atricleCaches", "siteCache"}, allEntries = true, beforeInvocation = true)
     public void updateContentByCid(ContentEsPO content) {
         if (null != content && null != content.getId()) {
             contentManager.update(content);
@@ -155,7 +148,6 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    @Cacheable(value = "atricleCache", key = "'atricleById_' + #p0")
     public ContentEsPO getArticleById(Long id) {
         if (null == id) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);

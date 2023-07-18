@@ -13,8 +13,6 @@ import cn.lq.manager.CommentManager;
 import cn.lq.service.comment.CommentService;
 import cn.lq.service.content.ContentService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +53,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void addComment(CommentPO comments) {
         //字符串不为空代表有错误
         String errorMsg = null;
@@ -97,7 +94,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void deleteComment(Long coid) {
         if (null == coid) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -121,7 +117,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @CacheEvict(value = {"commentCache", "siteCache"}, allEntries = true)
     public void updateCommentStatus(Long commentId, String status) {
         if (null == commentId) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -133,7 +128,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Cacheable(value = "commentCache", key = "'commentById_' + #p0")
     public CommentPO getCommentById(Long coid) {
         if (null == coid) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -143,7 +137,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Cacheable(value = "commentCache", key = "'commentsByCId_' + #p0")
     public List<CommentPO> getCommentsByContentId(Long contentId) {
         if (null == contentId) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
@@ -155,7 +148,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Cacheable(value = "commentCache", key = "'commentsByCond_' + #p1")
     public PageVO<CommentPO> getCommentsByCond(CommentInnerQuery commentInnerQuery, int pageNum, int pageSize) {
         if (null == commentInnerQuery) {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);

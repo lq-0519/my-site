@@ -135,22 +135,23 @@
             this.items.forEach(function (el, i) {
                 if (!classie.has(el, 'shown') && !classie.has(el, 'animate') && inViewport(el, self.options.viewportFactor)) {
                     setTimeout(function () {
-                        var perspY = scrollY() + getViewportH() / 2;
-                        self.el.style.WebkitPerspectiveOrigin = '50% ' + perspY + 'px';
-                        self.el.style.MozPerspectiveOrigin = '50% ' + perspY + 'px';
-                        self.el.style.perspectiveOrigin = '50% ' + perspY + 'px';
+                            var perspY = scrollY() + getViewportH() / 2;
+                            self.el.style.WebkitPerspectiveOrigin = '50% ' + perspY + 'px';
+                            self.el.style.MozPerspectiveOrigin = '50% ' + perspY + 'px';
+                            self.el.style.perspectiveOrigin = '50% ' + perspY + 'px';
 
-                        self._checkTotalRendered();
+                            self._checkTotalRendered();
 
-                        if (self.options.minDuration && self.options.maxDuration) {
-                            var randDuration = (Math.random() * (self.options.maxDuration - self.options.minDuration) + self.options.minDuration) + 's';
-                            el.style.WebkitAnimationDuration = randDuration;
-                            el.style.MozAnimationDuration = randDuration;
-                            el.style.animationDuration = randDuration;
-                        }
+                            if (self.options.minDuration && self.options.maxDuration) {
+                                var randDuration = (Math.random() * (self.options.maxDuration - self.options.minDuration) + self.options.minDuration) + 's';
+                                el.style.WebkitAnimationDuration = randDuration;
+                                el.style.MozAnimationDuration = randDuration;
+                                el.style.animationDuration = randDuration;
+                            }
 
-                        classie.add(el, 'animate');
-                    }, 25);
+                            classie.add(el, 'animate');
+                        },
+                        25);
                 }
             });
             this.didScroll = false;
