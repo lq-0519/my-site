@@ -54,6 +54,7 @@ public class HomeController extends BaseController {
     @Resource
     private CommentService commentService;
 
+
     /**
      * blog首页
      */
