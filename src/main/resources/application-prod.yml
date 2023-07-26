@@ -1,14 +1,13 @@
 server:
-  port: 443
-  ssl:
-    key-store: classpath:lq.cn.pfx
-    key-store-password: l29df164yf5d4z
-    key-store-type: PKCS12
-
+  port: 80
 
 spring:
+  data:
+    elasticsearch:
+      cluster-name: lq-blog
+      cluster-nodes: 101.42.36.102:9300 # 程序连接es的端口号是9300
   datasource:
-    name: mysql_test
+    name: mysql_lq
     type: com.alibaba.druid.pool.DruidDataSource
     #druid相关配置
     druid:
@@ -16,9 +15,9 @@ spring:
       filters: stat
       driver-class-name: com.mysql.jdbc.Driver
       #基本属性
-      url: jdbc:mysql://127.0.0.1:3306/lu_tale?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+      url: jdbc:mysql://101.42.36.102:3306/lu_tale?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
       username: root
-      password: mac123
+      password: Yiqian0501@lq
       #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1
@@ -48,15 +47,14 @@ spring:
     proxy-target-class: true
   servlet:
     multipart:
-      max-file-size: 10Mb
-      max-request-size: 100Mb
-
+      max-file-size: 10485760
+      max-request-size: 104857600
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: cn.lq.common.model
-
-
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #pagehelper
 pagehelper:
   helperDialect: mysql
@@ -65,8 +63,19 @@ pagehelper:
   params: count=countSql
   returnPageInfo: check
 
+logging:
+  level:
+    cn.lq: info
+
 swagger:
   show: false
+
+qiniu:
+  accesskey: ""
+  serectkey: ""
+  bucket: ""
+  cdn:
+    url: ""
 
 
 
