@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
@@ -37,11 +37,15 @@ import java.util.Date;
 @Service("contentManager")
 public class ContentManagerImpl implements ContentManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContentManagerImpl.class);
-    @Resource
-    private ElasticsearchTemplate elasticsearchTemplate;
+
+    private final ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @Resource
     private ContentRepository contentRepository;
+
+    public ContentManagerImpl(ElasticsearchRestTemplate elasticsearchRestTemplate) {
+        this.elasticsearchRestTemplate = elasticsearchRestTemplate;
+    }
 
     @Override
     public long insert(ContentEsPO contentEsPO) {
@@ -88,7 +92,7 @@ public class ContentManagerImpl implements ContentManager {
                 .withClass(ContentRepository.DOC_CLASS)
                 .withIndexRequest(indexRequest)
                 .build();
-        UpdateResponse updateResponse = elasticsearchTemplate.update(updateQuery);
+        UpdateResponse updateResponse = elasticsearchRestTemplate.update(updateQuery);
         LOGGER.warn("update updateResponse:{}", JSON.toJSON(updateResponse));
         return updateResponse.status().getStatus();
     }
@@ -116,7 +120,7 @@ public class ContentManagerImpl implements ContentManager {
                 .withTypes(ContentRepository.TYPE)
                 .withQuery(boolQueryBuilder)
                 .build();
-        return elasticsearchTemplate.count(searchQuery, ContentRepository.DOC_CLASS);
+        return elasticsearchRestTemplate.count(searchQuery, ContentRepository.DOC_CLASS);
     }
 
     @Override
@@ -147,6 +151,6 @@ public class ContentManagerImpl implements ContentManager {
                         EsUtils.getSort(contentEsInnerQuery.getOrderByList(), ContentEsPO.class))
                 )
                 .build();
-        return elasticsearchTemplate.queryForPage(searchQuery, ContentEsPO.class, new HighlightResultMapper());
+        return elasticsearchRestTemplate.queryForPage(searchQuery, ContentEsPO.class, new HighlightResultMapper());
     }
 }
