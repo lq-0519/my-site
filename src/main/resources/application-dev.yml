@@ -4,7 +4,6 @@ server:
 spring:
   elasticsearch:
     rest:
-      #      uris: 127.0.0.1:9200
       uris: 101.42.36.102:9200
       username: elastic
       password: ENC(7E0aanxYXFQZE7p1n0J9ZapkjycnIE2Y)
@@ -18,10 +17,8 @@ spring:
       driver-class-name: com.mysql.jdbc.Driver
       #基本属性
       url: jdbc:mysql://101.42.36.102:3306/lq?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
-      #      url: jdbc:mysql://127.0.0.1:3306/lq?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
       username: root
       password: ENC(4uvIx9GEADNUTe8IUlEmG87P74fVrPWZ)
-      #      password: Yiqian0501@mysql
       #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1
@@ -59,7 +56,7 @@ mybatis:
   type-aliases-package: cn.lq.common.model
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-#pagehelper
+
 pagehelper:
   helperDialect: mysql
   reasonable: true
