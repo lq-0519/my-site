@@ -17,6 +17,14 @@ public class OrderBy implements Serializable {
      */
     private Boolean asc;
 
+    public OrderBy() {
+    }
+
+    public OrderBy(String field, Boolean asc) {
+        this.field = field;
+        this.asc = asc;
+    }
+
     public String getField() {
         return field;
     }

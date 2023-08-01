@@ -4,6 +4,7 @@ import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.enums.CommentStatusEnum;
+import cn.lq.common.domain.other.OrderBy;
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.po.ContentMetaBindPO;
 import cn.lq.common.domain.po.es.ContentEsPO;
@@ -22,12 +23,14 @@ import cn.lq.manager.ContentManager;
 import cn.lq.manager.ContentMetaBindManager;
 import cn.lq.service.content.ContentService;
 import cn.lq.service.meta.MetaService;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -162,6 +165,8 @@ public class ContentServiceImpl implements ContentService {
             throw BusinessException.withErrorCode(Constant.Common.PARAM_IS_EMPTY);
         }
 
+        ArrayList<OrderBy> orderByArrayList = Lists.newArrayList(new OrderBy(Constant.Es.FIELD_CREATED, false));
+        contentEsInnerQuery.setOrderByList(orderByArrayList);
         Page<ContentEsPO> contentEsPOS = contentManager.queryForPage(contentEsInnerQuery, page, pageSize);
         return PageUtils.convertPageVO(contentEsPOS);
     }
