@@ -2,7 +2,6 @@ package cn.lq.web.controller.admin;
 
 import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.AttachmentPO;
 import cn.lq.common.domain.po.AttachmentUserPO;
 import cn.lq.common.domain.po.UserPO;
@@ -57,7 +56,7 @@ public class AttachmentController {
         PageVO<AttachmentUserPO> atts = attachmentService.getAttachmentUserPage(page, limit);
         request.setAttribute("attachs", atts);
         request.setAttribute(Types.ATTACH_URL.getType(), Commons.site_option(Types.ATTACH_URL.getType(), Commons.site_url()));
-        request.setAttribute("max_file_size", WebConst.MAX_FILE_SIZE / 1024);
+        request.setAttribute("max_file_size", Constant.MAX_FILE_SIZE / 1024);
         return "admin/attach";
     }
 
@@ -75,7 +74,7 @@ public class AttachmentController {
             qiniuCloudService.upload(file, fileName);
             AttachmentPO attAch = new AttachmentPO();
             HttpSession session = request.getSession();
-            UserPO sessionUser = (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            UserPO sessionUser = (UserPO) session.getAttribute(Constant.LOGIN_SESSION_KEY);
             attAch.setUserId(sessionUser.getId());
             attAch.setFileType(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
             attAch.setFileName(fileName);
@@ -111,7 +110,7 @@ public class AttachmentController {
                 qiniuCloudService.upload(file, fileName);
                 AttachmentPO attAch = new AttachmentPO();
                 HttpSession session = request.getSession();
-                UserPO sessionUser = (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+                UserPO sessionUser = (UserPO) session.getAttribute(Constant.LOGIN_SESSION_KEY);
                 attAch.setUserId(sessionUser.getId());
                 attAch.setFileType(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
                 attAch.setFileName(fileName);

@@ -1,10 +1,47 @@
 package cn.lq.common.domain.constant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author winterchen
  * @date 2018/4/29
  */
 public interface Constant {
+
+    String USER_IN_COOKIE = "S_L_ID";
+    /**
+     * 最大获取文章条数
+     */
+    int MAX_POSTS = 9999;
+    /**
+     * 最大页码
+     */
+    int MAX_PAGE = 100;
+    /**
+     * 文章最多可以输入的文字数
+     */
+    int MAX_TEXT_COUNT = 200000;
+    /**
+     * 文章标题最多可以输入的文字个数
+     */
+    int MAX_TITLE_COUNT = 200;
+    /**
+     * 一些网站配置
+     */
+    Map<String, String> INIT_CONFIG = new HashMap<>();
+    /**
+     * session的key
+     */
+    String LOGIN_SESSION_KEY = "login_user";
+    /**
+     * aes加密加盐
+     */
+    String AES_SALT = "0123456789abcdef";
+    /**
+     * 上传文件最大1M
+     */
+    Integer MAX_FILE_SIZE = 1048576;
 
     interface Common {
         String PARAM_IS_EMPTY = "参数为空";
@@ -43,6 +80,11 @@ public interface Constant {
         String FIELD_DELETED = "deleted";
         String FIELD_MODIFIED = "modified";
         String FIELD_CREATED = "created";
+    }
+
+    interface Env {
+        String DEV = "dev";
+        String PROD = "prod";
     }
 
 }

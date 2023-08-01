@@ -1,7 +1,7 @@
 package cn.lq.web.controller.admin;
 
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.LogActions;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.NetKit;
@@ -67,7 +67,7 @@ public class AuthController extends BaseController {
         Integer error_count = cache.hget("login_error_count", ip);
         try {
             UserPO userInfo = userService.login(username, password);
-            request.getSession().setAttribute(WebConst.LOGIN_SESSION_KEY, userInfo);
+            request.getSession().setAttribute(Constant.LOGIN_SESSION_KEY, userInfo);
             if (StringUtils.isNotBlank(remeber_me)) {
                 TaleUtils.setCookie(response, userInfo.getId());
             }
@@ -98,8 +98,8 @@ public class AuthController extends BaseController {
      */
     @RequestMapping("/logout")
     public void logout(HttpSession session, HttpServletResponse response, HttpServletRequest request) {
-        session.removeAttribute(WebConst.LOGIN_SESSION_KEY);
-        Cookie cookie = new Cookie(WebConst.USER_IN_COOKIE, "");
+        session.removeAttribute(Constant.LOGIN_SESSION_KEY);
+        Cookie cookie = new Cookie(Constant.USER_IN_COOKIE, "");
         cookie.setValue(null);
         // 立即销毁cookie
         cookie.setMaxAge(0);

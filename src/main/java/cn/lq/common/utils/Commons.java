@@ -1,6 +1,6 @@
 package cn.lq.common.utils;
 
-import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.vo.PageVO;
 import com.vdurmont.emoji.EmojiParser;
@@ -21,7 +21,9 @@ import java.util.regex.Pattern;
 
 /**
  * 公共函数
- * Created by winterchen on 2018/4/30.
+ *
+ * @author winterchen
+ * @date 2018/4/30
  */
 @Component
 public class Commons {
@@ -117,7 +119,7 @@ public class Commons {
         if (StringUtils.isBlank(key)) {
             return "";
         }
-        String str = WebConst.initConfig.get(key);
+        String str = Constant.INIT_CONFIG.get(key);
         if (StringUtils.isNotBlank(str)) {
             return str;
         } else {
@@ -221,13 +223,13 @@ public class Commons {
     public static Map<String, String> social() {
         final String prefix = "social_";
         Map<String, String> map = new HashMap<>();
-        map.put("twitter", WebConst.initConfig.get(prefix + "twitter"));
-        map.put("jianshu", WebConst.initConfig.get(prefix + "jianshu"));
-        map.put("resume", WebConst.initConfig.get(prefix + "resume"));
-        map.put("weibo", WebConst.initConfig.get(prefix + "weibo"));
-        map.put("zhihu", WebConst.initConfig.get(prefix + "zhihu"));
-        map.put("csdn", WebConst.initConfig.get(prefix + "csdn"));
-        map.put("github", WebConst.initConfig.get(prefix + "github"));
+        map.put("twitter", Constant.INIT_CONFIG.get(prefix + "twitter"));
+        map.put("jianshu", Constant.INIT_CONFIG.get(prefix + "jianshu"));
+        map.put("resume", Constant.INIT_CONFIG.get(prefix + "resume"));
+        map.put("weibo", Constant.INIT_CONFIG.get(prefix + "weibo"));
+        map.put("zhihu", Constant.INIT_CONFIG.get(prefix + "zhihu"));
+        map.put("csdn", Constant.INIT_CONFIG.get(prefix + "csdn"));
+        map.put("github", Constant.INIT_CONFIG.get(prefix + "github"));
         return map;
     }
 

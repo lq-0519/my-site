@@ -1,7 +1,7 @@
 package cn.lq.web.controller.admin;
 
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.MetaExtendPO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.common.utils.Response;
@@ -40,8 +40,8 @@ public class CategoryController extends BaseController {
     @ApiOperation("进入分类和标签页")
     @GetMapping(value = "")
     public String index(HttpServletRequest request) {
-        List<MetaExtendPO> categories = metaService.getMetaList(Types.CATEGORY.getType(), null, WebConst.MAX_POSTS);
-        List<MetaExtendPO> tags = metaService.getMetaList(Types.TAG.getType(), null, WebConst.MAX_POSTS);
+        List<MetaExtendPO> categories = metaService.getMetaList(Types.CATEGORY.getType(), null, Constant.MAX_POSTS);
+        List<MetaExtendPO> tags = metaService.getMetaList(Types.TAG.getType(), null, Constant.MAX_POSTS);
         request.setAttribute("categories", categories);
         request.setAttribute("tags", tags);
         return "admin/category";

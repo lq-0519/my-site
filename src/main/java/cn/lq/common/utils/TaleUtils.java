@@ -1,6 +1,6 @@
 package cn.lq.common.utils;
 
-import cn.lq.common.domain.constant.WebConst;
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.po.UserPO;
 import cn.lq.common.exception.BusinessException;
 import cn.lq.web.controller.admin.AttachmentController;
@@ -149,7 +149,7 @@ public class TaleUtils {
         if (null == session) {
             return null;
         }
-        return (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+        return (UserPO) session.getAttribute(Constant.LOGIN_SESSION_KEY);
     }
 
 
@@ -158,10 +158,10 @@ public class TaleUtils {
      */
     public static Long getCookieUid(HttpServletRequest request) {
         if (null != request) {
-            Cookie cookie = cookieRaw(WebConst.USER_IN_COOKIE, request);
+            Cookie cookie = cookieRaw(Constant.USER_IN_COOKIE, request);
             if (cookie != null && cookie.getValue() != null) {
                 try {
-                    String uid = Tools.deAes(cookie.getValue(), WebConst.AES_SALT);
+                    String uid = Tools.deAes(cookie.getValue(), Constant.AES_SALT);
                     return StringUtils.isNotBlank(uid) && NumberUtils.isNumber(uid) ? Long.valueOf(uid) : null;
                 } catch (Exception e) {
                 }
@@ -195,9 +195,9 @@ public class TaleUtils {
      */
     public static void setCookie(HttpServletResponse response, Long uid) {
         try {
-            String val = Tools.enAes(uid.toString(), WebConst.AES_SALT);
+            String val = Tools.enAes(uid.toString(), Constant.AES_SALT);
             boolean isSSL = false;
-            Cookie cookie = new Cookie(WebConst.USER_IN_COOKIE, val);
+            Cookie cookie = new Cookie(Constant.USER_IN_COOKIE, val);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 30);
             cookie.setSecure(isSSL);
@@ -240,8 +240,8 @@ public class TaleUtils {
      * 退出登录状态
      */
     public static void logout(HttpSession session, HttpServletResponse response) {
-        session.removeAttribute(WebConst.LOGIN_SESSION_KEY);
-        Cookie cookie = new Cookie(WebConst.USER_IN_COOKIE, "");
+        session.removeAttribute(Constant.LOGIN_SESSION_KEY);
+        Cookie cookie = new Cookie(Constant.USER_IN_COOKIE, "");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         try {

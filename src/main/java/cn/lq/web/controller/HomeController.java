@@ -2,7 +2,6 @@ package cn.lq.web.controller;
 
 import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.po.MetaExtendPO;
 import cn.lq.common.domain.po.es.ContentEsPO;
@@ -75,7 +74,7 @@ public class HomeController extends BaseController {
             int page,
             @RequestParam(value = "limit", required = false, defaultValue = "11") int limit,
             String content) {
-        page = page < 0 || page > WebConst.MAX_PAGE ? 1 : page;
+        page = page < 0 || page > Constant.MAX_PAGE ? 1 : page;
         ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
         contentEsInnerQuery.setType(Types.ARTICLE.getType());
         contentEsInnerQuery.setContent("null".equals(content) || StringUtils.isBlank(content) ? null : content);
@@ -135,7 +134,7 @@ public class HomeController extends BaseController {
     @GetMapping(value = {"/about", "/about/index"})
     public String getAbout(HttpServletRequest request) {
         //获取友链
-        List<MetaExtendPO> links = metaService.getMetaList(Types.LINK.getType(), null, WebConst.MAX_POSTS);
+        List<MetaExtendPO> links = metaService.getMetaList(Types.LINK.getType(), null, Constant.MAX_POSTS);
         request.setAttribute("links", links);
         request.setAttribute("active", "about");
         return "site/about";
@@ -281,7 +280,7 @@ public class HomeController extends BaseController {
             @ApiParam(name = "page", value = "页数") @PathVariable(name = "p") int page,
             @ApiParam(name = "limit", value = "条数") @RequestParam(name = "limit", required = false, defaultValue = "9999") int limit,
             HttpServletRequest request) {
-        page = page < 0 || page > WebConst.MAX_PAGE ? 1 : page;
+        page = page < 0 || page > Constant.MAX_PAGE ? 1 : page;
         ContentEsInnerQuery contentEsInnerQuery = new ContentEsInnerQuery();
         contentEsInnerQuery.setType(Types.PHOTO.getType());
         PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, page, limit);

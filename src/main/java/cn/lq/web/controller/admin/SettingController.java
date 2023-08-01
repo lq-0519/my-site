@@ -1,7 +1,7 @@
 package cn.lq.web.controller.admin;
 
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.LogActions;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.ConfigPO;
 import cn.lq.common.utils.CollectionUtils;
 import cn.lq.common.utils.GsonUtils;
@@ -68,9 +68,9 @@ public class SettingController extends BaseController {
             //刷新设置
             List<ConfigPO> options = optionService.getOptions();
             if (!CollectionUtils.isEmpty(options)) {
-                WebConst.initConfig.clear();
+                Constant.INIT_CONFIG.clear();
                 for (ConfigPO option : options) {
-                    WebConst.initConfig.put(option.getCode(), option.getValue());
+                    Constant.INIT_CONFIG.put(option.getCode(), option.getValue());
                 }
             }
 

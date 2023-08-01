@@ -25,4 +25,8 @@ public interface UserService {
      */
     UserPO login(String username, String password);
 
+    /**
+     * 根据用户名查询
+     */
+    UserPO queryByUsername(String username);
 }

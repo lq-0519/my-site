@@ -1,7 +1,7 @@
 package cn.lq.web.controller.admin;
 
+import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.LogActions;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.dto.StatisticsDto;
 import cn.lq.common.domain.po.CommentPO;
 import cn.lq.common.domain.po.LogPO;
@@ -96,10 +96,10 @@ public class IndexController extends BaseController {
             logService.addLog(LogActions.UP_INFO.getAction(), GsonUtils.toJsonString(temp), request.getRemoteAddr(), this.getUid(request));
 
             //更新session中的数据
-            UserPO original = (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            UserPO original = (UserPO) session.getAttribute(Constant.LOGIN_SESSION_KEY);
             original.setScreenName(screenName);
             original.setEmail(email);
-            session.setAttribute(WebConst.LOGIN_SESSION_KEY, original);
+            session.setAttribute(Constant.LOGIN_SESSION_KEY, original);
         }
         return Response.success();
     }
@@ -131,9 +131,9 @@ public class IndexController extends BaseController {
             logService.addLog(LogActions.UP_PWD.getAction(), null, request.getRemoteAddr(), this.getUid(request));
 
             //更新session中的数据
-            UserPO original = (UserPO) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            UserPO original = (UserPO) session.getAttribute(Constant.LOGIN_SESSION_KEY);
             original.setPassword(pwd);
-            session.setAttribute(WebConst.LOGIN_SESSION_KEY, original);
+            session.setAttribute(Constant.LOGIN_SESSION_KEY, original);
             return Response.success();
         } catch (Exception e) {
             String msg = "密码修改失败";

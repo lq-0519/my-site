@@ -2,7 +2,6 @@ package cn.lq.service.content.impl;
 
 import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.enums.CommentStatusEnum;
 import cn.lq.common.domain.other.OrderBy;
 import cn.lq.common.domain.po.CommentPO;
@@ -63,13 +62,13 @@ public class ContentServiceImpl implements ContentService {
         if (StringUtils.isBlank(contentEsPO.getTitle())) {
             throw BusinessException.withErrorCode(Constant.Article.TITLE_CAN_NOT_EMPTY);
         }
-        if (contentEsPO.getTitle().length() > WebConst.MAX_TITLE_COUNT) {
+        if (contentEsPO.getTitle().length() > Constant.MAX_TITLE_COUNT) {
             throw BusinessException.withErrorCode(Constant.Article.TITLE_IS_TOO_LONG);
         }
         if (StringUtils.isBlank(contentEsPO.getContent())) {
             throw BusinessException.withErrorCode(Constant.Article.CONTENT_CAN_NOT_EMPTY);
         }
-        if (contentEsPO.getContent().length() > WebConst.MAX_TEXT_COUNT) {
+        if (contentEsPO.getContent().length() > Constant.MAX_TEXT_COUNT) {
             throw BusinessException.withErrorCode(Constant.Article.CONTENT_IS_TOO_LONG);
         }
 

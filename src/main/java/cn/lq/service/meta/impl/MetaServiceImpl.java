@@ -2,7 +2,6 @@ package cn.lq.service.meta.impl;
 
 import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
-import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.ContentMetaBindPO;
 import cn.lq.common.domain.po.MetaExtendPO;
 import cn.lq.common.domain.po.MetaPO;
@@ -196,7 +195,7 @@ public class MetaServiceImpl implements MetaService {
             if (StringUtils.isBlank(orderby)) {
                 orderby = "count desc, a.mid desc";
             }
-            if (limit < 1 || limit > WebConst.MAX_POSTS) {
+            if (limit < 1 || limit > Constant.MAX_POSTS) {
                 limit = 10;
             }
             Map<String, Object> paraMap = new HashMap<>();
