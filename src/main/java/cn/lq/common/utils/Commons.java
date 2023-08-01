@@ -221,13 +221,13 @@ public class Commons {
     public static Map<String, String> social() {
         final String prefix = "social_";
         Map<String, String> map = new HashMap<>();
-        map.put("csdn", WebConst.initConfig.get(prefix + "csdn"));
+        map.put("twitter", WebConst.initConfig.get(prefix + "twitter"));
         map.put("jianshu", WebConst.initConfig.get(prefix + "jianshu"));
         map.put("resume", WebConst.initConfig.get(prefix + "resume"));
         map.put("weibo", WebConst.initConfig.get(prefix + "weibo"));
         map.put("zhihu", WebConst.initConfig.get(prefix + "zhihu"));
+        map.put("csdn", WebConst.initConfig.get(prefix + "csdn"));
         map.put("github", WebConst.initConfig.get(prefix + "github"));
-        map.put("twitter", WebConst.initConfig.get(prefix + "twitter"));
         return map;
     }
 
