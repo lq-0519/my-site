@@ -33,20 +33,15 @@ import java.util.List;
 public class BaseInterceptor implements HandlerInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseInterceptor.class);
     private static final String USER_AGENT = "user-agent";
-
+    private final MapCache cache = MapCache.single();
     @Resource
     private UserService userService;
-
     @Resource
     private OptionService optionService;
-
     @Resource
     private Commons commons;
-
     @Resource
     private AdminCommons adminCommons;
-
-    private final MapCache cache = MapCache.single();
     @Value("${spring.profiles.active}")
     private String env;
 
