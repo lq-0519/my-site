@@ -4,6 +4,7 @@ import cn.lq.common.domain.constant.Constant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.constant.WebConst;
 import cn.lq.common.domain.po.CommentPO;
+import cn.lq.common.domain.po.MetaExtendPO;
 import cn.lq.common.domain.po.es.ContentEsPO;
 import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
@@ -15,6 +16,7 @@ import cn.lq.common.utils.Response;
 import cn.lq.common.utils.TaleUtils;
 import cn.lq.service.comment.CommentService;
 import cn.lq.service.content.ContentService;
+import cn.lq.service.meta.MetaService;
 import com.alibaba.fastjson.JSON;
 import com.vdurmont.emoji.EmojiParser;
 import io.swagger.annotations.ApiOperation;
@@ -53,6 +55,8 @@ public class HomeController extends BaseController {
     private ContentService contentService;
     @Resource
     private CommentService commentService;
+    @Resource
+    private MetaService metaService;
 
     /**
      * blog首页
@@ -131,7 +135,8 @@ public class HomeController extends BaseController {
     @GetMapping(value = {"/about", "/about/index"})
     public String getAbout(HttpServletRequest request) {
         //获取友链
-        this.blogBaseData(request, null);
+        List<MetaExtendPO> links = metaService.getMetaList(Types.LINK.getType(), null, WebConst.MAX_POSTS);
+        request.setAttribute("links", links);
         request.setAttribute("active", "about");
         return "site/about";
     }

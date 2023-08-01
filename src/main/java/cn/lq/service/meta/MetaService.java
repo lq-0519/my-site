@@ -8,14 +8,13 @@ import java.util.List;
 
 /**
  * 项目服务层
- * Created by winterchen on 2018/4/29.
+ *
+ * @author winterchen
+ * @date 2018/4/29
  */
 public interface MetaService {
     /**
      * 添加项目
-     *
-     * @param meta
-     * @return
      */
     void addMeta(MetaPO meta);
 
@@ -27,36 +26,22 @@ public interface MetaService {
 
     /**
      * 批量添加
-     *
-     * @param cid
-     * @param names
-     * @param type
      */
     void addMetas(Long cid, String names, String type);
 
 
     /**
      * 添加或者更新
-     *
-     * @param cid
-     * @param name
-     * @param type
      */
     void saveOrUpdate(Long cid, String name, String type);
 
     /**
      * 删除项目
-     *
-     * @param mid
-     * @return
      */
     void deleteMetaById(Long mid);
 
     /**
      * 更新项目
-     *
-     * @param meta
-     * @return
      */
     void updateMeta(MetaPO meta);
 
@@ -64,7 +49,6 @@ public interface MetaService {
      * 获取所有的项目
      *
      * @param metaInnerQuery 查询条件
-     * @return
      */
     List<MetaPO> getMetas(MetaInnerQuery metaInnerQuery);
 
