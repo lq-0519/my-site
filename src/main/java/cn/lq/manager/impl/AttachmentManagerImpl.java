@@ -66,4 +66,9 @@ public class AttachmentManagerImpl implements AttachmentManager {
     public int queryForCount(AttachmentInnerQuery attachmentInnerQuery) {
         return attachmentDao.queryForCount(attachmentInnerQuery);
     }
+
+    @Override
+    public AttachmentPO queryForObject(Long id) {
+        return attachmentDao.queryForObject(id);
+    }
 }

@@ -42,4 +42,9 @@ public interface AttachmentDao {
      * 查找附件的数量
      */
     int queryForCount(AttachmentInnerQuery attachmentInnerQuery);
+
+    /**
+     * queryForObject
+     */
+    AttachmentPO queryForObject(Long id);
 }

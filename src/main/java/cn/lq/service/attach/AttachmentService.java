@@ -2,7 +2,10 @@ package cn.lq.service.attach;
 
 import cn.lq.common.domain.po.AttachmentPO;
 import cn.lq.common.domain.po.AttachmentUserPO;
+import cn.lq.common.domain.po.UserPO;
+import cn.lq.common.domain.vo.AttachmentVO;
 import cn.lq.common.domain.vo.PageVO;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 附件服务层
@@ -14,8 +17,10 @@ public interface AttachmentService {
 
     /**
      * 添加单个附件信息
+     *
+     * @return 返回文件url
      */
-    void addAttAch(AttachmentPO attachmentPO);
+    String addAttAch(MultipartFile file, UserPO sessionUser);
 
     /**
      * 根据主键编号删除附件信息
@@ -35,5 +40,5 @@ public interface AttachmentService {
     /**
      * 获取所有的附件信息
      */
-    PageVO<AttachmentUserPO> getAttachmentUserPage(int pageNum, int pageSize);
+    PageVO<AttachmentVO> getAttachmentUserPage(int pageNum, int pageSize);
 }

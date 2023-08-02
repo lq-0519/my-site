@@ -25,7 +25,7 @@
 
     <!-- 除ID的字段 -->
     <sql id="columnsNoId">
-        a.file_name, a.file_type, a.file_key, a.user_id, a.created, a.modified, a.is_deleted
+        file_name, file_type, file_key, user_id, created, modified, is_deleted
     </sql>
 
     <!-- 查询条件 -->
@@ -100,6 +100,12 @@
     <select id="queryForCount" resultType="java.lang.Integer" parameterType="cn.lq.common.domain.query.inner.AttachmentInnerQuery">
         SELECT count(*) FROM attachment AS a
         <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="queryForObject" resultMap="defaultResultMap">
+        SELECT
+        <include refid="allColumns"/>
+        FROM attachment AS a WHERE id = #{id}
     </select>
 
 </mapper>

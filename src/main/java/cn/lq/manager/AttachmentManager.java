@@ -39,4 +39,9 @@ public interface AttachmentManager {
      * 查找附件的数量
      */
     int queryForCount(AttachmentInnerQuery attachmentInnerQuery);
+
+    /**
+     * 单个查询
+     */
+    AttachmentPO queryForObject(Long id);
 }

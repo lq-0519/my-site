@@ -32,8 +32,9 @@ spring:
     proxy-target-class: true
   servlet:
     multipart:
-      max-file-size: 10485760
-      max-request-size: 104857600
+      # 最大文件上传
+      max-file-size: 20971520
+      max-request-size: 209715200
   thymeleaf:
     prefix: classpath:/templates/
     check-template-location: true
@@ -55,11 +56,19 @@ pagehelper:
   params: count=countSql
   returnPageInfo: check
 
-qiniu:
-  accesskey: ""
-  serectkey: ""
-  bucket: ""
-  cdn:
-    url: ""
+#七牛云OSS存储
+OSS:
+  # 公钥
+  accessKey: ENC(WtbPaMhE7+3hRh471CtbvTAZsw1PBbSeI7yeq62imlnjbZ/kgiHEc7aNC4C3Y0jkQxoYfZd24dM=)
+  # 私钥
+  secretKey: ENC(7C6gTp4FMipos8jiNMGxa5w9Pqii9MXQbiIzDMAr1LVOTk8WRT/TfH/ZbFJ1VyKOo5iWr+f2x2Q=)
+  # 存储空间名
+  bucketName: lqblogresource
+  # 域名/路径
+  path: rxzkxz1t2.hb-bkt.clouddn.com
+file:
+  # 上传文件允许的扩展名
+  allowed: png,jpg,jpeg,pdf,bmp,webp
+
 
 
