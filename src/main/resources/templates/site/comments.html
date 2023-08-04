@@ -36,7 +36,7 @@
                 <h4>留下你的评论~</h4>
                 <div class="row">
                     <form class="comment-form" id="comment-form" onsubmit="return TaleComment.subComment();" role="form">
-                        <input id="coid" name="coid" type="hidden"/> <input id="cid" name="cid" th:value="${article.id}" type="hidden"/>
+                        <input id="coid" name="coid" type="hidden"/> <input id="id" name="id" th:value="${article.id}" type="hidden"/>
                         <input name="_csrf_token" th:value="${_csrf_token}" type="hidden"/>
                         <div class="col-xs-12 col-sm-4 col-md-4">
                             <!--suppress HtmlFormInputWithoutLabel -->

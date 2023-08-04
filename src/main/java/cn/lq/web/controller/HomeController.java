@@ -204,7 +204,7 @@ public class HomeController extends BaseController {
     @PostMapping(value = "/blog/comment")
     @ResponseBody
     public Response<?> comment(HttpServletRequest request, HttpServletResponse response,
-                               @RequestParam(name = "cid") Long cid,
+                               @RequestParam(name = "id") Long id,
                                @RequestParam(name = "coid", required = false) Long commentId,
                                @RequestParam(name = "author", required = false) String author,
                                @RequestParam(name = "mail", required = false) String mail,
@@ -221,7 +221,7 @@ public class HomeController extends BaseController {
             return Response.fail("访问失败");
         }
 
-        if (null == cid || StringUtils.isBlank(text)) {
+        if (null == id || StringUtils.isBlank(text)) {
             return Response.fail("请输入完整后评论");
         }
 
@@ -233,7 +233,7 @@ public class HomeController extends BaseController {
             return Response.fail("请输入正确的邮箱格式");
         }
 
-        String val = NetKit.getIpAddrByRequest(request) + ":" + cid;
+        String val = NetKit.getIpAddrByRequest(request) + ":" + id;
         Integer count = cache.hget(Types.COMMENTS_FREQUENCY.getType(), val);
         if (null != count && count > 0) {
             return Response.fail("您发表评论太快了，请过会再试");
@@ -247,7 +247,7 @@ public class HomeController extends BaseController {
 
         CommentPO comments = new CommentPO();
         comments.setAuthor(author);
-        comments.setContentId(cid);
+        comments.setContentId(id);
         comments.setIp(request.getRemoteAddr());
         comments.setContent(text);
         comments.setMail(mail);
