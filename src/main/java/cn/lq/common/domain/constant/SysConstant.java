@@ -15,7 +15,7 @@ public class SysConstant {
     public static String env;
 
     @Value("${spring.profiles.active}")
-    public static void setEnv(String env) {
+    public void setEnv(String env) {
         SysConstant.env = env;
     }
 }

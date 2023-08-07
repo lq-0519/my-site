@@ -102,7 +102,7 @@ public class BaiduBlogUploadUtils {
     }
 
     @Value("${bd.search.token}")
-    public static void setBdToken(String bdToken) {
+    public void setBdToken(String bdToken) {
         BaiduBlogUploadUtils.bdToken = bdToken;
     }
 }
