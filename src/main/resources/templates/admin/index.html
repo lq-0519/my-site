@@ -59,7 +59,7 @@
                                     <ul class="list-group">
                                         <li class="list-group-item" th:each="article : ${articles}">
                                             <span class="badge badge-primary" th:text="${article.commentsNum}" th:title="${article.commentsNum}+'条评论'"></span>
-                                            <a target="_blank" th:href="${commons.site_url('/blog/article/')}+${article.id}" th:text="${article.title}"></a>
+                                            <a target="_blank" th:href="${commons.blogPermalink(article.id)}" th:text="${article.title}"></a>
                                         </li>
                                     </ul>
                                 </div>
@@ -81,7 +81,8 @@
                                             <th:block th:text="${comment.author}"/>
                                             于
                                             <th:block th:text="${commons.fmtdate(comment.created,'MM月dd日HH:mm')}"/>
-                                            ：<a target="_blank" th:href="${commons.site_url('/blog/article/')}+${comment.id}+'#comments-content'" th:utext="${commons.article(comment.content)}"></a>
+                                            ：<a target="_blank" th:href="${commons.blogPermalink(comment.contentId)}" th:utext="${commons.article(comment.content)}"></a>
+
                                         </li>
                                     </ul>
                                 </div>
