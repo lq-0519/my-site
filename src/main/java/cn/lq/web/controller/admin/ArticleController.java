@@ -96,7 +96,6 @@ public class ArticleController extends BaseController {
         //只允许博客文章有分类，防止作品被收入分类
         contentEsPO.setCategories(type.equals(Types.ARTICLE.getType()) ? categories : null);
         contentEsPO.setAllowComment(allowComment ? 1 : 0);
-
         contentService.addArticle(contentEsPO);
         return Response.success();
     }
@@ -138,7 +137,6 @@ public class ArticleController extends BaseController {
         contentEsPO.setTags(tags);
         contentEsPO.setCategories(categories);
         contentEsPO.setAllowComment(allowComment ? 1 : 0);
-
         contentService.updateArticleById(contentEsPO);
         return Response.success();
     }

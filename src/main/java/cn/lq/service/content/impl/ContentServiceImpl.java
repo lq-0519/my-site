@@ -13,6 +13,7 @@ import cn.lq.common.domain.query.inner.es.ContentEsInnerQuery;
 import cn.lq.common.domain.vo.ContentVO;
 import cn.lq.common.domain.vo.PageVO;
 import cn.lq.common.exception.BusinessException;
+import cn.lq.common.utils.BaiduBlogUploadUtils;
 import cn.lq.common.utils.BeanConverter;
 import cn.lq.common.utils.CollectionUtils;
 import cn.lq.common.utils.MapCache;
@@ -78,6 +79,8 @@ public class ContentServiceImpl implements ContentService {
         long contentId = contentManager.insert(contentEsPO);
         metaService.addMetas(contentId, tags, Types.TAG.getType());
         metaService.addMetas(contentId, categories, Types.CATEGORY.getType());
+        //内容推送百度
+        BaiduBlogUploadUtils.upload(contentId);
     }
 
     @Override
@@ -114,13 +117,14 @@ public class ContentServiceImpl implements ContentService {
         String tags = contentEsPO.getTags();
         String categories = contentEsPO.getCategories();
         contentManager.update(contentEsPO);
-        Long cid = contentEsPO.getId();
+        Long contentId = contentEsPO.getId();
         ContentMetaBindInnerQuery delQuery = new ContentMetaBindInnerQuery();
-        delQuery.setContentId(cid);
+        delQuery.setContentId(contentId);
         contentMetaBindManager.deleteByQuery(delQuery);
-        metaService.addMetas(cid, tags, Types.TAG.getType());
-        metaService.addMetas(cid, categories, Types.CATEGORY.getType());
-
+        metaService.addMetas(contentId, tags, Types.TAG.getType());
+        metaService.addMetas(contentId, categories, Types.CATEGORY.getType());
+        //内容推送百度
+        BaiduBlogUploadUtils.upload(contentId);
     }
 
     @Override

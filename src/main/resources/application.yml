@@ -70,5 +70,9 @@ file:
   # 上传文件允许的扩展名
   allowed: png,jpg,jpeg,pdf,bmp,webp
 
+bd:
+  search:
+    token: ENC(PQNjecx3PcbFTAKWowIh44bj7c+WVQaHl16IKodIdUc=)
+
 
 

@@ -1,6 +1,7 @@
 package cn.lq.web.interceptor;
 
 import cn.lq.common.domain.constant.Constant;
+import cn.lq.common.domain.constant.SysConstant;
 import cn.lq.common.domain.constant.Types;
 import cn.lq.common.domain.po.ConfigPO;
 import cn.lq.common.domain.po.UserPO;
@@ -14,7 +15,6 @@ import cn.lq.service.option.OptionService;
 import cn.lq.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -42,8 +42,6 @@ public class BaseInterceptor implements HandlerInterceptor {
     private Commons commons;
     @Resource
     private AdminCommons adminCommons;
-    @Value("${spring.profiles.active}")
-    private String env;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
@@ -52,7 +50,7 @@ public class BaseInterceptor implements HandlerInterceptor {
         LOGGER.info("用户访问地址: {}, 来路地址: {}", uri, NetKit.getIpAddrByRequest(request));
         //请求拦截处理
         UserPO user = TaleUtils.getLoginUser(request);
-        if (Constant.Env.DEV.equals(env)) {
+        if (Constant.Env.DEV.equals(SysConstant.env)) {
             //测试环境免登录
             user = userService.queryByUsername("admin");
             request.getSession().setAttribute(Constant.LOGIN_SESSION_KEY, user);

@@ -82,6 +82,9 @@ public interface Constant {
         String FIELD_CREATED = "created";
     }
 
+    /**
+     * 系统环境
+     */
     interface Env {
         String DEV = "dev";
         String PROD = "prod";
