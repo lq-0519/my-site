@@ -78,7 +78,7 @@
                         <th:block th:unless="${commons.is_empty(attachs)}">
                             <th:block th:each="attach : ${attachs.list}">
                                 <div class="col-md-2 text-center m-t-10">
-                                    <a target="_blank" th:href="${attach.fileKey}"><img class="attach-img" th:src="${attach.fileType == 'image' ? attach.fileUrl : 'http://rxzkxz1t2.hb-bkt.clouddn.com/attach.png'}" th:title="${attach.fileName}"/>
+                                    <a target="_blank" th:href="${attach.fileKey}"><img class="attach-img" th:src="${attach.fileType == 'image' ? attach.fileUrl : 'http://qn.1qian.net/attach.png'}" th:title="${attach.fileName}"/>
                                     </a>
                                     <div class="clearfix m-t-10">
                                         <span class="attach-text" data-placement="top" data-toggle="tooltip" th:attr="data-original-title=${attach.fileName}" th:text="${commons.substr(attach.fileName, 12)}"></span>

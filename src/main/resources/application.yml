@@ -65,7 +65,7 @@ OSS:
   # 存储空间名
   bucketName: lqblogresource
   # 域名/路径
-  path: rxzkxz1t2.hb-bkt.clouddn.com
+  path: qn.1qian.net
 file:
   # 上传文件允许的扩展名
   allowed: png,jpg,jpeg,pdf,bmp,webp
