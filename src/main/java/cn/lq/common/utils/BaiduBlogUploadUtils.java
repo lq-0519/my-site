@@ -15,6 +15,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -27,6 +28,7 @@ import java.security.cert.X509Certificate;
  *
  * @author liqian477
  */
+@Component
 public class BaiduBlogUploadUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaiduBlogUploadUtils.class);
     private static final String URL = "http://www.1qian.net/blog/article?id=%s&content=";
