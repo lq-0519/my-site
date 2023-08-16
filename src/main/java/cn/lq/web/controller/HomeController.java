@@ -123,12 +123,12 @@ public class HomeController extends BaseController {
     }
 
     /**
-     * work首页
+     * photo首页
      */
-    @GetMapping(value = {"/work/", "/work/index"})
-    public String workIndex(HttpServletRequest request,
-                            @ApiParam(name = "limit", value = "页数") @RequestParam(name = "limit", required = false, defaultValue = "100") int limit) {
-        return this.workIndex(1, limit, request);
+    @GetMapping(value = {"/photo/", "/photo/index"})
+    public String photoIndex(HttpServletRequest request,
+                             @ApiParam(name = "limit", value = "页数") @RequestParam(name = "limit", required = false, defaultValue = "100") int limit) {
+        return this.photoIndex(1, limit, request);
     }
 
     @GetMapping(value = {"/about", "/about/index"})
@@ -276,7 +276,7 @@ public class HomeController extends BaseController {
 
     @ApiOperation("作品主页-分页")
     @GetMapping(value = "/photo/page/{p}")
-    public String workIndex(
+    public String photoIndex(
             @ApiParam(name = "page", value = "页数") @PathVariable(name = "p") int page,
             @ApiParam(name = "limit", value = "条数") @RequestParam(name = "limit", required = false, defaultValue = "9999") int limit,
             HttpServletRequest request) {
@@ -285,7 +285,7 @@ public class HomeController extends BaseController {
         contentEsInnerQuery.setType(Types.PHOTO.getType());
         PageVO<ContentEsPO> articles = contentService.queryContentPage(contentEsInnerQuery, page, limit);
         request.setAttribute("archives", articles);
-        request.setAttribute("active", "work");
+        request.setAttribute("active", "photo");
         return "site/index";
     }
 
@@ -295,8 +295,8 @@ public class HomeController extends BaseController {
         ContentEsPO article = contentService.getArticleById(cid);
         contentService.updateArticleHit(article.getId(), article.getHits());
         request.setAttribute("archive", article);
-        request.setAttribute("active", "work");
-        return "site/works-details";
+        request.setAttribute("active", "photo");
+        return "site/photo-details";
     }
 
     /**
