@@ -127,7 +127,7 @@ public class HomeController extends BaseController {
      */
     @GetMapping(value = {"/work/", "/work/index"})
     public String workIndex(HttpServletRequest request,
-                            @ApiParam(name = "limit", value = "页数") @RequestParam(name = "limit", required = false, defaultValue = "12") int limit) {
+                            @ApiParam(name = "limit", value = "页数") @RequestParam(name = "limit", required = false, defaultValue = "100") int limit) {
         return this.workIndex(1, limit, request);
     }
 
